@@ -1,0 +1,42 @@
+# Android Studio / IntelliJ
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+**/build/
+
+# Configuração local
+local.properties
+
+# Pacotes gerados
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# Keystores / assinatura
+*.jks
+*.keystore
+keystore.properties
+
+# Firebase
+google-services.json
+
+# Kotlin
+.kotlin/
+
+# Logs
+*.log
+
+# Temporários
+*.tmp
+*.temp
+*.swp
+*~
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">Ide</string>
+
+    <!-- OAuth -->
+    <string name="google_web_client_id" translatable="false">
+        1039327481065-57oku5agk5fbtgkkidkd9til1a7qu1pa.apps.googleusercontent.com
+    </string>
+
+    <!-- Login -->
+    <string name="login_slogan">Missão que conecta pessoas</string>
+
+    <string name="login_email_label">E-mail</string>
+    <string name="login_email_placeholder">seu@email.com</string>
+
+    <string name="login_password_label">Senha</string>
+    <string name="login_password_placeholder">Digite sua senha</string>
+
+    <string name="login_show_password">Mostrar senha</string>
+    <string name="login_hide_password">Ocultar senha</string>
+
+    <string name="login_forgot_password">Esqueci minha senha</string>
+
+    <string name="login_button">Entrar</string>
+    <string name="login_or">ou</string>
+    <string name="login_google_button">Entrar com Google</string>
+
+    <string name="login_no_account">Ainda não tem uma conta?</string>
+    <string name="login_create_account">Criar conta</string>
+
+    <!-- Sabbath School Enums -->
+    <string name="sabbath_school_juveniles">Juvenis</string>
+    <string name="sabbath_school_youth">Jovens</string>
+    <string name="sabbath_school_adults">Adultos</string>
+
+    <!-- User Role Enums -->
+    <string name="user_role_missionary">Missionário</string>
+    <string name="user_role_leader">Líder</string>
+    <string name="user_role_pastor">Pastor</string>
+    <string name="user_role_admin">Administrador</string>
+
+    <!-- Register -->
+    <string name="register_title">Criar conta</string>
+    <string name="register_subtitle">Preencha seus dados para começar</string>
+
+    <string name="register_first_name">Nome</string>
+    <string name="register_last_name">Sobrenome</string>
+    <string name="register_email">E-mail</string>
+    <string name="register_sabbath_school_class">Classe da Escola Sabatina</string>
+    <string name="register_password">Senha</string>
+    <string name="register_confirm_password">Confirmar senha</string>
+
+    <string name="register_button">Criar conta</string>
+
+    <string name="register_has_account">Já possui uma conta?</string>
+    <string name="register_login">Entrar</string>
+
+    <string name="register_back">Voltar</string>
+
+    <!-- Register validation -->
+    <string name="error_first_name_required">Informe o nome.</string>
+    <string name="error_last_name_required">Informe o sobrenome.</string>
+    <string name="error_sabbath_school_class_required">Selecione a classe da Escola Sabatina.</string>
+    <string name="error_password_min_length">A senha deve ter pelo menos 6 caracteres.</string>
+    <string name="error_confirm_password_required">Confirme a senha.</string>
+    <string name="error_passwords_do_not_match">As senhas não coincidem.</string>
+    <string name="error_register_generic">Não foi possível criar a conta. Tente novamente.</string>
+
+    <!-- Acessibilidade -->
+    <string name="login_logo_description">Logo IDE</string>
+    <string name="google_logo_description">Google</string>
+
+    <!-- Versículo -->
+    <string name="login_bible_verse">“Ide por todo o mundo e pregai o evangelho a toda criatura.”</string>
+    <string name="login_bible_reference">Marcos 16:15</string>
+
+    <!-- Validação -->
+    <string name="error_email_required">Informe o e-mail.</string>
+    <string name="error_email_invalid">Informe um e-mail válido.</string>
+    <string name="error_password_required">Informe a senha.</string>
+
+    <!-- Autenticação -->
+    <string name="error_invalid_credentials">E-mail ou senha incorretos.</string>
+    <string name="error_network">Não foi possível conectar ao servidor. Verifique sua conexão com a internet.</string>
+    <string name="error_too_many_requests">Muitas tentativas foram realizadas. Aguarde alguns minutos e tente novamente.</string>
+    <string name="error_login_generic">Não foi possível realizar o login. Tente novamente.</string>
+    <string name="error_google_login">Não foi possível entrar com o Google.</string>
+    <string name="error_unexpected">Ocorreu um erro inesperado. Tente novamente.</string>
+
+    <!-- Home -->
+    <string name="home_greeting">Olá, %1$s</string>
+    <string name="home_active_mission">Missão ativa: %1$s</string>
+    <string name="home_open_mission">Abrir missão</string>
+    <string name="home_loading_error">Não foi possível carregar os dados.</string>
+    <string name="retry">Tentar novamente</string>
+</resources>

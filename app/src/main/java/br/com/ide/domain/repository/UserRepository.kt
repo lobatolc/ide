@@ -1,0 +1,10 @@
+package br.com.ide.domain.repository
+
+import br.com.ide.domain.model.UserProfile
+
+interface UserRepository {
+
+    suspend fun saveUser(
+        user: UserProfile
+    ): Result<Unit>
+}
