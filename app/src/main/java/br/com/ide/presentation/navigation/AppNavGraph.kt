@@ -12,6 +12,8 @@ import br.com.ide.presentation.feature.profile.ProfileScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.ide.presentation.feature.forgotpassword.ForgotPasswordScreen
+import br.com.ide.presentation.feature.forgotpassword.ForgotPasswordViewModel
 import br.com.ide.presentation.feature.home.HomeViewModel
 import br.com.ide.presentation.feature.login.LoginViewModel
 import br.com.ide.presentation.feature.register.RegisterScreen
@@ -50,6 +52,9 @@ fun AppNavGraph(
             LoginScreen(
                 uiState = uiState,
                 onEvent = viewModel::onEvent,
+                onForgotPasswordClick = {
+                    navController.navigate(ForgotPassword)
+                },
                 onCreateAccountClick = {
                     navController.navigate(Register)
                 }
@@ -72,6 +77,23 @@ fun AppNavGraph(
             }
 
             RegisterScreen(
+                uiState = uiState,
+                onEvent = viewModel::onEvent,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onLoginClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<ForgotPassword> {
+            val viewModel: ForgotPasswordViewModel = hiltViewModel()
+
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+            ForgotPasswordScreen(
                 uiState = uiState,
                 onEvent = viewModel::onEvent,
                 onBackClick = {

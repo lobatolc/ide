@@ -18,54 +18,42 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.ide.R
-import androidx.compose.ui.platform.LocalContext
 import androidx.credentials.CredentialManager
-import androidx.credentials.GetCredentialRequest
 import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import br.com.ide.R
+import br.com.ide.presentation.components.IdePasswordField
+import br.com.ide.presentation.components.IdePrimaryButton
+import br.com.ide.presentation.components.IdeTextField
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.res.stringResource
-import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 
 @Composable
 fun LoginScreen(
@@ -74,10 +62,6 @@ fun LoginScreen(
     onForgotPasswordClick: () -> Unit = {},
     onCreateAccountClick: () -> Unit = {}
 ) {
-    var passwordVisible by remember {
-        mutableStateOf(false)
-    }
-
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -95,7 +79,7 @@ fun LoginScreen(
         ).build()
     }
 
-    val googleRequest = remember {
+    val googleRequest = remember(googleIdOption) {
         GetCredentialRequest.Builder()
             .addCredentialOption(
                 googleIdOption
@@ -110,22 +94,21 @@ fun LoginScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .navigationBarsPadding()
         ) {
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(290.dp)
             ) {
-
                 Image(
-                    painter = painterResource(id = R.drawable.login_background),
+                    painter = painterResource(
+                        id = R.drawable.login_background
+                    ),
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -137,10 +120,14 @@ fun LoginScreen(
                         .background(
                             brush = Brush.verticalGradient(
                                 colorStops = arrayOf(
-                                    0.0f to MaterialTheme.colorScheme.background.copy(alpha = 0.35f),
+                                    0.0f to MaterialTheme.colorScheme.background.copy(
+                                        alpha = 0.35f
+                                    ),
                                     0.45f to Color.Transparent,
                                     0.72f to Color.Transparent,
-                                    1.0f to MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                                    1.0f to MaterialTheme.colorScheme.surface.copy(
+                                        alpha = 0.85f
+                                    )
                                 )
                             )
                         )
@@ -154,22 +141,23 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-
                     Icon(
                         painter = painterResource(
                             id = R.drawable.ide_logo
                         ),
-                        contentDescription = "Logo IDE",
+                        contentDescription = stringResource(
+                            R.string.login_logo_description
+                        ),
                         modifier = Modifier
                             .fillMaxWidth(0.72f)
                             .height(135.dp),
                         tint = Color.Unspecified
                     )
 
-
-
                     Text(
-                        text = stringResource(R.string.login_slogan),
+                        text = stringResource(
+                            R.string.login_slogan
+                        ),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center,
@@ -180,12 +168,13 @@ fun LoginScreen(
                     Spacer(
                         modifier = Modifier.height(56.dp)
                     )
-
                 }
             }
 
             Surface(
-                modifier = Modifier.fillMaxWidth().offset(y = (-32).dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = (-32).dp),
                 shape = RoundedCornerShape(
                     topStart = 32.dp,
                     topEnd = 32.dp
@@ -195,95 +184,44 @@ fun LoginScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 28.dp),
+                        .padding(
+                            horizontal = 24.dp,
+                            vertical = 28.dp
+                        ),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
-                    OutlinedTextField(
+                    IdeTextField(
                         value = uiState.email,
                         onValueChange = {
-                            onEvent(LoginEvent.EmailChanged(it))
-                        },
-                        label = { Text(stringResource(R.string.login_email_label)) },
-                        placeholder = { Text(stringResource(R.string.login_email_placeholder)) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Email,
-                                contentDescription = null
+                            onEvent(
+                                LoginEvent.EmailChanged(it)
                             )
                         },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Email
+                        label = stringResource(
+                            R.string.login_email_label
                         ),
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = uiState.emailError != null,
-                        supportingText = {
-                            uiState.emailError?.let { errorRes ->
-                                Text(
-                                    text = stringResource(errorRes)
-                                )
-                            }
-                        }
+                        leadingIcon = Icons.Outlined.Email,
+                        keyboardType = KeyboardType.Email,
+                        errorRes = uiState.emailError,
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(
                         modifier = Modifier.height(8.dp)
                     )
 
-                    OutlinedTextField(
+                    IdePasswordField(
                         value = uiState.password,
                         onValueChange = {
-                            onEvent(LoginEvent.PasswordChanged(it))
-                        },
-                        label = { Text(stringResource(R.string.login_password_label)) },
-                        placeholder = { Text(stringResource(R.string.login_password_placeholder)) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Lock,
-                                contentDescription = null
+                            onEvent(
+                                LoginEvent.PasswordChanged(it)
                             )
                         },
-                        trailingIcon = {
-                            IconButton(
-                                onClick = {
-                                    passwordVisible = !passwordVisible
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = if (passwordVisible) {
-                                        Icons.Outlined.VisibilityOff
-                                    } else {
-                                        Icons.Outlined.Visibility
-                                    },
-                                    contentDescription = if (passwordVisible) {
-                                        stringResource(R.string.login_hide_password)
-                                    } else {
-                                        stringResource(R.string.login_show_password)
-                                    }
-                                )
-                            }
-                        },
-                        visualTransformation = if (passwordVisible) {
-                            VisualTransformation.None
-                        } else {
-                            PasswordVisualTransformation()
-                        },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password
+                        label = stringResource(
+                            R.string.login_password_label
                         ),
-                        shape = RoundedCornerShape(20.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = uiState.passwordError != null,
-                        supportingText = {
-                            uiState.passwordError?.let { errorRes ->
-                                Text(
-                                    text = stringResource(errorRes)
-                                )
-                            }
-                        }
+                        errorRes = uiState.passwordError,
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     uiState.errorMessage?.let { errorRes ->
@@ -301,14 +239,19 @@ fun LoginScreen(
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(
-                            text = stringResource(R.string.login_forgot_password),
+                            text = stringResource(
+                                R.string.login_forgot_password
+                            ),
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier
                                 .clickable {
                                     onForgotPasswordClick()
                                 }
-                                .padding(top = 8.dp, bottom = 4.dp)
+                                .padding(
+                                    top = 8.dp,
+                                    bottom = 4.dp
+                                )
                         )
                     }
 
@@ -316,34 +259,16 @@ fun LoginScreen(
                         modifier = Modifier.height(20.dp)
                     )
 
-                    Button(
+                    IdePrimaryButton(
+                        text = stringResource(
+                            R.string.login_button
+                        ),
                         onClick = {
                             onEvent(LoginEvent.Login)
                         },
-                        enabled = !uiState.isLoading,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(58.dp),
-                        shape = RoundedCornerShape(28.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        if (uiState.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                        } else {
-                            Text(
-                                text = stringResource(R.string.login_button),
-                                fontSize = 17.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
+                        isLoading = uiState.isLoading,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     Spacer(
                         modifier = Modifier.height(28.dp)
@@ -358,8 +283,12 @@ fun LoginScreen(
                         )
 
                         Text(
-                            text = stringResource(R.string.login_or),
-                            modifier = Modifier.padding(horizontal = 16.dp),
+                            text = stringResource(
+                                R.string.login_or
+                            ),
+                            modifier = Modifier.padding(
+                                horizontal = 16.dp
+                            ),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
@@ -374,11 +303,8 @@ fun LoginScreen(
 
                     OutlinedButton(
                         onClick = {
-
                             scope.launch {
-
                                 try {
-
                                     val result =
                                         credentialManager.getCredential(
                                             context = context,
@@ -393,7 +319,6 @@ fun LoginScreen(
                                         credential.type ==
                                         GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
                                     ) {
-
                                         val googleCredential =
                                             GoogleIdTokenCredential
                                                 .createFrom(
@@ -406,9 +331,9 @@ fun LoginScreen(
                                             )
                                         )
                                     }
-
-                                } catch (exception: GetCredentialException) {
-
+                                } catch (
+                                    exception: GetCredentialException
+                                ) {
                                     onEvent(
                                         LoginEvent.GoogleLoginError
                                     )
@@ -424,7 +349,9 @@ fun LoginScreen(
                             painter = painterResource(
                                 id = R.drawable.ic_google_logo
                             ),
-                            contentDescription = stringResource(R.string.google_logo_description),
+                            contentDescription = stringResource(
+                                R.string.google_logo_description
+                            ),
                             modifier = Modifier.size(20.dp),
                             tint = Color.Unspecified
                         )
@@ -434,7 +361,9 @@ fun LoginScreen(
                         )
 
                         Text(
-                            text = stringResource(R.string.login_google_button),
+                            text = stringResource(
+                                R.string.login_google_button
+                            ),
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -444,7 +373,9 @@ fun LoginScreen(
                     )
 
                     Text(
-                        text = stringResource(R.string.login_no_account),
+                        text = stringResource(
+                            R.string.login_no_account
+                        ),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -454,7 +385,9 @@ fun LoginScreen(
                     )
 
                     Text(
-                        text = stringResource(R.string.login_create_account),
+                        text = stringResource(
+                            R.string.login_create_account
+                        ),
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
@@ -468,7 +401,9 @@ fun LoginScreen(
                     )
 
                     Text(
-                        text = stringResource(R.string.login_bible_verse),
+                        text = stringResource(
+                            R.string.login_bible_verse
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -479,7 +414,9 @@ fun LoginScreen(
                     )
 
                     Text(
-                        text = stringResource(R.string.login_bible_reference),
+                        text = stringResource(
+                            R.string.login_bible_reference
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center

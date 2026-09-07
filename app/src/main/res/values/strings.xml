@@ -65,6 +65,27 @@
     <string name="error_passwords_do_not_match">As senhas não coincidem.</string>
     <string name="error_register_generic">Não foi possível criar a conta. Tente novamente.</string>
 
+    <!-- Forgot Password -->
+    <string name="forgot_password_title">Recuperar senha</string>
+    <string name="forgot_password_subtitle">Informe o e-mail cadastrado na sua conta. Se ele existir, enviaremos instruções para redefinir sua senha.</string>
+
+    <string name="forgot_password_email">E-mail</string>
+
+    <string name="forgot_password_button">Enviar link de recuperação</string>
+
+    <string name="forgot_password_remembered">Lembrou sua senha?</string>
+    <string name="forgot_password_login">Entrar</string>
+
+    <string name="forgot_password_back">Voltar</string>
+
+    <string name="forgot_password_success">Se o e-mail estiver cadastrado, enviaremos instruções para redefinir sua senha.</string>
+
+    <string name="forgot_password_error">Não foi possível enviar as instruções de recuperação. Tente novamente.</string>
+
+    <string name="forgot_password_resend">Reenviar link</string>
+
+    <string name="forgot_password_wait_to_resend">Aguarde %1$d segundos para reenviar</string>
+
     <!-- Acessibilidade -->
     <string name="login_logo_description">Logo IDE</string>
     <string name="google_logo_description">Google</string>

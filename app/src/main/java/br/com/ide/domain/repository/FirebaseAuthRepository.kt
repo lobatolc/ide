@@ -80,6 +80,23 @@ class FirebaseAuthRepository @Inject constructor(
         }
     }
 
+    override suspend fun sendPasswordResetEmail(
+        email: String
+    ): Result<Unit> {
+        return try {
+            firebaseAuth.useAppLanguage()
+
+            firebaseAuth
+                .sendPasswordResetEmail(email)
+                .await()
+
+            Result.success(Unit)
+
+        } catch (exception: Exception) {
+            Result.failure(exception)
+        }
+    }
+
     override fun isUserLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null
     }
