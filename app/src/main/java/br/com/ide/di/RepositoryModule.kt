@@ -1,7 +1,7 @@
 package br.com.ide.di
 
-import br.com.ide.data.repository.FakeMissionRepository
 import br.com.ide.data.repository.FirebaseAuthRepository
+import br.com.ide.data.repository.FirestoreMissionRepository
 import br.com.ide.data.repository.FirestoreUserRepository
 import br.com.ide.domain.repository.AuthRepository
 import br.com.ide.domain.repository.MissionRepository
@@ -19,7 +19,7 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindMissionRepository(
-        repository: FakeMissionRepository
+        repository: FirestoreMissionRepository
     ): MissionRepository
 
     @Binds

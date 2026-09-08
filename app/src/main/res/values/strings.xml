@@ -1,116 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Ide</string>
+    <string name="app_name" translatable="false">IDE</string>
 
-    <!-- OAuth -->
-    <string name="google_web_client_id" translatable="false">
-        1039327481065-57oku5agk5fbtgkkidkd9til1a7qu1pa.apps.googleusercontent.com
+    <string
+        name="google_web_client_id"
+        translatable="false">
+    1039327481065-57oku5agk5fbtgkkidkd9til1a7qu1pa.apps.googleusercontent.com
     </string>
-
     <!-- Login -->
-    <string name="login_slogan">Missão que conecta pessoas</string>
-
-    <string name="login_email_label">E-mail</string>
-    <string name="login_email_placeholder">seu@email.com</string>
-
-    <string name="login_password_label">Senha</string>
-    <string name="login_password_placeholder">Digite sua senha</string>
-
+    <string name="login_title">Bem-vindo de volta</string>
+    <string name="login_subtitle">Entre para continuar</string>
+    <string name="login_email">E-mail</string>
+    <string name="login_password">Senha</string>
+    <string name="login_button">Entrar</string>
+    <string name="login_forgot_password">Esqueceu sua senha?</string>
+    <string name="login_google">Continuar com Google</string>
+    <string name="login_no_account">Não possui uma conta?</string>
+    <string name="login_create_account">Criar conta</string>
+    <string name="login_logo_description">Logo do IDE</string>
     <string name="login_show_password">Mostrar senha</string>
     <string name="login_hide_password">Ocultar senha</string>
 
-    <string name="login_forgot_password">Esqueci minha senha</string>
+    <!-- Login extras -->
 
-    <string name="login_button">Entrar</string>
-    <string name="login_or">ou</string>
-    <string name="login_google_button">Entrar com Google</string>
+    <string name="login_slogan">
+        Missões que conectam pessoas
+    </string>
 
-    <string name="login_no_account">Ainda não tem uma conta?</string>
-    <string name="login_create_account">Criar conta</string>
+    <string name="login_email_label">
+        E-mail
+    </string>
 
-    <!-- Sabbath School Enums -->
-    <string name="sabbath_school_juveniles">Juvenis</string>
-    <string name="sabbath_school_youth">Jovens</string>
-    <string name="sabbath_school_adults">Adultos</string>
+    <string name="login_password_label">
+        Senha
+    </string>
 
-    <!-- User Role Enums -->
-    <string name="user_role_missionary">Missionário</string>
-    <string name="user_role_leader">Líder</string>
-    <string name="user_role_pastor">Pastor</string>
-    <string name="user_role_admin">Administrador</string>
+    <string name="login_or">
+        ou
+    </string>
 
-    <!-- Register -->
+    <string name="google_logo_description">
+        Logo do Google
+    </string>
+
+    <string name="login_google_button">
+        Continuar com Google
+    </string>
+
+    <string name="login_bible_verse">
+        “Ide por todo o mundo e pregai o evangelho a toda criatura.”
+    </string>
+
+    <string name="login_bible_reference">
+        Marcos 16:15
+    </string>
+
+    <!-- Register extras -->
+    <string name="register_back">
+        Voltar
+    </string>
+
+    <string name="register_has_account">
+        Já possui uma conta?
+    </string>
+
+    <!-- Cadastro -->
     <string name="register_title">Criar conta</string>
     <string name="register_subtitle">Preencha seus dados para começar</string>
-
     <string name="register_first_name">Nome</string>
     <string name="register_last_name">Sobrenome</string>
     <string name="register_email">E-mail</string>
     <string name="register_sabbath_school_class">Classe da Escola Sabatina</string>
     <string name="register_password">Senha</string>
     <string name="register_confirm_password">Confirmar senha</string>
-
     <string name="register_button">Criar conta</string>
-
-    <string name="register_has_account">Já possui uma conta?</string>
+    <string name="register_already_have_account">Já possui uma conta?</string>
     <string name="register_login">Entrar</string>
 
-    <string name="register_back">Voltar</string>
+    <!-- Escola Sabatina -->
+    <string name="sabbath_school_juveniles">Juvenis</string>
+    <string name="sabbath_school_youth">Jovens</string>
+    <string name="sabbath_school_adults">Adultos</string>
 
-    <!-- Register validation -->
-    <string name="error_first_name_required">Informe o nome.</string>
-    <string name="error_last_name_required">Informe o sobrenome.</string>
-    <string name="error_sabbath_school_class_required">Selecione a classe da Escola Sabatina.</string>
-    <string name="error_password_min_length">A senha deve ter pelo menos 6 caracteres.</string>
-    <string name="error_confirm_password_required">Confirme a senha.</string>
-    <string name="error_passwords_do_not_match">As senhas não coincidem.</string>
-    <string name="error_register_generic">Não foi possível criar a conta. Tente novamente.</string>
+    <!-- Perfis de usuário -->
+    <string name="user_role_missionary">Missionário</string>
+    <string name="user_role_leader">Líder</string>
+    <string name="user_role_pastor">Pastor</string>
+    <string name="user_role_admin">Administrador</string>
 
-    <!-- Forgot Password -->
+    <!-- Recuperação de senha -->
     <string name="forgot_password_title">Recuperar senha</string>
-    <string name="forgot_password_subtitle">Informe o e-mail cadastrado na sua conta. Se ele existir, enviaremos instruções para redefinir sua senha.</string>
+
+    <string name="forgot_password_subtitle">
+        Informe o e-mail cadastrado na sua conta. Se ele existir, enviaremos instruções para redefinir sua senha.
+    </string>
 
     <string name="forgot_password_email">E-mail</string>
 
-    <string name="forgot_password_button">Enviar link de recuperação</string>
+    <string name="forgot_password_button">
+        Enviar link de recuperação
+    </string>
 
-    <string name="forgot_password_remembered">Lembrou sua senha?</string>
+    <string name="forgot_password_remembered">
+        Lembrou sua senha?
+    </string>
+
     <string name="forgot_password_login">Entrar</string>
-
     <string name="forgot_password_back">Voltar</string>
 
-    <string name="forgot_password_success">Se o e-mail estiver cadastrado, enviaremos instruções para redefinir sua senha.</string>
+    <string name="forgot_password_success">
+        Se o e-mail estiver cadastrado, você receberá instruções para redefinir sua senha.
+    </string>
 
-    <string name="forgot_password_error">Não foi possível enviar as instruções de recuperação. Tente novamente.</string>
+    <string name="forgot_password_error">
+        Não foi possível enviar o e-mail de recuperação.
+    </string>
 
-    <string name="forgot_password_resend">Reenviar link</string>
+    <string name="forgot_password_resend">
+        Reenviar link
+    </string>
 
-    <string name="forgot_password_wait_to_resend">Aguarde %1$d segundos para reenviar</string>
-
-    <!-- Acessibilidade -->
-    <string name="login_logo_description">Logo IDE</string>
-    <string name="google_logo_description">Google</string>
-
-    <!-- Versículo -->
-    <string name="login_bible_verse">“Ide por todo o mundo e pregai o evangelho a toda criatura.”</string>
-    <string name="login_bible_reference">Marcos 16:15</string>
+    <string name="forgot_password_wait_to_resend">
+        Aguarde %1$d s para reenviar
+    </string>
 
     <!-- Validação -->
-    <string name="error_email_required">Informe o e-mail.</string>
-    <string name="error_email_invalid">Informe um e-mail válido.</string>
-    <string name="error_password_required">Informe a senha.</string>
+    <string name="error_email_required">
+        O e-mail é obrigatório.
+    </string>
 
-    <!-- Autenticação -->
-    <string name="error_invalid_credentials">E-mail ou senha incorretos.</string>
-    <string name="error_network">Não foi possível conectar ao servidor. Verifique sua conexão com a internet.</string>
-    <string name="error_too_many_requests">Muitas tentativas foram realizadas. Aguarde alguns minutos e tente novamente.</string>
-    <string name="error_login_generic">Não foi possível realizar o login. Tente novamente.</string>
-    <string name="error_google_login">Não foi possível entrar com o Google.</string>
-    <string name="error_unexpected">Ocorreu um erro inesperado. Tente novamente.</string>
+    <string name="error_email_invalid">
+        Informe um e-mail válido.
+    </string>
+
+    <string name="error_password_required">
+        A senha é obrigatória.
+    </string>
+
+    <string name="error_invalid_credentials">
+        E-mail ou senha inválidos.
+    </string>
+
+    <string name="error_network">
+        Não foi possível conectar. Verifique sua conexão com a internet.
+    </string>
+
+    <string name="error_too_many_requests">
+        Muitas tentativas. Tente novamente mais tarde.
+    </string>
+
+    <string name="error_login_generic">
+        Não foi possível entrar.
+    </string>
+
+    <string name="error_google_login">
+        Não foi possível entrar com o Google.
+    </string>
+
+    <string name="error_unexpected">
+        Ocorreu um erro inesperado.
+    </string>
+
+    <string name="error_first_name_required">
+        O nome é obrigatório.
+    </string>
+
+    <string name="error_last_name_required">
+        O sobrenome é obrigatório.
+    </string>
+
+    <string name="error_sabbath_school_class_required">
+        Selecione sua classe da Escola Sabatina.
+    </string>
+
+    <string name="error_password_min_length">
+        A senha deve possuir pelo menos 6 caracteres.
+    </string>
+
+    <string name="error_confirm_password_required">
+        Confirme sua senha.
+    </string>
+
+    <string name="error_passwords_do_not_match">
+        As senhas não coincidem.
+    </string>
+
+    <string name="error_register_generic">
+        Não foi possível criar sua conta.
+    </string>
+
+    <!-- Home / Missões -->
+    <string name="home_loading_error">
+        Não foi possível carregar as missões.
+    </string>
+
+    <string name="mission_search_placeholder">
+        Pesquisar missão
+    </string>
+
+    <string name="mission_filter_description">
+        Abrir filtros de missão
+    </string>
+
+    <string name="mission_filter_all">
+        Todas
+    </string>
+
+    <!-- Status da missão -->
+    <string name="mission_status_scheduled">
+        Agendada
+    </string>
+
+    <string name="mission_status_in_progress">
+        Em andamento
+    </string>
+
+    <string name="mission_status_completed">
+        Concluída
+    </string>
+
+    <string name="mission_status_cancelled">
+        Cancelada
+    </string>
+
+    <!-- Idioma -->
+    <string name="language_selector_description">
+        Selecionar idioma
+    </string>
+
+    <string name="language_portuguese">
+        Português
+    </string>
+
+    <string name="language_english">
+        English
+    </string>
+
+    <string name="language_spanish">
+        Español
+    </string>
+
+    <!-- Bottom navigation -->
+    <string name="bottom_nav_home">Início</string>
+    <string name="bottom_nav_metrics">Métricas</string>
+    <string name="bottom_nav_profile">Perfil</string>
 
     <!-- Home -->
-    <string name="home_greeting">Olá, %1$s</string>
-    <string name="home_active_mission">Missão ativa: %1$s</string>
-    <string name="home_open_mission">Abrir missão</string>
-    <string name="home_loading_error">Não foi possível carregar os dados.</string>
-    <string name="retry">Tentar novamente</string>
+    <string name="home_greeting">Olá!</string>
+    <string name="home_greeting_name">Olá, %1$s!</string>
+    <string name="home_subtitle">Pronto para a missão?</string>
+
+    <string name="home_retry">Tentar novamente</string>
+
+    <string name="home_no_missions">
+        Nenhuma missão disponível
+    </string>
+
+    <string name="home_no_missions_subtitle">
+        As próximas missões aparecerão aqui.
+    </string>
+
+    <string name="home_no_missions_found">
+        Nenhuma missão encontrada
+    </string>
+
+    <string name="home_no_missions_found_subtitle">
+    Tente alterar a busca ou os filtros.
+</string>
+
+    <string name="profile_logout">Sair da conta</string>
+
 </resources>

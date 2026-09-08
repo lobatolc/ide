@@ -7,4 +7,8 @@ interface UserRepository {
     suspend fun saveUser(
         user: UserProfile
     ): Result<Unit>
+
+    suspend fun getUserById(
+        userId: String
+    ): Result<UserProfile>
 }

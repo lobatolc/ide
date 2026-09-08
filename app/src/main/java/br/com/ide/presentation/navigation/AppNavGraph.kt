@@ -18,14 +18,18 @@ import br.com.ide.presentation.feature.home.HomeViewModel
 import br.com.ide.presentation.feature.login.LoginViewModel
 import br.com.ide.presentation.feature.register.RegisterScreen
 import br.com.ide.presentation.feature.register.RegisterViewModel
+import br.com.ide.presentation.model.AppLanguage
 
 @Composable
 fun AppNavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    appLanguage: AppLanguage,
+    onLanguageChanged: (AppLanguage) -> Unit,
+    startDestination: Any
 ) {
     NavHost(
         navController = navController,
-        startDestination = Login
+        startDestination = startDestination
     ) {
 
         composable<Login> {
@@ -107,15 +111,27 @@ fun AppNavGraph(
 
         composable<Home> {
 
-            val viewModel: HomeViewModel = hiltViewModel()
-
-            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
             HomeScreen(
-                uiState = uiState,
-                onEvent = viewModel::onEvent,
-                onMissionClick = {
-                    navController.navigate(Mission)
+                appLanguage = appLanguage,
+                onLanguageChanged =
+                    onLanguageChanged,
+
+                onMissionClick = { _ ->
+                    navController.navigate(
+                        Mission
+                    )
+                },
+
+                onMetricsClick = {
+                },
+
+                onProfileClick = {
+                    navController.navigate(
+                        Profile
+                    )
+                },
+
+                onFilterClick = {
                 }
             )
         }
@@ -125,7 +141,18 @@ fun AppNavGraph(
         }
 
         composable<Profile> {
-            ProfileScreen()
+            ProfileScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onLogout = {
+                    navController.navigate(Login) {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
     }
 }

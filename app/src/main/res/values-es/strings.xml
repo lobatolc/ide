@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Login -->
+    <string name="login_title">Bienvenido de nuevo</string>
+    <string name="login_subtitle">Inicia sesión para continuar</string>
+    <string name="login_email">Correo electrónico</string>
+    <string name="login_password">Contraseña</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="login_forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_google">Continuar con Google</string>
+    <string name="login_no_account">¿No tienes una cuenta?</string>
+    <string name="login_create_account">Crear cuenta</string>
+    <string name="login_logo_description">Logo de IDE</string>
+    <string name="login_show_password">Mostrar contraseña</string>
+    <string name="login_hide_password">Ocultar contraseña</string>
+
+    <!-- Login extras -->
+    <string name="login_slogan">
+    Misiones que conectan personas
+</string>
+
+    <string name="login_email_label">
+    Correo electrónico
+</string>
+
+    <string name="login_password_label">
+    Contraseña
+</string>
+
+    <string name="login_or">
+    o
+</string>
+
+    <string name="google_logo_description">
+    Logo de Google
+</string>
+
+    <string name="login_google_button">
+    Continuar con Google
+</string>
+
+    <string name="login_bible_verse">
+    “Id por todo el mundo y predicad el evangelio a toda criatura.”
+</string>
+
+    <string name="login_bible_reference">
+    Marcos 16:15
+</string>
+
+    <!-- Register extras -->
+    <string name="register_back">
+    Volver
+</string>
+
+    <string name="register_has_account">
+    ¿Ya tienes una cuenta?
+</string>
+
+    <!-- Register -->
+    <string name="register_title">Crear cuenta</string>
+    <string name="register_subtitle">Completa tus datos para comenzar</string>
+    <string name="register_first_name">Nombre</string>
+    <string name="register_last_name">Apellido</string>
+    <string name="register_email">Correo electrónico</string>
+    <string name="register_sabbath_school_class">Clase de Escuela Sabática</string>
+    <string name="register_password">Contraseña</string>
+    <string name="register_confirm_password">Confirmar contraseña</string>
+    <string name="register_button">Crear cuenta</string>
+    <string name="register_already_have_account">¿Ya tienes una cuenta?</string>
+    <string name="register_login">Iniciar sesión</string>
+
+    <!-- Sabbath School -->
+    <string name="sabbath_school_juveniles">Juveniles</string>
+    <string name="sabbath_school_youth">Jóvenes</string>
+    <string name="sabbath_school_adults">Adultos</string>
+
+    <!-- User roles -->
+    <string name="user_role_missionary">Misionero</string>
+    <string name="user_role_leader">Líder</string>
+    <string name="user_role_pastor">Pastor</string>
+    <string name="user_role_admin">Administrador</string>
+
+    <!-- Forgot password -->
+    <string name="forgot_password_title">Recuperar contraseña</string>
+    <string name="forgot_password_subtitle">Ingresa el correo registrado en tu cuenta. Si existe, enviaremos instrucciones para restablecer tu contraseña.</string>
+    <string name="forgot_password_email">Correo electrónico</string>
+    <string name="forgot_password_button">Enviar enlace de recuperación</string>
+    <string name="forgot_password_remembered">¿Recordaste tu contraseña?</string>
+    <string name="forgot_password_login">Iniciar sesión</string>
+    <string name="forgot_password_back">Volver</string>
+    <string name="forgot_password_success">Si el correo está registrado, recibirás instrucciones para restablecer tu contraseña.</string>
+    <string name="forgot_password_error">No fue posible enviar el correo de recuperación.</string>
+    <string name="forgot_password_resend">Reenviar enlace</string>
+    <string name="forgot_password_wait_to_resend">Espera %1$d s para reenviar</string>
+
+    <!-- Validation -->
+    <string name="error_email_required">El correo electrónico es obligatorio.</string>
+    <string name="error_email_invalid">Ingresa un correo válido.</string>
+    <string name="error_password_required">La contraseña es obligatoria.</string>
+    <string name="error_invalid_credentials">Correo o contraseña inválidos.</string>
+    <string name="error_network">No fue posible conectarse. Revisa tu conexión a internet.</string>
+    <string name="error_too_many_requests">Demasiados intentos. Inténtalo de nuevo más tarde.</string>
+    <string name="error_login_generic">No fue posible iniciar sesión.</string>
+    <string name="error_google_login">No fue posible iniciar sesión con Google.</string>
+    <string name="error_unexpected">Ocurrió un error inesperado.</string>
+
+    <string name="error_first_name_required">El nombre es obligatorio.</string>
+    <string name="error_last_name_required">El apellido es obligatorio.</string>
+    <string name="error_sabbath_school_class_required">Selecciona tu clase de Escuela Sabática.</string>
+    <string name="error_password_min_length">La contraseña debe tener al menos 6 caracteres.</string>
+    <string name="error_confirm_password_required">Confirma tu contraseña.</string>
+    <string name="error_passwords_do_not_match">Las contraseñas no coinciden.</string>
+    <string name="error_register_generic">No fue posible crear tu cuenta.</string>
+
+    <!-- Home / missions -->
+    <string name="home_loading_error">No fue posible cargar las misiones.</string>
+    <string name="mission_search_placeholder">Buscar misión</string>
+    <string name="mission_filter_description">Abrir filtros de misión</string>
+    <string name="mission_filter_all">Todas</string>
+
+    <string name="mission_status_scheduled">Programada</string>
+    <string name="mission_status_in_progress">En curso</string>
+    <string name="mission_status_completed">Completada</string>
+    <string name="mission_status_cancelled">Cancelada</string>
+
+    <!-- Language -->
+    <string name="language_selector_description">Seleccionar idioma</string>
+    <string name="language_portuguese">Português</string>
+    <string name="language_english">English</string>
+    <string name="language_spanish">Español</string>
+
+    <!-- Bottom navigation -->
+    <string name="bottom_nav_home">Inicio</string>
+    <string name="bottom_nav_metrics">Métricas</string>
+    <string name="bottom_nav_profile">Perfil</string>
+
+    <!-- Home -->
+    <string name="home_greeting">¡Hola!</string>
+    <string name="home_greeting_name">¡Hola, %1$s!</string>
+    <string name="home_subtitle">¿Listo para la misión?</string>
+
+    <string name="home_retry">Intentar de nuevo</string>
+
+    <string name="home_no_missions">
+        No hay misiones disponibles
+    </string>
+
+    <string name="home_no_missions_subtitle">
+        Las próximas misiones aparecerán aquí.
+    </string>
+
+    <string name="home_no_missions_found">
+        No se encontraron misiones
+    </string>
+
+    <string name="home_no_missions_found_subtitle">
+        Intenta cambiar la búsqueda o los filtros.
+    </string>
+
+    <string name="profile_logout">Cerrar sesión</string>
+</resources>

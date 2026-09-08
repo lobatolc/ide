@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Login -->
+    <string name="login_title">Welcome back</string>
+    <string name="login_subtitle">Sign in to continue</string>
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Sign in</string>
+    <string name="login_forgot_password">Forgot password?</string>
+    <string name="login_google">Continue with Google</string>
+    <string name="login_no_account">Don\'t have an account?</string>
+    <string name="login_create_account">Create account</string>
+    <string name="login_logo_description">IDE logo</string>
+    <string name="login_show_password">Show password</string>
+    <string name="login_hide_password">Hide password</string>
+
+    <!-- Login extras -->
+    <string name="login_slogan">
+    Missions that connect people
+</string>
+
+    <string name="login_email_label">
+    Email
+</string>
+
+    <string name="login_password_label">
+    Password
+</string>
+
+    <string name="login_or">
+    or
+</string>
+
+    <string name="google_logo_description">
+    Google logo
+</string>
+
+    <string name="login_google_button">
+    Continue with Google
+</string>
+
+    <string name="login_bible_verse">
+    “Go into all the world and preach the gospel to all creation.”
+</string>
+
+    <string name="login_bible_reference">
+    Mark 16:15
+</string>
+
+    <!-- Register extras -->
+    <string name="register_back">
+    Back
+</string>
+
+    <string name="register_has_account">
+    Already have an account?
+</string>
+
+    <!-- Register -->
+    <string name="register_title">Create account</string>
+    <string name="register_subtitle">Fill in your information to get started</string>
+    <string name="register_first_name">First name</string>
+    <string name="register_last_name">Last name</string>
+    <string name="register_email">Email</string>
+    <string name="register_sabbath_school_class">Sabbath School class</string>
+    <string name="register_password">Password</string>
+    <string name="register_confirm_password">Confirm password</string>
+    <string name="register_button">Create account</string>
+    <string name="register_already_have_account">Already have an account?</string>
+    <string name="register_login">Sign in</string>
+
+    <!-- Sabbath School -->
+    <string name="sabbath_school_juveniles">Juniors</string>
+    <string name="sabbath_school_youth">Youth</string>
+    <string name="sabbath_school_adults">Adults</string>
+
+    <!-- User roles -->
+    <string name="user_role_missionary">Missionary</string>
+    <string name="user_role_leader">Leader</string>
+    <string name="user_role_pastor">Pastor</string>
+    <string name="user_role_admin">Administrator</string>
+
+    <!-- Forgot password -->
+    <string name="forgot_password_title">Reset password</string>
+    <string name="forgot_password_subtitle">Enter the email registered to your account. If it exists, we will send instructions to reset your password.</string>
+    <string name="forgot_password_email">Email</string>
+    <string name="forgot_password_button">Send recovery link</string>
+    <string name="forgot_password_remembered">Remembered your password?</string>
+    <string name="forgot_password_login">Sign in</string>
+    <string name="forgot_password_back">Back</string>
+    <string name="forgot_password_success">If the email is registered, you will receive instructions to reset your password.</string>
+    <string name="forgot_password_error">Could not send the recovery email.</string>
+    <string name="forgot_password_resend">Resend link</string>
+    <string name="forgot_password_wait_to_resend">Wait %1$d s to resend</string>
+
+    <!-- Validation -->
+    <string name="error_email_required">Email is required.</string>
+    <string name="error_email_invalid">Enter a valid email.</string>
+    <string name="error_password_required">Password is required.</string>
+    <string name="error_invalid_credentials">Invalid email or password.</string>
+    <string name="error_network">Could not connect. Check your internet connection.</string>
+    <string name="error_too_many_requests">Too many attempts. Please try again later.</string>
+    <string name="error_login_generic">Could not sign in.</string>
+    <string name="error_google_login">Could not sign in with Google.</string>
+    <string name="error_unexpected">An unexpected error occurred.</string>
+
+    <string name="error_first_name_required">First name is required.</string>
+    <string name="error_last_name_required">Last name is required.</string>
+    <string name="error_sabbath_school_class_required">Select your Sabbath School class.</string>
+    <string name="error_password_min_length">Password must be at least 6 characters long.</string>
+    <string name="error_confirm_password_required">Confirm your password.</string>
+    <string name="error_passwords_do_not_match">Passwords do not match.</string>
+    <string name="error_register_generic">Could not create your account.</string>
+
+    <!-- Home / missions -->
+    <string name="home_loading_error">Could not load missions.</string>
+    <string name="mission_search_placeholder">Search missions</string>
+    <string name="mission_filter_description">Open mission filters</string>
+    <string name="mission_filter_all">All</string>
+
+    <string name="mission_status_scheduled">Scheduled</string>
+    <string name="mission_status_in_progress">In progress</string>
+    <string name="mission_status_completed">Completed</string>
+    <string name="mission_status_cancelled">Cancelled</string>
+
+    <!-- Language -->
+    <string name="language_selector_description">Select language</string>
+    <string name="language_portuguese">Português</string>
+    <string name="language_english">English</string>
+    <string name="language_spanish">Español</string>
+
+    <!-- Bottom navigation -->
+    <string name="bottom_nav_home">Home</string>
+    <string name="bottom_nav_metrics">Metrics</string>
+    <string name="bottom_nav_profile">Profile</string>
+
+    <!-- Home -->
+    <string name="home_greeting">Hello!</string>
+    <string name="home_greeting_name">Hello, %1$s!</string>
+    <string name="home_subtitle">Ready for the mission?</string>
+
+    <string name="home_retry">Try again</string>
+
+    <string name="home_no_missions">
+        No missions available
+    </string>
+
+    <string name="home_no_missions_subtitle">
+        Upcoming missions will appear here.
+    </string>
+
+    <string name="home_no_missions_found">
+        No missions found
+    </string>
+
+    <string name="home_no_missions_found_subtitle">
+        Try changing your search or filters.
+    </string>
+
+    <string name="profile_logout">Sign out</string>
+
+</resources>

@@ -23,4 +23,6 @@ interface AuthRepository {
     fun isUserLoggedIn(): Boolean
 
     fun logout()
+
+    fun getCurrentUserId(): String?
 }
