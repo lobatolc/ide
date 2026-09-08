@@ -4,15 +4,12 @@ import br.com.ide.domain.model.GoogleUser
 import br.com.ide.domain.repository.AuthRepository
 import javax.inject.Inject
 
-class LoginWithGoogleUseCase @Inject constructor(
+class GetCurrentAuthenticatedUserUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
 
-    suspend operator fun invoke(
-        idToken: String
-    ): Result<GoogleUser> {
-        return authRepository.loginWithGoogle(
-            idToken
-        )
+    operator fun invoke(): GoogleUser? {
+        return authRepository
+            .getCurrentAuthenticatedUser()
     }
 }

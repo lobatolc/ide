@@ -189,6 +189,20 @@
         Não foi possível criar sua conta.
     </string>
 
+    <!-- Completar Cadastro Google -->
+
+    <string name="complete_registration_title">
+    Complete seu cadastro
+</string>
+
+    <string name="complete_registration_subtitle">
+    Precisamos de algumas informações antes de continuar.
+</string>
+
+    <string name="complete_registration_button">
+    Concluir cadastro
+</string>
+
     <!-- Home / Missões -->
     <string name="home_loading_error">
         Não foi possível carregar as missões.
@@ -269,5 +283,11 @@
 </string>
 
     <string name="profile_logout">Sair da conta</string>
+
+    <string name="complete_registration_back">
+    Cancelar cadastro e voltar
+</string>
+
+    <string name="home_create_mission">Criar missão</string>
 
 </resources>

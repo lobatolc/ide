@@ -11,4 +11,10 @@ interface UserRepository {
     suspend fun getUserById(
         userId: String
     ): Result<UserProfile>
+
+    suspend fun userExists(
+        userId: String
+    ): Result<Boolean>
+
+
 }

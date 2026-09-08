@@ -112,6 +112,17 @@
     <string name="error_passwords_do_not_match">Las contraseñas no coinciden.</string>
     <string name="error_register_generic">No fue posible crear tu cuenta.</string>
 
+    <string name="complete_registration_title">
+    Completa tu registro
+</string>
+
+    <string name="complete_registration_subtitle">
+    Necesitamos algunos datos antes de continuar.
+</string>
+
+    <string name="complete_registration_button">
+    Completar registro
+</string>
     <!-- Home / missions -->
     <string name="home_loading_error">No fue posible cargar las misiones.</string>
     <string name="mission_search_placeholder">Buscar misión</string>
@@ -158,4 +169,10 @@
     </string>
 
     <string name="profile_logout">Cerrar sesión</string>
+
+    <string name="complete_registration_back">
+    Cancelar registro y volver
+</string>
+
+    <string name="home_create_mission">Crear misión</string>
 </resources>

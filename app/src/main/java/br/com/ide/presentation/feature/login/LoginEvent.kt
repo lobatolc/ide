@@ -17,4 +17,6 @@ sealed interface LoginEvent {
     data object GoogleLoginError : LoginEvent
 
     data object Login : LoginEvent
+
+    data object CompleteRegistrationNavigationHandled : LoginEvent
 }

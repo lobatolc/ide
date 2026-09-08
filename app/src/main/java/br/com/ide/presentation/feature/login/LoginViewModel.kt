@@ -3,6 +3,8 @@ package br.com.ide.presentation.feature.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.ide.R
+import br.com.ide.domain.model.GoogleLoginResult
+import br.com.ide.domain.usecase.HandleGoogleLoginUseCase
 import br.com.ide.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +14,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import br.com.ide.domain.usecase.LoginWithGoogleUseCase
 import br.com.ide.presentation.mapper.mapFirebaseAuthError
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val loginWithGoogleUseCase: LoginWithGoogleUseCase
+    private val handleGoogleLoginUseCase: HandleGoogleLoginUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -61,6 +64,14 @@ class LoginViewModel @Inject constructor(
                     isLoading = false,
                     errorMessage = R.string.error_google_login
                 )
+            }
+
+            LoginEvent.CompleteRegistrationNavigationHandled -> {
+                _uiState.update {
+                    it.copy(
+                        googleUserToComplete = null
+                    )
+                }
             }
         }
     }
@@ -134,23 +145,47 @@ class LoginViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
 
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                errorMessage = null
-            )
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    errorMessage = null
+                )
+            }
 
-            loginWithGoogleUseCase(idToken)
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        isLoggedIn = true
-                    )
+            handleGoogleLoginUseCase(idToken)
+                .onSuccess { result ->
+
+                    when (result) {
+
+                        GoogleLoginResult.ExistingUser -> {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isLoggedIn = true
+                                )
+                            }
+                        }
+
+                        is GoogleLoginResult.NewUser -> {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    googleUserToComplete =
+                                        result.user
+                                )
+                            }
+                        }
+                    }
                 }
                 .onFailure { exception ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        errorMessage = mapFirebaseAuthError(exception)
-                    )
+
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage =
+                                exception.toLoginErrorRes()
+                        )
+                    }
                 }
         }
     }

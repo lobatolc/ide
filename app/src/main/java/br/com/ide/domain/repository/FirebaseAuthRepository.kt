@@ -1,5 +1,6 @@
 package br.com.ide.data.repository
 
+import br.com.ide.domain.model.GoogleUser
 import br.com.ide.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -34,8 +35,7 @@ class FirebaseAuthRepository @Inject constructor(
 
     override suspend fun loginWithGoogle(
         idToken: String
-    ): Result<Unit> {
-
+    ): Result<GoogleUser> {
         return try {
 
             val credential =
@@ -44,14 +44,34 @@ class FirebaseAuthRepository @Inject constructor(
                     null
                 )
 
-            firebaseAuth
-                .signInWithCredential(credential)
-                .await()
+            val authResult =
+                firebaseAuth
+                    .signInWithCredential(
+                        credential
+                    )
+                    .await()
 
-            Result.success(Unit)
+            val firebaseUser =
+                authResult.user
+                    ?: return Result.failure(
+                        IllegalStateException(
+                            "Google user not found"
+                        )
+                    )
+
+            Result.success(
+                GoogleUser(
+                    id = firebaseUser.uid,
+                    displayName =
+                        firebaseUser.displayName
+                            .orEmpty(),
+                    email =
+                        firebaseUser.email
+                            .orEmpty()
+                )
+            )
 
         } catch (exception: Exception) {
-
             Result.failure(exception)
         }
     }
@@ -107,5 +127,20 @@ class FirebaseAuthRepository @Inject constructor(
 
     override fun getCurrentUserId(): String? {
         return firebaseAuth.currentUser?.uid
+    }
+
+    override fun getCurrentAuthenticatedUser(): GoogleUser? {
+
+        val firebaseUser =
+            firebaseAuth.currentUser
+                ?: return null
+
+        return GoogleUser(
+            id = firebaseUser.uid,
+            displayName =
+                firebaseUser.displayName.orEmpty(),
+            email =
+                firebaseUser.email.orEmpty()
+        )
     }
 }

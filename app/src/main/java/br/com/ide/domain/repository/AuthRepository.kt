@@ -1,5 +1,7 @@
 package br.com.ide.domain.repository
 
+import br.com.ide.domain.model.GoogleUser
+
 interface AuthRepository {
 
     suspend fun login(
@@ -9,7 +11,9 @@ interface AuthRepository {
 
     suspend fun loginWithGoogle(
         idToken: String
-    ): Result<Unit>
+    ): Result<GoogleUser>
+
+    fun getCurrentAuthenticatedUser(): GoogleUser?
 
     suspend fun register(
         email: String,

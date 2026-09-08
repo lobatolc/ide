@@ -112,6 +112,18 @@
     <string name="error_passwords_do_not_match">Passwords do not match.</string>
     <string name="error_register_generic">Could not create your account.</string>
 
+    <string name="complete_registration_title">
+    Complete your registration
+</string>
+
+    <string name="complete_registration_subtitle">
+    We need a few more details before you continue.
+</string>
+
+    <string name="complete_registration_button">
+    Complete registration
+</string>
+
     <!-- Home / missions -->
     <string name="home_loading_error">Could not load missions.</string>
     <string name="mission_search_placeholder">Search missions</string>
@@ -158,5 +170,11 @@
     </string>
 
     <string name="profile_logout">Sign out</string>
+
+    <string name="complete_registration_back">
+    Cancel registration and go back
+</string>
+
+    <string name="home_create_mission">Create mission</string>
 
 </resources>

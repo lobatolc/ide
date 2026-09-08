@@ -3,13 +3,22 @@ package br.com.ide
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import br.com.ide.presentation.locale.ProvideLocalizedContext
 import br.com.ide.presentation.navigation.AppNavGraph
+import br.com.ide.presentation.navigation.CompleteRegistration
 import br.com.ide.presentation.navigation.Home
 import br.com.ide.presentation.navigation.Login
+import br.com.ide.presentation.session.SessionState
 import br.com.ide.presentation.session.SessionViewModel
 import br.com.ide.presentation.settings.AppSettingsViewModel
 import br.com.ide.presentation.theme.IdeTheme
@@ -26,37 +35,91 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val settingsViewModel:
-                    AppSettingsViewModel = hiltViewModel()
+                    AppSettingsViewModel =
+                hiltViewModel()
 
             val sessionViewModel:
-                    SessionViewModel = hiltViewModel()
+                    SessionViewModel =
+                hiltViewModel()
 
-            val language =
-                settingsViewModel.language
-                    .collectAsStateWithLifecycle()
+            val language by
+            settingsViewModel.language
+                .collectAsStateWithLifecycle()
 
-            val startDestination =
-                if (sessionViewModel.isUserLoggedIn()) {
-                    Home
-                } else {
-                    Login
-                }
+            val sessionState by
+            sessionViewModel.sessionState
+                .collectAsStateWithLifecycle()
 
             ProvideLocalizedContext(
-                language = language.value
+                language = language
             ) {
+
                 IdeTheme {
 
                     val navController =
                         rememberNavController()
 
-                    AppNavGraph(
-                        navController = navController,
-                        appLanguage = language.value,
-                        onLanguageChanged =
-                            settingsViewModel::changeLanguage,
-                        startDestination = startDestination
-                    )
+                    when (sessionState) {
+
+                        SessionState.Loading -> {
+                            Box(
+                                modifier =
+                                    Modifier.fillMaxSize(),
+                                contentAlignment =
+                                    Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color =
+                                        MaterialTheme
+                                            .colorScheme
+                                            .primary
+                                )
+                            }
+                        }
+
+                        SessionState.LoggedOut -> {
+                            AppNavGraph(
+                                navController = navController,
+                                appLanguage = language,
+                                onLanguageChanged =
+                                    settingsViewModel::changeLanguage,
+                                startDestination = Login,
+                                onSessionChanged =
+                                    sessionViewModel::checkSession,
+                                onLogout =
+                                    sessionViewModel::logout
+                            )
+                        }
+
+                        SessionState.NeedsRegistration -> {
+                            AppNavGraph(
+                                navController = navController,
+                                appLanguage = language,
+                                onLanguageChanged =
+                                    settingsViewModel::changeLanguage,
+                                startDestination =
+                                    CompleteRegistration,
+                                onSessionChanged =
+                                    sessionViewModel::checkSession,
+                                onLogout =
+                                    sessionViewModel::logout
+                            )
+                        }
+
+                        SessionState.LoggedIn -> {
+                            AppNavGraph(
+                                navController = navController,
+                                appLanguage = language,
+                                onLanguageChanged =
+                                    settingsViewModel::changeLanguage,
+                                startDestination = Home,
+                                onSessionChanged =
+                                    sessionViewModel::checkSession,
+                                onLogout =
+                                    sessionViewModel::logout
+                            )
+                        }
+                    }
                 }
             }
         }

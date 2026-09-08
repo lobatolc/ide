@@ -99,4 +99,24 @@ class FirestoreUserRepository @Inject constructor(
             Result.failure(exception)
         }
     }
+
+    override suspend fun userExists(
+        userId: String
+    ): Result<Boolean> {
+        return try {
+
+            val document = firestore
+                .collection("users")
+                .document(userId)
+                .get()
+                .await()
+
+            Result.success(
+                document.exists()
+            )
+
+        } catch (exception: Exception) {
+            Result.failure(exception)
+        }
+    }
 }

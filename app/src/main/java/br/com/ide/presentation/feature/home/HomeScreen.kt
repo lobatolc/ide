@@ -13,8 +13,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.com.ide.R
 import br.com.ide.domain.model.MissionStatus
+import br.com.ide.domain.model.UserRole
 import br.com.ide.presentation.components.BottomNavigationItem
 import br.com.ide.presentation.components.IdeBottomNavigation
 import br.com.ide.presentation.components.LanguageSelector
@@ -45,6 +48,7 @@ fun HomeScreen(
     appLanguage: AppLanguage,
     onLanguageChanged: (AppLanguage) -> Unit,
     onMissionClick: (String) -> Unit,
+    onCreateMissionClick: () -> Unit,
     onMetricsClick: () -> Unit,
     onProfileClick: () -> Unit,
     onFilterClick: () -> Unit,
@@ -61,7 +65,8 @@ fun HomeScreen(
         onMissionClick = onMissionClick,
         onMetricsClick = onMetricsClick,
         onProfileClick = onProfileClick,
-        onFilterClick = onFilterClick
+        onFilterClick = onFilterClick,
+        onCreateMissionClick = onCreateMissionClick
     )
 }
 
@@ -73,12 +78,36 @@ private fun HomeContent(
         (AppLanguage) -> Unit,
     onEvent: (HomeEvent) -> Unit,
     onMissionClick: (String) -> Unit,
+    onCreateMissionClick: () -> Unit,
     onMetricsClick: () -> Unit,
     onProfileClick: () -> Unit,
-    onFilterClick: () -> Unit
+    onFilterClick: () -> Unit,
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+
+        floatingActionButton = {
+            if (
+                uiState.userRole.hasAtLeast(
+                    UserRole.LEADER
+                )
+            ) {
+                FloatingActionButton(
+                    onClick = onCreateMissionClick,
+                    containerColor =
+                        MaterialTheme.colorScheme.primary,
+                    contentColor =
+                        MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(
+                            R.string.home_create_mission
+                        )
+                    )
+                }
+            }
+        },
         bottomBar = {
             IdeBottomNavigation(
                 selectedItem = BottomNavigationItem.HOME,

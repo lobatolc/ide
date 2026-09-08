@@ -9,6 +9,9 @@ data object Login
 data object Register
 
 @Serializable
+data object CompleteRegistration
+
+@Serializable
 data object ForgotPassword
 
 @Serializable

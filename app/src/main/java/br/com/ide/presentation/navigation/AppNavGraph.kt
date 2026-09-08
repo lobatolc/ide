@@ -12,20 +12,25 @@ import br.com.ide.presentation.feature.profile.ProfileScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.ide.presentation.feature.completeregistration.CompleteRegistrationScreen
 import br.com.ide.presentation.feature.forgotpassword.ForgotPasswordScreen
 import br.com.ide.presentation.feature.forgotpassword.ForgotPasswordViewModel
 import br.com.ide.presentation.feature.home.HomeViewModel
+import br.com.ide.presentation.feature.login.LoginEvent
 import br.com.ide.presentation.feature.login.LoginViewModel
 import br.com.ide.presentation.feature.register.RegisterScreen
 import br.com.ide.presentation.feature.register.RegisterViewModel
 import br.com.ide.presentation.model.AppLanguage
+import br.com.ide.presentation.session.SessionViewModel
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     appLanguage: AppLanguage,
     onLanguageChanged: (AppLanguage) -> Unit,
-    startDestination: Any
+    startDestination: Any,
+    onSessionChanged: () -> Unit,
+    onLogout: () -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -34,18 +39,16 @@ fun AppNavGraph(
 
         composable<Login> {
 
-            val viewModel: LoginViewModel =
-                hiltViewModel()
+            val viewModel: LoginViewModel = hiltViewModel()
 
-            val uiState by
-            viewModel.uiState.collectAsStateWithLifecycle()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-            LaunchedEffect(uiState.isLoggedIn) {
-
+            LaunchedEffect(
+                uiState.isLoggedIn
+            ) {
                 if (uiState.isLoggedIn) {
 
                     navController.navigate(Home) {
-
                         popUpTo<Login> {
                             inclusive = true
                         }
@@ -53,14 +56,36 @@ fun AppNavGraph(
                 }
             }
 
+            LaunchedEffect(
+                uiState.googleUserToComplete
+            ) {
+                if (uiState.googleUserToComplete != null) {
+
+                    navController.navigate(
+                        CompleteRegistration
+                    )
+
+                    viewModel.onEvent(
+                        LoginEvent
+                            .CompleteRegistrationNavigationHandled
+                    )
+                }
+            }
+
             LoginScreen(
                 uiState = uiState,
                 onEvent = viewModel::onEvent,
+
                 onForgotPasswordClick = {
-                    navController.navigate(ForgotPassword)
+                    navController.navigate(
+                        ForgotPassword
+                    )
                 },
+
                 onCreateAccountClick = {
-                    navController.navigate(Register)
+                    navController.navigate(
+                        Register
+                    )
                 }
             )
         }
@@ -88,6 +113,33 @@ fun AppNavGraph(
                 },
                 onLoginClick = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable<CompleteRegistration> {
+
+            CompleteRegistrationScreen(
+                onRegistrationCompleted = {
+
+                    onSessionChanged()
+
+                    navController.navigate(Home) {
+                        popUpTo<Login> {
+                            inclusive = true
+                        }
+                    }
+                },
+
+                onCancelRegistration = {
+
+                    onLogout()
+
+                    navController.navigate(Login) {
+                        popUpTo<Login> {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -132,7 +184,14 @@ fun AppNavGraph(
                 },
 
                 onFilterClick = {
+                },
+
+                onCreateMissionClick = {
+                    // Por enquanto ainda não temos a rota de criação.
+                    // Vamos criar no próximo passo.
                 }
+
+
             )
         }
 
