@@ -36,6 +36,8 @@ import br.com.ide.domain.model.MissionStatus
 import br.com.ide.domain.model.UserRole
 import br.com.ide.presentation.components.BottomNavigationItem
 import br.com.ide.presentation.components.IdeBottomNavigation
+import br.com.ide.presentation.components.IdeScreenSubtitle
+import br.com.ide.presentation.components.IdeScreenTitle
 import br.com.ide.presentation.components.LanguageSelector
 import br.com.ide.presentation.components.MissionCard
 import br.com.ide.presentation.components.MissionSearchBar
@@ -133,10 +135,7 @@ private fun HomeContent(
         ) {
 
             HomeHeader(
-                userName = uiState.userName,
-                appLanguage = appLanguage,
-                onLanguageChanged =
-                    onLanguageChanged
+                userName = uiState.userName
             )
 
             MissionSearchBar(
@@ -227,10 +226,7 @@ private fun HomeContent(
 
 @Composable
 private fun HomeHeader(
-    userName: String,
-    appLanguage: AppLanguage,
-    onLanguageChanged:
-        (AppLanguage) -> Unit
+    userName: String
 ) {
     Row(
         modifier = Modifier
@@ -246,7 +242,8 @@ private fun HomeHeader(
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Text(
+
+            IdeScreenTitle(
                 text = if (userName.isBlank()) {
                     stringResource(
                         R.string.home_greeting
@@ -257,9 +254,6 @@ private fun HomeHeader(
                         userName
                     )
                 },
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(
@@ -268,22 +262,13 @@ private fun HomeHeader(
                 )
             )
 
-            Text(
+            IdeScreenSubtitle(
                 text = stringResource(
                     R.string.home_subtitle
-                ),
-                style = MaterialTheme.typography.bodyLarge,
-                color =
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
-        }
 
-        LanguageSelector(
-            selectedLanguage =
-                appLanguage,
-            onLanguageSelected =
-                onLanguageChanged
-        )
+        }
     }
 }
 

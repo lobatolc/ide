@@ -168,11 +168,83 @@
         Intenta cambiar la búsqueda o los filtros.
     </string>
 
-    <string name="profile_logout">Cerrar sesión</string>
 
     <string name="complete_registration_back">
     Cancelar registro y volver
 </string>
 
     <string name="home_create_mission">Crear misión</string>
+
+    <string name="profile_title">Perfil</string>
+    <string name="profile_subtitle">Actualiza tus datos personales.</string>
+    <string name="profile_permission">Permiso</string>
+    <string name="profile_defined_by_admin">Definido por el administrador</string>
+    <string name="profile_save">Guardar cambios</string>
+    <string name="profile_change_password">Cambiar contraseña</string>
+    <string name="profile_logout">Cerrar sesión</string>
+    <string name="profile_loading_error">No fue posible cargar tu perfil.</string>
+    <string name="profile_save_error">No fue posible guardar los cambios.</string>
+    <string name="profile_save_success">Cambios guardados correctamente.</string>
+    <string name="profile_change_photo">
+    Cambiar foto de perfil
+</string>
+
+    <string name="profile_subtitle_overview">
+    Tus datos y preferencias.
+</string>
+
+    <string name="profile_information">
+    Información
+</string>
+
+    <string name="profile_settings">
+    Configuración
+</string>
+
+    <string name="profile_edit">
+    Editar perfil
+</string>
+
+    <string name="profile_language">
+    Idioma
+</string>
+
+    <string name="profile_language_current">
+    Español
+</string>
+
+    <string name="profile_theme">
+    Tema
+</string>
+
+    <string name="profile_theme_system">
+    Predeterminado del sistema
+</string>
+
+    <string name="profile_notifications">
+    Notificaciones
+</string>
+
+    <string name="profile_notifications_enabled">
+    Activadas
+</string>
+
+    <string name="edit_profile_title">
+    Editar perfil
+</string>
+
+    <string name="edit_profile_subtitle">
+    Actualiza tus datos personales.
+</string>
+
+    <string name="edit_profile_back">
+    Volver al perfil
+</string>
+
+    <!-- values-es/strings.xml -->
+    <string name="profile_select_language">Seleccionar idioma</string>
+
+    <string name="profile_theme_light">Modo claro</string>
+    <string name="profile_theme_dark">Modo oscuro</string>
+    <string name="profile_select_theme">Seleccionar tema</string>
 </resources>

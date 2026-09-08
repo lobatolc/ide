@@ -22,3 +22,6 @@ data object Mission
 
 @Serializable
 data object Profile
+
+@Serializable
+data object EditProfile

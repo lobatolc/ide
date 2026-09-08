@@ -3,10 +3,10 @@ package br.com.ide
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +46,10 @@ class MainActivity : ComponentActivity() {
             settingsViewModel.language
                 .collectAsStateWithLifecycle()
 
+            val theme by
+            settingsViewModel.theme
+                .collectAsStateWithLifecycle()
+
             val sessionState by
             sessionViewModel.sessionState
                 .collectAsStateWithLifecycle()
@@ -54,7 +58,9 @@ class MainActivity : ComponentActivity() {
                 language = language
             ) {
 
-                IdeTheme {
+                IdeTheme(
+                    appTheme = theme
+                ) {
 
                     val navController =
                         rememberNavController()
@@ -62,12 +68,14 @@ class MainActivity : ComponentActivity() {
                     when (sessionState) {
 
                         SessionState.Loading -> {
+
                             Box(
                                 modifier =
                                     Modifier.fillMaxSize(),
                                 contentAlignment =
                                     Alignment.Center
                             ) {
+
                                 CircularProgressIndicator(
                                     color =
                                         MaterialTheme
@@ -78,43 +86,87 @@ class MainActivity : ComponentActivity() {
                         }
 
                         SessionState.LoggedOut -> {
+
                             AppNavGraph(
-                                navController = navController,
-                                appLanguage = language,
+                                navController =
+                                    navController,
+
+                                appLanguage =
+                                    language,
+
                                 onLanguageChanged =
                                     settingsViewModel::changeLanguage,
-                                startDestination = Login,
+
+                                appTheme =
+                                    theme,
+
+                                onThemeChanged =
+                                    settingsViewModel::changeTheme,
+
+                                startDestination =
+                                    Login,
+
                                 onSessionChanged =
                                     sessionViewModel::checkSession,
+
                                 onLogout =
                                     sessionViewModel::logout
                             )
                         }
 
                         SessionState.NeedsRegistration -> {
+
                             AppNavGraph(
-                                navController = navController,
-                                appLanguage = language,
+                                navController =
+                                    navController,
+
+                                appLanguage =
+                                    language,
+
                                 onLanguageChanged =
                                     settingsViewModel::changeLanguage,
+
+                                appTheme =
+                                    theme,
+
+                                onThemeChanged =
+                                    settingsViewModel::changeTheme,
+
                                 startDestination =
                                     CompleteRegistration,
+
                                 onSessionChanged =
                                     sessionViewModel::checkSession,
+
                                 onLogout =
                                     sessionViewModel::logout
                             )
                         }
 
                         SessionState.LoggedIn -> {
+
                             AppNavGraph(
-                                navController = navController,
-                                appLanguage = language,
+                                navController =
+                                    navController,
+
+                                appLanguage =
+                                    language,
+
                                 onLanguageChanged =
                                     settingsViewModel::changeLanguage,
-                                startDestination = Home,
+
+                                appTheme =
+                                    theme,
+
+                                onThemeChanged =
+                                    settingsViewModel::changeTheme,
+
+                                startDestination =
+                                    Home,
+
                                 onSessionChanged =
                                     sessionViewModel::checkSession,
+
                                 onLogout =
                                     sessionViewModel::logout
                             )

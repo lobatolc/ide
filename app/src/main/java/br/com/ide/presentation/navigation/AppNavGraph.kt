@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.com.ide.presentation.feature.completeregistration.CompleteRegistrationScreen
+import br.com.ide.presentation.feature.editprofile.EditProfileScreen
 import br.com.ide.presentation.feature.forgotpassword.ForgotPasswordScreen
 import br.com.ide.presentation.feature.forgotpassword.ForgotPasswordViewModel
 import br.com.ide.presentation.feature.home.HomeViewModel
@@ -22,12 +23,22 @@ import br.com.ide.presentation.feature.register.RegisterScreen
 import br.com.ide.presentation.feature.register.RegisterViewModel
 import br.com.ide.presentation.model.AppLanguage
 import br.com.ide.presentation.session.SessionViewModel
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import br.com.ide.domain.model.SabbathSchoolClass
+import br.com.ide.presentation.feature.profile.ProfileEvent
+import br.com.ide.presentation.feature.profile.ProfileViewModel
+import br.com.ide.presentation.model.AppTheme
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     appLanguage: AppLanguage,
     onLanguageChanged: (AppLanguage) -> Unit,
+    appTheme: AppTheme,
+    onThemeChanged: (AppTheme) -> Unit,
     startDestination: Any,
     onSessionChanged: () -> Unit,
     onLogout: () -> Unit
@@ -199,17 +210,155 @@ fun AppNavGraph(
             MissionScreen()
         }
 
-        composable<Profile> {
+        composable<Profile> { backStackEntry ->
+
+            val viewModel: ProfileViewModel =
+                hiltViewModel()
+
+            val profileUpdated by
+            backStackEntry
+                .savedStateHandle
+                .getStateFlow(
+                    "profile_updated",
+                    false
+                )
+                .collectAsStateWithLifecycle()
+
+            LaunchedEffect(
+                profileUpdated
+            ) {
+                if (profileUpdated) {
+
+                    val firstName =
+                        backStackEntry
+                            .savedStateHandle
+                            .get<String>(
+                                "profile_first_name"
+                            )
+                            .orEmpty()
+
+                    val lastName =
+                        backStackEntry
+                            .savedStateHandle
+                            .get<String>(
+                                "profile_last_name"
+                            )
+                            .orEmpty()
+
+                    val sabbathSchoolClassName =
+                        backStackEntry
+                            .savedStateHandle
+                            .get<String>(
+                                "profile_sabbath_class"
+                            )
+
+                    val sabbathSchoolClass =
+                        sabbathSchoolClassName
+                            ?.let {
+                                runCatching {
+                                    SabbathSchoolClass
+                                        .valueOf(it)
+                                }.getOrNull()
+                            }
+
+                    if (
+                        firstName.isNotBlank() &&
+                        lastName.isNotBlank() &&
+                        sabbathSchoolClass != null
+                    ) {
+                        viewModel.onEvent(
+                            ProfileEvent.ProfileUpdated(
+                                firstName = firstName,
+                                lastName = lastName,
+                                sabbathSchoolClass =
+                                    sabbathSchoolClass
+                            )
+                        )
+                    }
+
+                    backStackEntry
+                        .savedStateHandle[
+                        "profile_updated"
+                    ] = false
+                }
+            }
+
             ProfileScreen(
-                onBackClick = {
-                    navController.popBackStack()
+                appLanguage = appLanguage,
+                onLanguageChanged = onLanguageChanged,
+
+                appTheme = appTheme,
+                onThemeChanged = onThemeChanged,
+
+                onHomeClick = {
+                    navController.navigate(Home) {
+                        launchSingleTop = true
+                    }
                 },
+
+                onMetricsClick = {
+                },
+
+                onEditProfileClick = {
+                    navController.navigate(EditProfile)
+                },
+
+                onNotificationsClick = {
+                },
+
                 onLogout = {
+                    onLogout()
+
                     navController.navigate(Login) {
                         popUpTo(0) {
                             inclusive = true
                         }
                     }
+                },
+
+                viewModel = viewModel
+            )
+        }
+
+        composable<EditProfile> {
+
+            EditProfileScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+
+                onSaved = {
+                        firstName,
+                        lastName,
+                        sabbathSchoolClass ->
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.apply {
+
+                            set(
+                                "profile_first_name",
+                                firstName
+                            )
+
+                            set(
+                                "profile_last_name",
+                                lastName
+                            )
+
+                            set(
+                                "profile_sabbath_class",
+                                sabbathSchoolClass.name
+                            )
+
+                            set(
+                                "profile_updated",
+                                true
+                            )
+                        }
+
+                    navController.popBackStack()
                 }
             )
         }
