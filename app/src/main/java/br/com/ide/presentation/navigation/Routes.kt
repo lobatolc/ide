@@ -25,3 +25,6 @@ data object Profile
 
 @Serializable
 data object EditProfile
+
+@Serializable
+data object UserManagement

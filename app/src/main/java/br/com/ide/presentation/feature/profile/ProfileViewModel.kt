@@ -3,7 +3,10 @@ package br.com.ide.presentation.feature.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.ide.R
+import br.com.ide.domain.model.UserRole
+import br.com.ide.domain.usecase.GetChurchByIdUseCase
 import br.com.ide.domain.usecase.GetCurrentUserProfileUseCase
+import br.com.ide.domain.usecase.GetDistrictByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,13 +18,22 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getCurrentUserProfileUseCase:
-    GetCurrentUserProfileUseCase
+    GetCurrentUserProfileUseCase,
+
+    private val getDistrictByIdUseCase:
+    GetDistrictByIdUseCase,
+
+    private val getChurchByIdUseCase:
+    GetChurchByIdUseCase
 ) : ViewModel() {
 
     private val _uiState =
-        MutableStateFlow(ProfileUiState())
+        MutableStateFlow(
+            ProfileUiState()
+        )
 
-    val uiState: StateFlow<ProfileUiState> =
+    val uiState:
+            StateFlow<ProfileUiState> =
         _uiState.asStateFlow()
 
     init {
@@ -45,18 +57,16 @@ class ProfileViewModel @Inject constructor(
 
                 _uiState.update {
                     it.copy(
-                        firstName = event.firstName,
-                        lastName = event.lastName,
+                        firstName =
+                            event.firstName,
+                        lastName =
+                            event.lastName,
                         sabbathSchoolClass =
                             event.sabbathSchoolClass,
                         isLoading = false
                     )
                 }
 
-                /*
-                 * Confirma silenciosamente os dados
-                 * com o Firestore.
-                 */
                 loadProfile(
                     showLoading = false
                 )
@@ -81,36 +91,90 @@ class ProfileViewModel @Inject constructor(
             getCurrentUserProfileUseCase()
                 .onSuccess { user ->
 
+                    val districtName =
+                        loadDistrictName(
+                            user.districtId
+                        )
+
+                    val churchName =
+                        loadChurchName(
+                            user.churchId
+                        )
+
                     _uiState.update {
                         it.copy(
-                            firstName = user.firstName,
-                            lastName = user.lastName,
-                            email = user.email,
+                            firstName =
+                                user.firstName,
+
+                            lastName =
+                                user.lastName,
+
+                            email =
+                                user.email,
+
+                            districtName =
+                                districtName,
+
+                            churchName =
+                                churchName,
+
                             sabbathSchoolClass =
                                 user.sabbathSchoolClass,
-                            role = user.role,
+
+                            role =
+                                user.role,
+
                             isLoading = false,
+
                             errorMessage = null
                         )
                     }
                 }
                 .onFailure {
 
-                    /*
-                     * Se já temos dados na tela,
-                     * não vamos destruí-los só porque
-                     * o refresh silencioso falhou.
-                     */
                     if (showLoading) {
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
                                 errorMessage =
-                                    R.string.profile_loading_error
+                                    R.string
+                                        .profile_loading_error
                             )
                         }
                     }
                 }
         }
+    }
+
+    private suspend fun loadDistrictName(
+        districtId: String?
+    ): String {
+
+        if (districtId.isNullOrBlank()) {
+            return ""
+        }
+
+        return getDistrictByIdUseCase(
+            districtId
+        )
+            .getOrNull()
+            ?.name
+            .orEmpty()
+    }
+
+    private suspend fun loadChurchName(
+        churchId: String?
+    ): String {
+
+        if (churchId.isNullOrBlank()) {
+            return ""
+        }
+
+        return getChurchByIdUseCase(
+            churchId
+        )
+            .getOrNull()
+            ?.name
+            .orEmpty()
     }
 }

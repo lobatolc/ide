@@ -18,7 +18,7 @@ class CompleteGoogleRegistrationUseCase @Inject constructor(
         sabbathSchoolClass: SabbathSchoolClass
     ): Result<Unit> {
 
-        val userProfile = UserProfile(
+        val user = UserProfile(
             id = googleUser.id,
             firstName = firstName.trim(),
             lastName = lastName.trim(),
@@ -27,8 +27,6 @@ class CompleteGoogleRegistrationUseCase @Inject constructor(
             role = UserRole.MISSIONARY
         )
 
-        return userRepository.saveUser(
-            user = userProfile
-        )
+        return userRepository.createUser(user)
     }
 }

@@ -30,6 +30,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import br.com.ide.domain.model.SabbathSchoolClass
 import br.com.ide.presentation.feature.profile.ProfileEvent
 import br.com.ide.presentation.feature.profile.ProfileViewModel
+import br.com.ide.presentation.feature.usermanagement.UserManagementScreen
 import br.com.ide.presentation.model.AppTheme
 
 @Composable
@@ -175,10 +176,6 @@ fun AppNavGraph(
         composable<Home> {
 
             HomeScreen(
-                appLanguage = appLanguage,
-                onLanguageChanged =
-                    onLanguageChanged,
-
                 onMissionClick = { _ ->
                     navController.navigate(
                         Mission
@@ -316,7 +313,27 @@ fun AppNavGraph(
                     }
                 },
 
+                onUserManagementClick = {
+                    navController.navigate(
+                        UserManagement
+                    )
+                },
+
                 viewModel = viewModel
+            )
+        }
+
+        composable<UserManagement> {
+
+            UserManagementScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+
+                onUserClick = { userId ->
+                    // Próxima tela:
+                    // UserManagementDetails(userId)
+                }
             )
         }
 

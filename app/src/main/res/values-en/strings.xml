@@ -247,4 +247,72 @@
     <string name="profile_theme_light">Light mode</string>
     <string name="profile_theme_dark">Dark mode</string>
     <string name="profile_select_theme">Select theme</string>
+
+    <string name="user_management_error_cannot_manage_user">
+    You do not have permission to manage this user.
+</string>
+
+    <string name="user_management_error_cannot_assign_role">
+    You do not have permission to assign this role.
+</string>
+
+    <string name="user_management_error_district_required">
+    A district must be selected.
+</string>
+
+    <string name="user_management_error_church_required">
+    A church must be selected.
+</string>
+
+    <string name="user_management_error_pastor_without_district">
+    The pastor must be assigned to a district.
+</string>
+
+    <string name="user_management_error_other_district">
+    You cannot manage users from another district.
+</string>
+
+    <string name="user_management_error_move_district">
+    You do not have permission to move this user to another district.
+</string>
+
+    <string name="user_management_error_invalid_role_pastor">
+    A pastor can only assign the missionary or leader roles.
+</string>
+
+    <string name="user_management_error_admin_role">
+    The administrator role cannot be assigned from this screen.
+</string>
+
+    <string name="user_management_error_generic">
+    The change could not be completed. Please try again.
+</string>
+
+    <string name="user_management_error_church_wrong_district">
+    The selected church does not belong to the selected district.
+</string>
+
+    <string name="user_management_error_validate_church">
+    The selected church could not be validated. Check your connection and try again.
+</string>
+
+    <string name="user_management_title">People management</string>
+    <string name="user_management_subtitle">Manage user roles and assignments.</string>
+    <string name="user_management_back">Back</string>
+    <string name="user_management_search">Search by first or last name</string>
+    <string name="user_management_district">District</string>
+    <string name="user_management_church">Church</string>
+    <string name="user_management_people_count">%1$d people</string>
+    <string name="user_management_loading_error">Users could not be loaded.</string>
+    <string name="user_management_access_denied">You do not have permission to access people management.</string>
+    <string name="profile_administration">Administration</string>
+
+    <string name="profile_user_management">People management</string>
+
+    <string name="profile_user_management_subtitle">
+    Manage roles, churches and districts.
+</string>
+
+    <string name="profile_district">District</string>
+    <string name="profile_church">Church</string>
 </resources>

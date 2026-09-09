@@ -4,16 +4,18 @@ import br.com.ide.domain.model.UserProfile
 import br.com.ide.domain.repository.UserRepository
 import javax.inject.Inject
 
-class UpdateUserProfileUseCase @Inject constructor(
+class GetUsersByDistrictUseCase @Inject constructor(
     private val userRepository:
     UserRepository
 ) {
 
     suspend operator fun invoke(
-        user: UserProfile
-    ): Result<Unit> {
+        districtId: String
+    ): Result<List<UserProfile>> {
 
         return userRepository
-            .updateUserProfile(user)
+            .getUsersByDistrict(
+                districtId
+            )
     }
 }

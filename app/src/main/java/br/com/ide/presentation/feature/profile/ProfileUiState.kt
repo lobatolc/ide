@@ -25,5 +25,8 @@ data class ProfileUiState(
     val successMessage: Int? = null,
 
     val isLoading: Boolean = false,
-    val isSaving: Boolean = false
+    val isSaving: Boolean = false,
+
+    val districtName: String = "",
+    val churchName: String = "",
 )

@@ -362,4 +362,71 @@
     <string name="profile_theme_dark">Modo escuro</string>
     <string name="profile_select_theme">Selecionar tema</string>
 
+    <string name="user_management_error_cannot_manage_user">
+    Você não tem permissão para gerenciar este usuário.
+</string>
+
+    <string name="user_management_error_cannot_assign_role">
+    Você não tem permissão para atribuir esta função.
+</string>
+
+    <string name="user_management_error_district_required">
+    É necessário selecionar um distrito.
+</string>
+
+    <string name="user_management_error_church_required">
+    É necessário selecionar uma igreja.
+</string>
+
+    <string name="user_management_error_pastor_without_district">
+    O pastor precisa estar vinculado a um distrito.
+</string>
+
+    <string name="user_management_error_other_district">
+    Você não pode gerenciar usuários de outro distrito.
+</string>
+
+    <string name="user_management_error_move_district">
+    Você não tem permissão para transferir este usuário para outro distrito.
+</string>
+
+    <string name="user_management_error_invalid_role_pastor">
+    O pastor só pode atribuir as funções de missionário ou líder.
+</string>
+
+    <string name="user_management_error_admin_role">
+    A função de administrador não pode ser atribuída por esta tela.
+</string>
+
+    <string name="user_management_error_generic">
+    Não foi possível realizar a alteração. Tente novamente.
+</string>
+
+    <string name="user_management_error_church_wrong_district">
+    A igreja selecionada não pertence ao distrito informado.
+</string>
+
+    <string name="user_management_error_validate_church">
+    Não foi possível validar a igreja selecionada. Verifique sua conexão e tente novamente.
+</string>
+
+    <string name="user_management_title">Gestão de pessoas</string>
+    <string name="user_management_subtitle">Gerencie funções e vínculos dos usuários.</string>
+    <string name="user_management_back">Voltar</string>
+    <string name="user_management_search">Buscar por nome ou sobrenome</string>
+    <string name="user_management_district">Distrito</string>
+    <string name="user_management_church">Igreja</string>
+    <string name="user_management_people_count">%1$d pessoas</string>
+    <string name="user_management_loading_error">Não foi possível carregar os usuários.</string>
+    <string name="user_management_access_denied">Você não tem permissão para acessar a gestão de pessoas.</string>
+    <string name="profile_administration">Administração</string>
+
+    <string name="profile_user_management">Gestão de pessoas</string>
+
+    <string name="profile_user_management_subtitle">
+    Gerencie funções, igrejas e distritos.
+</string>
+
+    <string name="profile_district">Distrito</string>
+    <string name="profile_church">Igreja</string>
 </resources>

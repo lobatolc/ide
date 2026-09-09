@@ -38,6 +38,6 @@ class RegisterUserUseCase @Inject constructor(
             role = UserRole.MISSIONARY
         )
 
-        return userRepository.saveUser(user)
+        return userRepository.createUser(user)
     }
 }

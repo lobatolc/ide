@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,10 +21,10 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.ide.R
 import br.com.ide.domain.model.MissionStatus
 import br.com.ide.domain.model.UserRole
@@ -38,17 +40,13 @@ import br.com.ide.presentation.components.BottomNavigationItem
 import br.com.ide.presentation.components.IdeBottomNavigation
 import br.com.ide.presentation.components.IdeScreenSubtitle
 import br.com.ide.presentation.components.IdeScreenTitle
-import br.com.ide.presentation.components.LanguageSelector
+import br.com.ide.presentation.components.IdeSearchBar
 import br.com.ide.presentation.components.MissionCard
-import br.com.ide.presentation.components.MissionSearchBar
 import br.com.ide.presentation.components.MissionStatusChip
 import br.com.ide.presentation.mapper.toStringRes
-import br.com.ide.presentation.model.AppLanguage
 
 @Composable
 fun HomeScreen(
-    appLanguage: AppLanguage,
-    onLanguageChanged: (AppLanguage) -> Unit,
     onMissionClick: (String) -> Unit,
     onCreateMissionClick: () -> Unit,
     onMetricsClick: () -> Unit,
@@ -56,13 +54,11 @@ fun HomeScreen(
     onFilterClick: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by
+    viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeContent(
         uiState = uiState,
-        appLanguage = appLanguage,
-        onLanguageChanged =
-            onLanguageChanged,
         onEvent = viewModel::onEvent,
         onMissionClick = onMissionClick,
         onMetricsClick = onMetricsClick,
@@ -75,18 +71,16 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     uiState: HomeUiState,
-    appLanguage: AppLanguage,
-    onLanguageChanged:
-        (AppLanguage) -> Unit,
     onEvent: (HomeEvent) -> Unit,
     onMissionClick: (String) -> Unit,
     onCreateMissionClick: () -> Unit,
     onMetricsClick: () -> Unit,
     onProfileClick: () -> Unit,
-    onFilterClick: () -> Unit,
+    onFilterClick: () -> Unit
 ) {
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor =
+            MaterialTheme.colorScheme.background,
 
         floatingActionButton = {
             if (
@@ -110,12 +104,17 @@ private fun HomeContent(
                 }
             }
         },
+
         bottomBar = {
             IdeBottomNavigation(
-                selectedItem = BottomNavigationItem.HOME,
+                selectedItem =
+                    BottomNavigationItem.HOME,
+
                 onItemSelected = { item ->
                     when (item) {
-                        BottomNavigationItem.HOME -> Unit
+
+                        BottomNavigationItem.HOME ->
+                            Unit
 
                         BottomNavigationItem.METRICS ->
                             onMetricsClick()
@@ -138,22 +137,35 @@ private fun HomeContent(
                 userName = uiState.userName
             )
 
-            MissionSearchBar(
-                value = uiState.searchQuery,
-                onValueChange = {
+            Spacer(
+                modifier =
+                    Modifier.height(16.dp)
+            )
+
+            IdeSearchBar(
+                query = uiState.searchQuery,
+                onQueryChange = {
                     onEvent(
                         HomeEvent.SearchChanged(it)
                     )
                 },
-                onFilterClick = onFilterClick,
+                placeholder = stringResource(
+                    R.string.mission_search_placeholder
+                ),
                 modifier = Modifier.padding(
-                    horizontal = 20.dp,
-                    vertical = 12.dp
+                    start = 20.dp,
+                    end = 12.dp
                 )
             )
 
+            Spacer(
+                modifier =
+                    Modifier.height(12.dp)
+            )
+
             MissionStatusFilters(
-                selectedStatus = uiState.selectedStatus,
+                selectedStatus =
+                    uiState.selectedStatus,
                 onStatusSelected = {
                     onEvent(
                         HomeEvent.StatusSelected(it)
@@ -162,17 +174,21 @@ private fun HomeContent(
             )
 
             when {
+
                 uiState.isLoading -> {
                     HomeLoading()
                 }
 
                 uiState.errorMessage != null -> {
                     HomeError(
-                        errorMessage = stringResource(
-                            uiState.errorMessage
-                        ),
+                        errorMessage =
+                            stringResource(
+                                uiState.errorMessage
+                            ),
                         onRetry = {
-                            onEvent(HomeEvent.Retry)
+                            onEvent(
+                                HomeEvent.Retry
+                            )
                         }
                     )
                 }
@@ -180,26 +196,35 @@ private fun HomeContent(
                 uiState.missions.isEmpty() -> {
                     HomeEmptyState(
                         hasSearch =
-                            uiState.searchQuery.isNotBlank() ||
+                            uiState.searchQuery
+                                .isNotBlank() ||
                                     uiState.selectedStatus != null
                     )
                 }
 
                 else -> {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            start = 20.dp,
-                            end = 20.dp,
-                            top = 16.dp,
-                            bottom = 24.dp
-                        ),
-                        verticalArrangement = Arrangement.spacedBy(
-                            14.dp
-                        )
+                        modifier =
+                            Modifier.fillMaxSize(),
+
+                        contentPadding =
+                            PaddingValues(
+                                start = 20.dp,
+                                end = 12.dp,
+                                top = 16.dp,
+                                bottom = 24.dp
+                            ),
+
+                        verticalArrangement =
+                            Arrangement.spacedBy(
+                                14.dp
+                            )
                     ) {
+
                         items(
-                            items = uiState.missions,
+                            items =
+                                uiState.missions,
+
                             key = { mission ->
                                 mission.id
                             }
@@ -207,9 +232,13 @@ private fun HomeContent(
 
                             MissionCard(
                                 mission = mission,
-                                statusText = stringResource(
-                                    mission.status.toStringRes()
-                                ),
+
+                                statusText =
+                                    stringResource(
+                                        mission.status
+                                            .toStringRes()
+                                    ),
+
                                 onClick = {
                                     onMissionClick(
                                         mission.id
@@ -236,30 +265,37 @@ private fun HomeHeader(
                 end = 12.dp,
                 top = 20.dp
             ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        verticalAlignment =
+            Alignment.CenterVertically,
+        horizontalArrangement =
+            Arrangement.SpaceBetween
     ) {
+
         Column(
-            modifier = Modifier.weight(1f)
+            modifier =
+                Modifier.weight(1f)
         ) {
 
             IdeScreenTitle(
-                text = if (userName.isBlank()) {
-                    stringResource(
-                        R.string.home_greeting
-                    )
-                } else {
-                    stringResource(
-                        R.string.home_greeting_name,
-                        userName
-                    )
-                },
+                text =
+                    if (userName.isBlank()) {
+
+                        stringResource(
+                            R.string.home_greeting
+                        )
+
+                    } else {
+
+                        stringResource(
+                            R.string.home_greeting_name,
+                            userName
+                        )
+                    }
             )
 
             Spacer(
-                modifier = Modifier.padding(
-                    vertical = 2.dp
-                )
+                modifier =
+                    Modifier.height(4.dp)
             )
 
             IdeScreenSubtitle(
@@ -267,7 +303,6 @@ private fun HomeHeader(
                     R.string.home_subtitle
                 )
             )
-
         }
     }
 }
@@ -278,20 +313,28 @@ private fun MissionStatusFilters(
     onStatusSelected: (MissionStatus?) -> Unit
 ) {
     LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(
-            horizontal = 20.dp
-        ),
-        horizontalArrangement = Arrangement.spacedBy(
-            8.dp
-        )
+        modifier =
+            Modifier.fillMaxWidth(),
+
+        contentPadding =
+            PaddingValues(
+                start = 20.dp,
+                end = 12.dp
+            ),
+
+        horizontalArrangement =
+            Arrangement.spacedBy(
+                8.dp
+            )
     ) {
+
         item {
             MissionStatusChip(
                 text = stringResource(
                     R.string.mission_filter_all
                 ),
-                selected = selectedStatus == null,
+                selected =
+                    selectedStatus == null,
                 onClick = {
                     onStatusSelected(null)
                 }
@@ -301,7 +344,8 @@ private fun MissionStatusFilters(
         item {
             MissionStatusChip(
                 text = stringResource(
-                    R.string.mission_status_in_progress
+                    R.string
+                        .mission_status_in_progress
                 ),
                 selected =
                     selectedStatus ==
@@ -317,7 +361,8 @@ private fun MissionStatusFilters(
         item {
             MissionStatusChip(
                 text = stringResource(
-                    R.string.mission_status_scheduled
+                    R.string
+                        .mission_status_scheduled
                 ),
                 selected =
                     selectedStatus ==
@@ -333,7 +378,8 @@ private fun MissionStatusFilters(
         item {
             MissionStatusChip(
                 text = stringResource(
-                    R.string.mission_status_completed
+                    R.string
+                        .mission_status_completed
                 ),
                 selected =
                     selectedStatus ==
@@ -351,11 +397,14 @@ private fun MissionStatusFilters(
 @Composable
 private fun HomeLoading() {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier.fillMaxSize(),
+        contentAlignment =
+            Alignment.Center
     ) {
         CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary
+            color =
+                MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -369,23 +418,32 @@ private fun HomeError(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment =
+            Alignment.Center
     ) {
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment =
+                Alignment.CenterHorizontally
         ) {
+
             Text(
                 text = errorMessage,
-                style = MaterialTheme.typography.bodyLarge,
+                style =
+                    MaterialTheme.typography.bodyLarge,
                 color =
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                    MaterialTheme
+                        .colorScheme
+                        .onSurfaceVariant
             )
 
             TextButton(
                 onClick = onRetry
             ) {
+
                 Icon(
-                    imageVector = Icons.Outlined.Refresh,
+                    imageVector =
+                        Icons.Outlined.Refresh,
                     contentDescription = null
                 )
 
@@ -393,9 +451,10 @@ private fun HomeError(
                     text = stringResource(
                         R.string.home_retry
                     ),
-                    modifier = Modifier.padding(
-                        start = 6.dp
-                    )
+                    modifier =
+                        Modifier.padding(
+                            start = 6.dp
+                        )
                 )
             }
         }
@@ -410,42 +469,76 @@ private fun HomeEmptyState(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment =
+            Alignment.Center
     ) {
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment =
+                Alignment.CenterHorizontally
         ) {
+
             Text(
-                text = if (hasSearch) {
-                    stringResource(
-                        R.string.home_no_missions_found
-                    )
-                } else {
-                    stringResource(
-                        R.string.home_no_missions
-                    )
-                },
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground
+                text =
+                    if (hasSearch) {
+
+                        stringResource(
+                            R.string
+                                .home_no_missions_found
+                        )
+
+                    } else {
+
+                        stringResource(
+                            R.string.home_no_missions
+                        )
+                    },
+
+                style =
+                    MaterialTheme
+                        .typography
+                        .titleMedium,
+
+                fontWeight =
+                    FontWeight.SemiBold,
+
+                color =
+                    MaterialTheme
+                        .colorScheme
+                        .onBackground
             )
 
             Text(
-                text = if (hasSearch) {
-                    stringResource(
-                        R.string.home_no_missions_found_subtitle
-                    )
-                } else {
-                    stringResource(
-                        R.string.home_no_missions_subtitle
-                    )
-                },
-                style = MaterialTheme.typography.bodyMedium,
+                text =
+                    if (hasSearch) {
+
+                        stringResource(
+                            R.string
+                                .home_no_missions_found_subtitle
+                        )
+
+                    } else {
+
+                        stringResource(
+                            R.string
+                                .home_no_missions_subtitle
+                        )
+                    },
+
+                style =
+                    MaterialTheme
+                        .typography
+                        .bodyMedium,
+
                 color =
-                    MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(
-                    top = 6.dp
-                )
+                    MaterialTheme
+                        .colorScheme
+                        .onSurfaceVariant,
+
+                modifier =
+                    Modifier.padding(
+                        top = 6.dp
+                    )
             )
         }
     }

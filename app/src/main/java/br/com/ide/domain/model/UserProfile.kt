@@ -6,5 +6,8 @@ data class UserProfile(
     val lastName: String,
     val email: String,
     val sabbathSchoolClass: SabbathSchoolClass,
-    val role: UserRole
+    val role: UserRole,
+
+    val churchId: String? = null,
+    val districtId: String? = null
 )

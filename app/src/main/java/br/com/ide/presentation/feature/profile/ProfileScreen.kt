@@ -18,9 +18,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Church
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.SettingsBrightness
@@ -49,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.ide.R
+import br.com.ide.domain.model.UserRole
 import br.com.ide.presentation.components.BottomNavigationItem
 import br.com.ide.presentation.components.IdeBottomNavigation
 import br.com.ide.presentation.components.IdePrimaryButton
@@ -69,6 +72,7 @@ fun ProfileScreen(
     onHomeClick: () -> Unit,
     onMetricsClick: () -> Unit,
     onEditProfileClick: () -> Unit,
+    onUserManagementClick: () -> Unit,
     onNotificationsClick: () -> Unit,
     onLogout: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
@@ -101,6 +105,7 @@ fun ProfileScreen(
         onHomeClick = onHomeClick,
         onMetricsClick = onMetricsClick,
         onEditProfileClick = onEditProfileClick,
+        onUserManagementClick = onUserManagementClick,
         onLanguageClick = {
             showLanguageSheet = true
         },
@@ -154,6 +159,7 @@ private fun ProfileContent(
     onHomeClick: () -> Unit,
     onMetricsClick: () -> Unit,
     onEditProfileClick: () -> Unit,
+    onUserManagementClick: () -> Unit,
     onLanguageClick: () -> Unit,
     onThemeClick: () -> Unit,
     onNotificationsClick: () -> Unit,
@@ -268,6 +274,55 @@ private fun ProfileContent(
                     R.string.profile_information
                 )
             ) {
+
+                if (
+                    uiState.role != UserRole.ADMIN &&
+                    uiState.districtName.isNotBlank()
+                ) {
+
+                    ProfileOptionRow(
+                        icon =
+                            Icons.Outlined.Map,
+
+                        title = stringResource(
+                            R.string.profile_district
+                        ),
+
+                        subtitle =
+                            uiState.districtName,
+
+                        showChevron = false
+                    )
+
+                    ProfileDivider()
+                }
+
+                if (
+                    (
+                            uiState.role ==
+                                    UserRole.MISSIONARY ||
+                                    uiState.role ==
+                                    UserRole.LEADER
+                            ) &&
+                    uiState.churchName.isNotBlank()
+                ) {
+
+                    ProfileOptionRow(
+                        icon =
+                            Icons.Outlined.Church,
+
+                        title = stringResource(
+                            R.string.profile_church
+                        ),
+
+                        subtitle =
+                            uiState.churchName,
+
+                        showChevron = false
+                    )
+
+                    ProfileDivider()
+                }
 
                 ProfileOptionRow(
                     icon =
@@ -402,6 +457,42 @@ private fun ProfileContent(
                     onClick =
                         onNotificationsClick
                 )
+            }
+
+            if (
+                uiState.role == UserRole.PASTOR ||
+                uiState.role == UserRole.ADMIN
+            ) {
+
+                Spacer(
+                    modifier =
+                        Modifier.height(16.dp)
+                )
+
+                ProfileSection(
+                    title = stringResource(
+                        R.string.profile_administration
+                    )
+                ) {
+
+                    ProfileOptionRow(
+                        icon =
+                            Icons.Outlined.Groups,
+
+                        title = stringResource(
+                            R.string
+                                .profile_user_management
+                        ),
+
+                        subtitle = stringResource(
+                            R.string
+                                .profile_user_management_subtitle
+                        ),
+
+                        onClick =
+                            onUserManagementClick
+                    )
+                }
             }
 
             uiState.errorMessage?.let { errorMessage ->

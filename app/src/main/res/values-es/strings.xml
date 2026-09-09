@@ -247,4 +247,72 @@
     <string name="profile_theme_light">Modo claro</string>
     <string name="profile_theme_dark">Modo oscuro</string>
     <string name="profile_select_theme">Seleccionar tema</string>
+
+    <string name="user_management_error_cannot_manage_user">
+    No tienes permiso para gestionar este usuario.
+</string>
+
+    <string name="user_management_error_cannot_assign_role">
+    No tienes permiso para asignar esta función.
+</string>
+
+    <string name="user_management_error_district_required">
+    Es necesario seleccionar un distrito.
+</string>
+
+    <string name="user_management_error_church_required">
+    Es necesario seleccionar una iglesia.
+</string>
+
+    <string name="user_management_error_pastor_without_district">
+    El pastor debe estar vinculado a un distrito.
+</string>
+
+    <string name="user_management_error_other_district">
+    No puedes gestionar usuarios de otro distrito.
+</string>
+
+    <string name="user_management_error_move_district">
+    No tienes permiso para transferir este usuario a otro distrito.
+</string>
+
+    <string name="user_management_error_invalid_role_pastor">
+    El pastor solo puede asignar las funciones de misionero o líder.
+</string>
+
+    <string name="user_management_error_admin_role">
+    La función de administrador no puede asignarse desde esta pantalla.
+</string>
+
+    <string name="user_management_error_generic">
+    No se pudo realizar el cambio. Inténtalo de nuevo.
+</string>
+
+    <string name="user_management_error_church_wrong_district">
+    La iglesia seleccionada no pertenece al distrito informado.
+</string>
+
+    <string name="user_management_error_validate_church">
+    No se pudo validar la iglesia seleccionada. Verifica tu conexión e inténtalo de nuevo.
+</string>
+
+    <string name="user_management_title">Gestión de personas</string>
+    <string name="user_management_subtitle">Gestiona las funciones y vínculos de los usuarios.</string>
+    <string name="user_management_back">Volver</string>
+    <string name="user_management_search">Buscar por nombre o apellido</string>
+    <string name="user_management_district">Distrito</string>
+    <string name="user_management_church">Iglesia</string>
+    <string name="user_management_people_count">%1$d personas</string>
+    <string name="user_management_loading_error">No se pudieron cargar los usuarios.</string>
+    <string name="user_management_access_denied">No tienes permiso para acceder a la gestión de personas.</string>
+    <string name="profile_administration">Administración</string>
+
+    <string name="profile_user_management">Gestión de personas</string>
+
+    <string name="profile_user_management_subtitle">
+    Gestiona funciones, iglesias y distritos.
+</string>
+
+    <string name="profile_district">Distrito</string>
+    <string name="profile_church">Iglesia</string>
 </resources>
