@@ -80,19 +80,25 @@ class UserManagementViewModel @Inject constructor(
             }
 
             UserManagementEvent.Refresh -> {
-                loadData()
+                loadData(
+                    showLoading = false
+                )
             }
         }
     }
 
-    private fun loadData() {
+    private fun loadData(
+        showLoading: Boolean = true
+    ) {
         viewModelScope.launch {
 
-            _uiState.update {
-                it.copy(
-                    isLoading = true,
-                    errorMessage = null
-                )
+            if (showLoading) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = true,
+                        errorMessage = null
+                    )
+                }
             }
 
             val managerResult =

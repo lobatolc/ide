@@ -315,4 +315,18 @@
 
     <string name="profile_district">District</string>
     <string name="profile_church">Church</string>
+
+    <string name="user_management_details_title">Manage person</string>
+    <string name="user_management_details_subtitle">Change this user\'s role and assignments.</string>
+    <string name="user_management_details_back">Back to people management</string>
+
+    <string name="user_management_details_role">Role</string>
+    <string name="user_management_details_district">District</string>
+    <string name="user_management_details_church">Church</string>
+
+    <string name="user_management_details_pastor_no_church">
+    Pastors are assigned to a district rather than a specific church.
+</string>
+
+    <string name="user_management_details_save">Save changes</string>
 </resources>

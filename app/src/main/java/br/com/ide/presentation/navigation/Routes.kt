@@ -28,3 +28,8 @@ data object EditProfile
 
 @Serializable
 data object UserManagement
+
+@Serializable
+data class UserManagementDetails(
+    val userId: String
+)

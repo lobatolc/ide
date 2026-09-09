@@ -27,10 +27,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.toRoute
 import br.com.ide.domain.model.SabbathSchoolClass
 import br.com.ide.presentation.feature.profile.ProfileEvent
 import br.com.ide.presentation.feature.profile.ProfileViewModel
+import br.com.ide.presentation.feature.usermanagement.UserManagementEvent
 import br.com.ide.presentation.feature.usermanagement.UserManagementScreen
+import br.com.ide.presentation.feature.usermanagement.UserManagementViewModel
+import br.com.ide.presentation.feature.usermanagementdetails.UserManagementDetailsScreen
 import br.com.ide.presentation.model.AppTheme
 
 @Composable
@@ -323,7 +327,35 @@ fun AppNavGraph(
             )
         }
 
-        composable<UserManagement> {
+        composable<UserManagement> { backStackEntry ->
+
+            val viewModel: UserManagementViewModel =
+                hiltViewModel()
+
+            val userManagementUpdated by
+            backStackEntry
+                .savedStateHandle
+                .getStateFlow(
+                    "user_management_updated",
+                    false
+                )
+                .collectAsStateWithLifecycle()
+
+            LaunchedEffect(
+                userManagementUpdated
+            ) {
+                if (userManagementUpdated) {
+
+                    viewModel.onEvent(
+                        UserManagementEvent.Refresh
+                    )
+
+                    backStackEntry
+                        .savedStateHandle[
+                        "user_management_updated"
+                    ] = false
+                }
+            }
 
             UserManagementScreen(
                 onBackClick = {
@@ -331,8 +363,43 @@ fun AppNavGraph(
                 },
 
                 onUserClick = { userId ->
-                    // Próxima tela:
-                    // UserManagementDetails(userId)
+                    navController.navigate(
+                        UserManagementDetails(
+                            userId = userId
+                        )
+                    )
+                },
+
+                viewModel = viewModel
+            )
+        }
+
+        composable<UserManagementDetails> {
+                backStackEntry ->
+
+            val route =
+                backStackEntry
+                    .toRoute<UserManagementDetails>()
+
+            UserManagementDetailsScreen(
+                userId =
+                    route.userId,
+
+                onBackClick = {
+                    navController.popBackStack()
+                },
+
+                onSaved = {
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(
+                            "user_management_updated",
+                            true
+                        )
+
+                    navController.popBackStack()
                 }
             )
         }

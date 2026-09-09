@@ -315,4 +315,18 @@
 
     <string name="profile_district">Distrito</string>
     <string name="profile_church">Iglesia</string>
+
+    <string name="user_management_details_title">Gestionar persona</string>
+    <string name="user_management_details_subtitle">Cambia la función y los vínculos de este usuario.</string>
+    <string name="user_management_details_back">Volver a la gestión de personas</string>
+
+    <string name="user_management_details_role">Función</string>
+    <string name="user_management_details_district">Distrito</string>
+    <string name="user_management_details_church">Iglesia</string>
+
+    <string name="user_management_details_pastor_no_church">
+    Los pastores están vinculados al distrito y no a una iglesia específica.
+</string>
+
+    <string name="user_management_details_save">Guardar cambios</string>
 </resources>
