@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.toRoute
 import br.com.ide.domain.model.SabbathSchoolClass
+import br.com.ide.presentation.feature.createmission.CreateMissionScreen
 import br.com.ide.presentation.feature.profile.ProfileEvent
 import br.com.ide.presentation.feature.profile.ProfileViewModel
 import br.com.ide.presentation.feature.usermanagement.UserManagementEvent
@@ -199,8 +200,9 @@ fun AppNavGraph(
                 },
 
                 onCreateMissionClick = {
-                    // Por enquanto ainda não temos a rota de criação.
-                    // Vamos criar no próximo passo.
+                    navController.navigate(
+                        CreateMission
+                    )
                 }
 
 
@@ -209,6 +211,20 @@ fun AppNavGraph(
 
         composable<Mission> {
             MissionScreen()
+        }
+
+        composable<CreateMission> {
+
+            CreateMissionScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+
+                onNextClick = {
+                    // Próxima etapa:
+                    // Participantes
+                }
+            )
         }
 
         composable<Profile> { backStackEntry ->

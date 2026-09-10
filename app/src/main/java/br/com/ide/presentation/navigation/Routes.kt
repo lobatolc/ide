@@ -33,3 +33,6 @@ data object UserManagement
 data class UserManagementDetails(
     val userId: String
 )
+
+@Serializable
+data object CreateMission

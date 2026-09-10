@@ -329,4 +329,39 @@
 </string>
 
     <string name="user_management_details_save">Save changes</string>
+
+    <string name="create_mission_title">New mission</string>
+    <string name="create_mission_general_title">General</string>
+    <string name="create_mission_general_subtitle">Define the mission\'s main information.</string>
+
+    <string name="create_mission_name">Mission name</string>
+    <string name="create_mission_date">Date</string>
+    <string name="create_mission_time">Time</string>
+    <string name="create_mission_description">Description</string>
+    <string name="create_mission_movement">Movement</string>
+    <string name="create_mission_custom_movement">Movement name</string>
+
+    <string name="create_mission_movement_breaking_silence">Breaking the Silence</string>
+    <string name="create_mission_movement_hope_impact">Hope Impact</string>
+    <string name="create_mission_movement_other">Other</string>
+
+    <string name="create_mission_next">Next</string>
+    <string name="create_mission_back">Back</string>
+
+    <string name="create_mission_name_required">Enter the mission name.</string>
+    <string name="create_mission_date_required">Select the mission date.</string>
+    <string name="create_mission_time_required">Select the mission time.</string>
+    <string name="create_mission_movement_required">Select the movement.</string>
+    <string name="create_mission_custom_movement_required">Enter the movement name.</string>
+
+    <string name="create_mission_step">Step %1$d of %2$d</string>
+    <string name="create_mission_select_date">Select date</string>
+    <string name="create_mission_select_time">Select time</string>
+    <string name="create_mission_description_optional">Description (optional)</string>
+
+    <string name="common_confirm">Confirm</string>
+    <string name="common_cancel">Cancel</string>
+
+    <string name="common_select_date">Select date</string>
+    <string name="common_date">Date</string>
 </resources>

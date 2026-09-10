@@ -443,4 +443,38 @@
 </string>
 
     <string name="user_management_details_save">Salvar alterações</string>
+
+    <string name="create_mission_title">Nova missão</string>
+    <string name="create_mission_general_title">Geral</string>
+    <string name="create_mission_general_subtitle">Defina as informações principais da missão.</string>
+
+    <string name="create_mission_name">Nome da missão</string>
+    <string name="create_mission_date">Data</string>
+    <string name="create_mission_time">Hora</string>
+    <string name="create_mission_description">Descrição</string>
+    <string name="create_mission_movement">Movimento</string>
+    <string name="create_mission_custom_movement">Nome do movimento</string>
+
+    <string name="create_mission_movement_breaking_silence">Quebrando o Silêncio</string>
+    <string name="create_mission_movement_hope_impact">Impacto Esperança</string>
+    <string name="create_mission_movement_other">Outro</string>
+
+    <string name="create_mission_next">Avançar</string>
+    <string name="create_mission_back">Voltar</string>
+
+    <string name="create_mission_name_required">Informe o nome da missão.</string>
+    <string name="create_mission_date_required">Selecione a data da missão.</string>
+    <string name="create_mission_time_required">Selecione o horário da missão.</string>
+    <string name="create_mission_movement_required">Selecione o movimento.</string>
+    <string name="create_mission_custom_movement_required">Informe o nome do movimento.</string>
+
+    <string name="create_mission_step">Etapa %1$d de %2$d</string>
+    <string name="create_mission_select_date">Selecionar data</string>
+    <string name="create_mission_select_time">Selecionar hora</string>
+    <string name="create_mission_description_optional">Descrição (opcional)</string>
+
+    <string name="common_confirm">Confirmar</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_select_date">Selecionar data</string>
+    <string name="common_date">Data</string>
 </resources>
