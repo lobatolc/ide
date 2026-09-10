@@ -366,4 +366,75 @@
     <string name="common_date">Fecha</string>
     <string name="create_mission_date_in_past">La fecha de la misión no puede estar en el pasado.</string>
     <string name="create_mission_time_in_past">La hora de la misión no puede estar en el pasado.</string>
+
+    <string name="create_mission_participants_title">Participantes</string>
+    <string name="create_mission_participants_subtitle">Define qué iglesias participarán en la misión.</string>
+
+    <string name="create_mission_select_all_churches">Seleccionar todas las iglesias</string>
+
+    <string name="create_mission_participants_required">Selecciona al menos una iglesia.</string>
+    <string name="create_mission_participants_loading_error">No fue posible cargar los participantes.</string>
+    <string name="create_mission_creator_assignment_error">Tu vínculo con el distrito o la iglesia está incompleto.</string>
+    <string name="create_mission_permission_error">No tienes permiso para crear misiones.</string>
+
+    <string name="create_mission_leader_participants_info">
+    Todos los misioneros vinculados a tu iglesia serán invitados a esta misión.
+</string>
+
+    <string name="create_mission_selected_church">Iglesia participante</string>
+
+    <string name="create_mission_selected_church_count">%1$d iglesia(s) seleccionada(s)</string>
+
+    <string name="create_mission_actions_title">Acciones</string>
+    <string name="create_mission_actions_subtitle">Selecciona las actividades que se realizarán durante la misión.</string>
+
+    <string name="create_mission_action_visit">Visitas</string>
+    <string name="create_mission_action_prayer">Oraciones</string>
+    <string name="create_mission_action_bible_study">Estudio Bíblico</string>
+    <string name="create_mission_action_material_delivery">Entrega de materiales</string>
+    <string name="create_mission_action_opinion_survey">Encuesta de opinión</string>
+    <string name="create_mission_action_other">Otra actividad</string>
+
+    <string name="create_mission_custom_activity">Nombre de la actividad</string>
+
+    <string name="create_mission_materials_title">Materiales</string>
+    <string name="create_mission_materials_subtitle">Selecciona los materiales que podrán ser entregados.</string>
+
+    <string name="create_mission_material_book">Libro</string>
+    <string name="create_mission_material_magazine">Revista</string>
+    <string name="create_mission_material_leaflet">Folleto</string>
+    <string name="create_mission_material_other">Otro</string>
+
+    <string name="create_mission_custom_material">Nombre del material</string>
+
+    <string name="create_mission_activities_required">Selecciona al menos una acción.</string>
+    <string name="create_mission_custom_activity_required">Introduce el nombre de la actividad.</string>
+    <string name="create_mission_materials_required">Selecciona al menos un material.</string>
+    <string name="create_mission_custom_material_required">Introduce el nombre del material.</string>
+
+    <string name="create_mission_configure_materials">Configurar materiales</string>
+    <string name="create_mission_materials_configured">%1$d material(es) configurado(s)</string>
+
+    <string name="create_mission_configure_survey">Configurar encuesta</string>
+    <string name="create_mission_survey_configured">%1$d pregunta(s) configurada(s)</string>
+
+    <string name="create_mission_survey_title">Configurar encuesta</string>
+    <string name="create_mission_survey_subtitle">Define las preguntas que se utilizarán durante la misión.</string>
+
+    <string name="create_mission_survey_question">Pregunta</string>
+    <string name="create_mission_survey_question_type">Tipo</string>
+    <string name="create_mission_survey_type_text">Texto libre</string>
+    <string name="create_mission_survey_type_single_choice">Opción única</string>
+
+    <string name="create_mission_survey_option">Opción</string>
+    <string name="create_mission_add_option">Agregar opción</string>
+    <string name="create_mission_add_question">Agregar pregunta</string>
+    <string name="create_mission_remove_question">Eliminar pregunta</string>
+
+    <string name="create_mission_save_materials">Guardar materiales</string>
+    <string name="create_mission_save_survey">Guardar encuesta</string>
+
+    <string name="create_mission_survey_required">Configura al menos una pregunta para la encuesta.</string>
+    <string name="create_mission_survey_question_required">Introduce el texto de la pregunta.</string>
+    <string name="create_mission_survey_options_required">Las preguntas de opción deben tener al menos dos opciones completas.</string>
 </resources>

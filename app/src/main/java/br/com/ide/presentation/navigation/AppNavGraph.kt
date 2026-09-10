@@ -218,11 +218,6 @@ fun AppNavGraph(
             CreateMissionScreen(
                 onBackClick = {
                     navController.popBackStack()
-                },
-
-                onNextClick = {
-                    // Próxima etapa:
-                    // Participantes
                 }
             )
         }

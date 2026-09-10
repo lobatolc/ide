@@ -366,4 +366,75 @@
     <string name="common_date">Date</string>
     <string name="create_mission_date_in_past">The mission date cannot be in the past.</string>
     <string name="create_mission_time_in_past">The mission time cannot be in the past.</string>
+
+    <string name="create_mission_participants_title">Participants</string>
+    <string name="create_mission_participants_subtitle">Choose which churches will participate in the mission.</string>
+
+    <string name="create_mission_select_all_churches">Select all churches</string>
+
+    <string name="create_mission_participants_required">Select at least one church.</string>
+    <string name="create_mission_participants_loading_error">Unable to load participants.</string>
+    <string name="create_mission_creator_assignment_error">Your district or church assignment is incomplete.</string>
+    <string name="create_mission_permission_error">You do not have permission to create missions.</string>
+
+    <string name="create_mission_leader_participants_info">
+    All missionaries assigned to your church will be invited to this mission.
+</string>
+
+    <string name="create_mission_selected_church">Participating church</string>
+
+    <string name="create_mission_selected_church_count">%1$d church(es) selected</string>
+
+    <string name="create_mission_actions_title">Actions</string>
+    <string name="create_mission_actions_subtitle">Select the activities that will be carried out during the mission.</string>
+
+    <string name="create_mission_action_visit">Visits</string>
+    <string name="create_mission_action_prayer">Prayers</string>
+    <string name="create_mission_action_bible_study">Bible Study</string>
+    <string name="create_mission_action_material_delivery">Material delivery</string>
+    <string name="create_mission_action_opinion_survey">Opinion survey</string>
+    <string name="create_mission_action_other">Other activity</string>
+
+    <string name="create_mission_custom_activity">Activity name</string>
+
+    <string name="create_mission_materials_title">Materials</string>
+    <string name="create_mission_materials_subtitle">Select the materials that may be distributed.</string>
+
+    <string name="create_mission_material_book">Book</string>
+    <string name="create_mission_material_magazine">Magazine</string>
+    <string name="create_mission_material_leaflet">Leaflet</string>
+    <string name="create_mission_material_other">Other</string>
+
+    <string name="create_mission_custom_material">Material name</string>
+
+    <string name="create_mission_activities_required">Select at least one action.</string>
+    <string name="create_mission_custom_activity_required">Enter the activity name.</string>
+    <string name="create_mission_materials_required">Select at least one material.</string>
+    <string name="create_mission_custom_material_required">Enter the material name.</string>
+
+    <string name="create_mission_configure_materials">Configure materials</string>
+    <string name="create_mission_materials_configured">%1$d material(s) configured</string>
+
+    <string name="create_mission_configure_survey">Configure survey</string>
+    <string name="create_mission_survey_configured">%1$d question(s) configured</string>
+
+    <string name="create_mission_survey_title">Configure survey</string>
+    <string name="create_mission_survey_subtitle">Define the questions that will be used during the mission.</string>
+
+    <string name="create_mission_survey_question">Question</string>
+    <string name="create_mission_survey_question_type">Type</string>
+    <string name="create_mission_survey_type_text">Free text</string>
+    <string name="create_mission_survey_type_single_choice">Single choice</string>
+
+    <string name="create_mission_survey_option">Option</string>
+    <string name="create_mission_add_option">Add option</string>
+    <string name="create_mission_add_question">Add question</string>
+    <string name="create_mission_remove_question">Remove question</string>
+
+    <string name="create_mission_save_materials">Save materials</string>
+    <string name="create_mission_save_survey">Save survey</string>
+
+    <string name="create_mission_survey_required">Configure at least one survey question.</string>
+    <string name="create_mission_survey_question_required">Enter the question text.</string>
+    <string name="create_mission_survey_options_required">Choice questions must have at least two filled options.</string>
 </resources>
