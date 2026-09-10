@@ -1,6 +1,7 @@
 package br.com.ide.presentation.feature.createmission
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -112,6 +113,9 @@ private fun CreateMissionGeneralContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(
+                MaterialTheme.colorScheme.background
+            )
             .verticalScroll(
                 rememberScrollState()
             )

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -49,6 +50,40 @@ fun IdeDatePickerDialog(
             )
         }
 
+    val today =
+        LocalDate.now()
+
+    val todayMillis =
+        today
+            .atStartOfDay(
+                ZoneOffset.UTC
+            )
+            .toInstant()
+            .toEpochMilli()
+
+    val selectableDates =
+        remember(
+            todayMillis,
+            today.year
+        ) {
+            object : SelectableDates {
+
+                override fun isSelectableDate(
+                    utcTimeMillis: Long
+                ): Boolean {
+                    return utcTimeMillis >=
+                            todayMillis
+                }
+
+                override fun isSelectableYear(
+                    year: Int
+                ): Boolean {
+                    return year >=
+                            today.year
+                }
+            }
+        }
+
     val initialSelectedDateMillis =
         selectedDate
             ?.atStartOfDay(
@@ -60,7 +95,9 @@ fun IdeDatePickerDialog(
     val datePickerState =
         rememberDatePickerState(
             initialSelectedDateMillis =
-                initialSelectedDateMillis
+                initialSelectedDateMillis,
+            selectableDates =
+                selectableDates
         )
 
     CompositionLocalProvider(
@@ -130,12 +167,15 @@ fun IdeDatePickerDialog(
             DatePicker(
                 state =
                     datePickerState,
+                showModeToggle = false,
 
                 title = {
                     Text(
-                        text = stringResource(
-                            R.string.common_select_date
-                        ),
+                        text =
+                            stringResource(
+                                R.string
+                                    .common_select_date
+                            ),
                         modifier =
                             Modifier
                                 .padding(
@@ -144,11 +184,15 @@ fun IdeDatePickerDialog(
                                     top = 16.dp
                                 ),
                         style =
-                            androidx.compose.material3.MaterialTheme
+                            androidx.compose
+                                .material3
+                                .MaterialTheme
                                 .typography
                                 .labelLarge,
                         color =
-                            androidx.compose.material3.MaterialTheme
+                            androidx.compose
+                                .material3
+                                .MaterialTheme
                                 .colorScheme
                                 .onSurfaceVariant
                     )
@@ -156,23 +200,28 @@ fun IdeDatePickerDialog(
 
                 headline = {
                     Text(
-                        text = stringResource(
-                            R.string.common_date
-                        ),
+                        text =
+                            stringResource(
+                                R.string
+                                    .common_date
+                            ),
                         modifier =
                             Modifier
                                 .padding(
                                     start = 24.dp,
                                     end = 24.dp,
-
                                     bottom = 12.dp
                                 ),
                         style =
-                            androidx.compose.material3.MaterialTheme
+                            androidx.compose
+                                .material3
+                                .MaterialTheme
                                 .typography
                                 .headlineMedium,
                         color =
-                            androidx.compose.material3.MaterialTheme
+                            androidx.compose
+                                .material3
+                                .MaterialTheme
                                 .colorScheme
                                 .onSurface
                     )

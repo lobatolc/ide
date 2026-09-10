@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -125,17 +127,43 @@ class CreateMissionViewModel @Inject constructor() :
             }
 
         val dateError =
-            if (state.date == null) {
-                R.string.create_mission_date_required
-            } else {
-                null
+            when {
+
+                state.date == null -> {
+                    R.string.create_mission_date_required
+                }
+
+                state.date.isBefore(
+                    LocalDate.now()
+                ) -> {
+                    R.string.create_mission_date_in_past
+                }
+
+                else -> {
+                    null
+                }
             }
 
         val timeError =
-            if (state.time == null) {
-                R.string.create_mission_time_required
-            } else {
-                null
+            when {
+
+                state.time == null -> {
+                    R.string.create_mission_time_required
+                }
+
+                state.date != null &&
+                        LocalDateTime.of(
+                            state.date,
+                            state.time
+                        ).isBefore(
+                            LocalDateTime.now()
+                        ) -> {
+                    R.string.create_mission_time_in_past
+                }
+
+                else -> {
+                    null
+                }
             }
 
         val movementError =

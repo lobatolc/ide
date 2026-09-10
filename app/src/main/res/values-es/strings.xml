@@ -364,4 +364,6 @@
 
     <string name="common_select_date">Seleccionar fecha</string>
     <string name="common_date">Fecha</string>
+    <string name="create_mission_date_in_past">La fecha de la misión no puede estar en el pasado.</string>
+    <string name="create_mission_time_in_past">La hora de la misión no puede estar en el pasado.</string>
 </resources>

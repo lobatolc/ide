@@ -477,4 +477,6 @@
     <string name="common_cancel">Cancelar</string>
     <string name="common_select_date">Selecionar data</string>
     <string name="common_date">Data</string>
+    <string name="create_mission_date_in_past">A data da missão não pode estar no passado.</string>
+    <string name="create_mission_time_in_past">O horário da missão não pode estar no passado.</string>
 </resources>
