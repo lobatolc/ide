@@ -6,15 +6,14 @@ import br.com.ide.R
 import br.com.ide.domain.model.GoogleLoginResult
 import br.com.ide.domain.usecase.HandleGoogleLoginUseCase
 import br.com.ide.domain.usecase.LoginUseCase
+import br.com.ide.presentation.mapper.mapFirebaseAuthError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import br.com.ide.domain.usecase.LoginWithGoogleUseCase
-import br.com.ide.presentation.mapper.mapFirebaseAuthError
-import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
