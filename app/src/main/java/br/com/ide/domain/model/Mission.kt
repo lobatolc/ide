@@ -24,6 +24,10 @@ data class Mission(
     val materials: List<MissionMaterialType> = emptyList(),
     val customMaterialName: String? = null,
 
+    // Planejamento
+    val departureLocation: MissionLocation? = null,
+    val returnLocation: MissionLocation? = null,
+
     // Pesquisa
     val surveyQuestions: List<MissionSurveyQuestion> = emptyList(),
 

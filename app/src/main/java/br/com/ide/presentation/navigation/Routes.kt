@@ -25,6 +25,12 @@ data class MissionPlanning(
     val missionId: String
 )
 
+
+@Serializable
+data class MissionLocations(
+    val missionId: String
+)
+
 @Serializable
 data object Profile
 

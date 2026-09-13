@@ -484,4 +484,74 @@
 
     <string name="user_management_update_success">¡Persona actualizada correctamente!</string>
     <string name="user_management_update_error">No se pudo actualizar la persona.</string>
+
+    <string name="mission_locations_loading_error">
+    No se pudieron cargar los lugares de la misión.
+</string>
+
+    <string name="mission_locations_departure_required">
+    Define el lugar de salida de la misión.
+</string>
+
+    <string name="mission_locations_save_success">
+    ¡Lugares de la misión guardados correctamente!
+</string>
+
+    <string name="mission_locations_save_error">
+    No se pudieron guardar los lugares de la misión.
+</string>
+
+    <string name="mission_locations_title">Lugares de la misión</string>
+    <string name="mission_locations_subtitle">Define dónde comenzará la misión y, opcionalmente, dónde finalizará.</string>
+    <string name="mission_locations_back">Volver</string>
+
+    <string name="mission_locations_select_type">¿Qué lugar deseas definir?</string>
+    <string name="mission_locations_departure">Salida</string>
+    <string name="mission_locations_return">Regreso</string>
+
+    <string name="mission_locations_departure_help">Toca el mapa para definir el lugar de salida de la misión.</string>
+    <string name="mission_locations_return_help">Toca el mapa para definir el lugar de regreso. Este lugar es opcional.</string>
+
+    <string name="mission_locations_remove_return">Eliminar lugar de regreso</string>
+    <string name="mission_locations_save">Guardar lugares</string>
+
+    <string name="mission_locations_not_defined_required">Lugar aún no definido.</string>
+    <string name="mission_locations_not_defined_optional">No definido (opcional).</string>
+
+    <string name="mission_locations_coordinates">Lat. %.5f • Long. %.5f</string>
+
+    <string name="mission_locations_read_only">Los lugares ya no pueden modificarse porque la misión ya comenzó o finalizó.</string>
+
+   <string name="mission_planning_mission_id">Misión: %1$s</string>
+
+    <string name="mission_planning_back">Volver</string>
+    <string name="mission_planning_title">Planificación</string>
+    <string name="mission_planning_subtitle">Organiza los detalles de la misión.</string>
+
+    <string name="mission_planning_hero_title">Prepara la misión</string>
+    <string name="mission_planning_hero_description">Configura el lugar de salida y, si lo deseas, organiza grupos y áreas de actuación antes del inicio de la misión.</string>
+
+    <string name="mission_planning_configuration_title">Configuración</string>
+    <string name="mission_planning_configuration_description">Define cómo se organizará la misión.</string>
+
+    <string name="mission_planning_locations_title">Lugares</string>
+    <string name="mission_planning_locations_description">Define el lugar de salida y, opcionalmente, el lugar de regreso.</string>
+
+    <string name="mission_planning_groups_title">Grupos</string>
+    <string name="mission_planning_groups_description">Organiza a los participantes en parejas, tríos u otros grupos.</string>
+
+    <string name="mission_planning_area_title">Área de actuación</string>
+    <string name="mission_planning_area_description">Define las calles o regiones donde actuará la misión.</string>
+
+    <string name="mission_planning_required">Obligatorio</string>
+    <string name="mission_planning_optional">Opcional</string>
+    <string name="mission_planning_coming_soon">Disponible próximamente</string>
+
+    <string name="mission_planning_edit_until_start">La planificación podrá modificarse hasta el momento en que comience la misión.</string>
+    <string name="mission_locations_map_departure_title">Define el lugar de salida</string>
+    <string name="mission_locations_map_return_title">Define el lugar de regreso</string>
+    <string name="mission_locations_defined_title">Lugares definidos</string>
+    <string name="mission_locations_defined_subtitle">Revisa los lugares configurados para la misión.</string>
+
+    <string name="mission_locations_selected_location">Lugar seleccionado</string>
 </resources>

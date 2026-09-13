@@ -484,4 +484,74 @@
 
     <string name="user_management_update_success">Person updated successfully!</string>
     <string name="user_management_update_error">Unable to update the person.</string>
+
+    <string name="mission_locations_loading_error">
+    Unable to load the mission locations.
+</string>
+
+    <string name="mission_locations_departure_required">
+    Define the mission departure location.
+</string>
+
+    <string name="mission_locations_save_success">
+    Mission locations saved successfully!
+</string>
+
+    <string name="mission_locations_save_error">
+    Unable to save the mission locations.
+</string>
+
+    <string name="mission_locations_title">Mission locations</string>
+    <string name="mission_locations_subtitle">Define where the mission will begin and, optionally, where it will end.</string>
+    <string name="mission_locations_back">Back</string>
+
+    <string name="mission_locations_select_type">Which location do you want to define?</string>
+    <string name="mission_locations_departure">Departure</string>
+    <string name="mission_locations_return">Return</string>
+
+    <string name="mission_locations_departure_help">Tap the map to define the mission departure location.</string>
+    <string name="mission_locations_return_help">Tap the map to define the return location. This location is optional.</string>
+
+    <string name="mission_locations_remove_return">Remove return location</string>
+    <string name="mission_locations_save">Save locations</string>
+
+    <string name="mission_locations_not_defined_required">Location not defined yet.</string>
+    <string name="mission_locations_not_defined_optional">Not defined (optional).</string>
+
+    <string name="mission_locations_coordinates">Lat. %.5f • Long. %.5f</string>
+
+    <string name="mission_locations_read_only">Locations can no longer be changed because the mission has already started or ended.</string>
+
+    <string name="mission_planning_mission_id">Mission: %1$s</string>
+
+    <string name="mission_planning_back">Back</string>
+    <string name="mission_planning_title">Planning</string>
+    <string name="mission_planning_subtitle">Organize the mission details.</string>
+
+    <string name="mission_planning_hero_title">Prepare the mission</string>
+    <string name="mission_planning_hero_description">Configure the departure location and, if desired, organize groups and activity areas before the mission begins.</string>
+
+    <string name="mission_planning_configuration_title">Configuration</string>
+    <string name="mission_planning_configuration_description">Define how the mission will be organized.</string>
+
+    <string name="mission_planning_locations_title">Locations</string>
+    <string name="mission_planning_locations_description">Define the departure location and, optionally, the return location.</string>
+
+    <string name="mission_planning_groups_title">Groups</string>
+    <string name="mission_planning_groups_description">Organize participants into pairs, trios, or other groups.</string>
+
+    <string name="mission_planning_area_title">Activity area</string>
+    <string name="mission_planning_area_description">Define the streets or regions where the mission will operate.</string>
+
+    <string name="mission_planning_required">Required</string>
+    <string name="mission_planning_optional">Optional</string>
+    <string name="mission_planning_coming_soon">Coming soon</string>
+
+    <string name="mission_planning_edit_until_start">The planning can be changed until the mission is started.</string>
+    <string name="mission_locations_map_departure_title">Set the departure location</string>
+    <string name="mission_locations_map_return_title">Set the return location</string>
+    <string name="mission_locations_defined_title">Defined locations</string>
+    <string name="mission_locations_defined_subtitle">Review the locations configured for the mission.</string>
+
+    <string name="mission_locations_selected_location">Selected location</string>
 </resources>

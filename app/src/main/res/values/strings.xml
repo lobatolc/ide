@@ -597,4 +597,74 @@
 
     <string name="user_management_update_success">Pessoa atualizada com sucesso!</string>
     <string name="user_management_update_error">Não foi possível atualizar a pessoa.</string>
+
+    <string name="mission_locations_loading_error">
+    Não foi possível carregar os locais da missão.
+</string>
+
+    <string name="mission_locations_departure_required">
+    Defina o local de saída da missão.
+</string>
+
+    <string name="mission_locations_save_success">
+    Locais da missão salvos com sucesso!
+</string>
+
+    <string name="mission_locations_save_error">
+    Não foi possível salvar os locais da missão.
+</string>
+
+    <string name="mission_locations_title">Locais da missão</string>
+    <string name="mission_locations_subtitle">Defina onde a missão começará e, opcionalmente, onde será encerrada.</string>
+    <string name="mission_locations_back">Voltar</string>
+
+    <string name="mission_locations_select_type">Qual local deseja definir?</string>
+    <string name="mission_locations_departure">Saída</string>
+    <string name="mission_locations_return">Retorno</string>
+
+    <string name="mission_locations_departure_help">Toque no mapa para definir o local de saída da missão.</string>
+    <string name="mission_locations_return_help">Toque no mapa para definir o local de retorno. Este local é opcional.</string>
+
+    <string name="mission_locations_remove_return">Remover local de retorno</string>
+    <string name="mission_locations_save">Salvar locais</string>
+
+    <string name="mission_locations_not_defined_required">Local ainda não definido.</string>
+    <string name="mission_locations_not_defined_optional">Não definido (opcional).</string>
+
+    <string name="mission_locations_coordinates">Lat. %.5f • Long. %.5f</string>
+
+    <string name="mission_locations_read_only">Os locais não podem mais ser alterados porque a missão já foi iniciada ou encerrada.</string>
+
+    <string name="mission_planning_mission_id">Missão: %1$s</string>
+
+    <string name="mission_planning_back">Voltar</string>
+    <string name="mission_planning_title">Planejamento</string>
+    <string name="mission_planning_subtitle">Organize os detalhes da missão.</string>
+
+    <string name="mission_planning_hero_title">Prepare a missão</string>
+    <string name="mission_planning_hero_description">Configure o local de saída e, se desejar, organize grupos e áreas de atuação antes do início da missão.</string>
+
+    <string name="mission_planning_configuration_title">Configuração</string>
+    <string name="mission_planning_configuration_description">Defina como a missão será organizada.</string>
+
+    <string name="mission_planning_locations_title">Locais</string>
+    <string name="mission_planning_locations_description">Defina o local de saída e, opcionalmente, o local de retorno.</string>
+
+    <string name="mission_planning_groups_title">Grupos</string>
+    <string name="mission_planning_groups_description">Organize os participantes em duplas, trios ou outros grupos.</string>
+
+    <string name="mission_planning_area_title">Área de atuação</string>
+    <string name="mission_planning_area_description">Defina as ruas ou regiões onde a missão irá atuar.</string>
+
+    <string name="mission_planning_required">Obrigatório</string>
+    <string name="mission_planning_optional">Opcional</string>
+    <string name="mission_planning_coming_soon">Disponível em breve</string>
+
+    <string name="mission_planning_edit_until_start">O planejamento poderá ser alterado até o momento em que a missão for iniciada.</string>
+    <string name="mission_locations_map_departure_title">Defina o local de saída</string>
+    <string name="mission_locations_map_return_title">Defina o local de retorno</string>
+    <string name="mission_locations_defined_title">Locais definidos</string>
+    <string name="mission_locations_defined_subtitle">Confira os pontos configurados para a missão.</string>
+
+    <string name="mission_locations_selected_location">Local selecionado</string>
 </resources>

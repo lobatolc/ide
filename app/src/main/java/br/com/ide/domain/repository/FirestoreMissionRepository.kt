@@ -2,6 +2,7 @@ package br.com.ide.data.repository
 
 import br.com.ide.domain.model.Mission
 import br.com.ide.domain.model.MissionActivityType
+import br.com.ide.domain.model.MissionLocation
 import br.com.ide.domain.model.MissionMaterialType
 import br.com.ide.domain.model.MissionMovement
 import br.com.ide.domain.model.MissionStatus
@@ -70,7 +71,9 @@ class FirestoreMissionRepository @Inject constructor(
                 } else {
                     firestore
                         .collection("missions")
-                        .document(mission.id)
+                        .document(
+                            mission.id
+                        )
                 }
 
             document
@@ -109,7 +112,9 @@ class FirestoreMissionRepository @Inject constructor(
                 )
                 .await()
 
-            Result.success(Unit)
+            Result.success(
+                Unit
+            )
 
         } catch (
             exception: Exception
@@ -120,6 +125,48 @@ class FirestoreMissionRepository @Inject constructor(
             )
         }
     }
+
+    override suspend fun updateMissionLocations(
+        missionId: String,
+        departureLocation: MissionLocation,
+        returnLocation: MissionLocation?
+    ): Result<Unit> {
+
+        return try {
+
+            firestore
+                .collection("missions")
+                .document(missionId)
+                .update(
+                    mapOf(
+                        "departureLocation" to
+                                departureLocation
+                                    .toFirestoreMap(),
+
+                        "returnLocation" to
+                                returnLocation
+                                    ?.toFirestoreMap()
+                    )
+                )
+                .await()
+
+            Result.success(
+                Unit
+            )
+
+        } catch (
+            exception: Exception
+        ) {
+
+            Result.failure(
+                exception
+            )
+        }
+    }
+
+    // =========================================================
+    // Firestore -> Mission
+    // =========================================================
 
     private fun DocumentSnapshot.toMission():
             Mission? {
@@ -202,6 +249,10 @@ class FirestoreMissionRepository @Inject constructor(
             id =
                 id,
 
+            // -------------------------------------------------
+            // Geral
+            // -------------------------------------------------
+
             name =
                 getString(
                     "name"
@@ -224,10 +275,18 @@ class FirestoreMissionRepository @Inject constructor(
                     "customMovementName"
                 ),
 
+            // -------------------------------------------------
+            // Participantes
+            // -------------------------------------------------
+
             participatingChurchIds =
                 getStringList(
                     "participatingChurchIds"
                 ),
+
+            // -------------------------------------------------
+            // Ações
+            // -------------------------------------------------
 
             activities =
                 activities,
@@ -237,6 +296,10 @@ class FirestoreMissionRepository @Inject constructor(
                     "customActivityName"
                 ),
 
+            // -------------------------------------------------
+            // Materiais
+            // -------------------------------------------------
+
             materials =
                 materials,
 
@@ -245,8 +308,30 @@ class FirestoreMissionRepository @Inject constructor(
                     "customMaterialName"
                 ),
 
+            // -------------------------------------------------
+            // Pesquisa
+            // -------------------------------------------------
+
             surveyQuestions =
                 surveyQuestions,
+
+            // -------------------------------------------------
+            // Planejamento
+            // -------------------------------------------------
+
+            departureLocation =
+                readLocation(
+                    "departureLocation"
+                ),
+
+            returnLocation =
+                readLocation(
+                    "returnLocation"
+                ),
+
+            // -------------------------------------------------
+            // Controle
+            // -------------------------------------------------
 
             status =
                 status,
@@ -269,6 +354,10 @@ class FirestoreMissionRepository @Inject constructor(
                     "creatorDistrictId"
                 ),
 
+            // -------------------------------------------------
+            // Dados posteriores
+            // -------------------------------------------------
+
             photoUrl =
                 getString(
                     "photoUrl"
@@ -281,20 +370,29 @@ class FirestoreMissionRepository @Inject constructor(
         )
     }
 
+    // =========================================================
+    // Listas simples
+    // =========================================================
+
     private fun DocumentSnapshot
             .getStringList(
         field: String
     ): List<String> {
 
         return (
-                get(field)
-                        as? List<*>
+                get(
+                    field
+                ) as? List<*>
                 )
             ?.mapNotNull {
                 it as? String
             }
             ?: emptyList()
     }
+
+    // =========================================================
+    // Pesquisa
+    // =========================================================
 
     private fun DocumentSnapshot
             .readSurveyQuestions():
@@ -303,8 +401,7 @@ class FirestoreMissionRepository @Inject constructor(
         return (
                 get(
                     "surveyQuestions"
-                )
-                        as? List<*>
+                ) as? List<*>
                 )
             ?.mapNotNull { item ->
 
@@ -330,10 +427,12 @@ class FirestoreMissionRepository @Inject constructor(
                         ?.let { value ->
 
                             runCatching {
+
                                 SurveyQuestionType
                                     .valueOf(
                                         value
                                     )
+
                             }.getOrNull()
                         }
                         ?: return@mapNotNull null
@@ -351,10 +450,13 @@ class FirestoreMissionRepository @Inject constructor(
                 MissionSurveyQuestion(
                     id =
                         id,
+
                     question =
                         question,
+
                     type =
                         type,
+
                     options =
                         options
                 )
@@ -362,10 +464,70 @@ class FirestoreMissionRepository @Inject constructor(
             ?: emptyList()
     }
 
+    // =========================================================
+    // Localização
+    // =========================================================
+
+    private fun DocumentSnapshot.readLocation(
+        field: String
+    ): MissionLocation? {
+
+        val map =
+            get(
+                field
+            ) as? Map<*, *>
+                ?: return null
+
+        val name =
+            map["name"]
+                    as? String
+                ?: return null
+
+        val address =
+            map["address"]
+                    as? String
+                ?: ""
+
+        val latitude =
+            map["latitude"]
+                    as? Number
+                ?: return null
+
+        val longitude =
+            map["longitude"]
+                    as? Number
+                ?: return null
+
+        return MissionLocation(
+            name =
+                name,
+
+            address =
+                address,
+
+            latitude =
+                latitude
+                    .toDouble(),
+
+            longitude =
+                longitude
+                    .toDouble()
+        )
+    }
+
+    // =========================================================
+    // Mission -> Firestore
+    // =========================================================
+
     private fun Mission.toFirestoreMap():
             Map<String, Any?> {
 
         return mapOf(
+
+            // -------------------------------------------------
+            // Geral
+            // -------------------------------------------------
+
             "name" to
                     name,
 
@@ -382,8 +544,16 @@ class FirestoreMissionRepository @Inject constructor(
             "customMovementName" to
                     customMovementName,
 
+            // -------------------------------------------------
+            // Participantes
+            // -------------------------------------------------
+
             "participatingChurchIds" to
                     participatingChurchIds,
+
+            // -------------------------------------------------
+            // Ações
+            // -------------------------------------------------
 
             "activities" to
                     activities
@@ -394,6 +564,10 @@ class FirestoreMissionRepository @Inject constructor(
             "customActivityName" to
                     customActivityName,
 
+            // -------------------------------------------------
+            // Materiais
+            // -------------------------------------------------
+
             "materials" to
                     materials
                         .map {
@@ -402,6 +576,10 @@ class FirestoreMissionRepository @Inject constructor(
 
             "customMaterialName" to
                     customMaterialName,
+
+            // -------------------------------------------------
+            // Pesquisa
+            // -------------------------------------------------
 
             "surveyQuestions" to
                     surveyQuestions
@@ -422,6 +600,22 @@ class FirestoreMissionRepository @Inject constructor(
                             )
                         },
 
+            // -------------------------------------------------
+            // Planejamento
+            // -------------------------------------------------
+
+            "departureLocation" to
+                    departureLocation
+                        ?.toFirestoreMap(),
+
+            "returnLocation" to
+                    returnLocation
+                        ?.toFirestoreMap(),
+
+            // -------------------------------------------------
+            // Controle
+            // -------------------------------------------------
+
             "status" to
                     status.name,
 
@@ -437,6 +631,10 @@ class FirestoreMissionRepository @Inject constructor(
             "creatorDistrictId" to
                     creatorDistrictId,
 
+            // -------------------------------------------------
+            // Dados posteriores
+            // -------------------------------------------------
+
             "photoUrl" to
                     photoUrl,
 
@@ -444,6 +642,32 @@ class FirestoreMissionRepository @Inject constructor(
                     totalDurationMinutes
         )
     }
+
+    // =========================================================
+    // MissionLocation -> Firestore
+    // =========================================================
+
+    private fun MissionLocation.toFirestoreMap():
+            Map<String, Any?> {
+
+        return mapOf(
+            "name" to
+                    name,
+
+            "address" to
+                    address,
+
+            "latitude" to
+                    latitude,
+
+            "longitude" to
+                    longitude
+        )
+    }
+
+    // =========================================================
+    // Datas
+    // =========================================================
 
     private fun LocalDateTime.toTimestamp():
             Timestamp {
@@ -473,6 +697,4 @@ class FirestoreMissionRepository @Inject constructor(
             )
             .toLocalDateTime()
     }
-
-
 }

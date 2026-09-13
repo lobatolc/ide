@@ -1,6 +1,7 @@
 package br.com.ide.domain.repository
 
 import br.com.ide.domain.model.Mission
+import br.com.ide.domain.model.MissionLocation
 
 interface MissionRepository {
 
@@ -16,5 +17,11 @@ interface MissionRepository {
 
     suspend fun updateMission(
         mission: Mission
+    ): Result<Unit>
+
+    suspend fun updateMissionLocations(
+        missionId: String,
+        departureLocation: MissionLocation,
+        returnLocation: MissionLocation?
     ): Result<Unit>
 }

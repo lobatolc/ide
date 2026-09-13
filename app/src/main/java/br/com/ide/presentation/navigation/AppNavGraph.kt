@@ -31,6 +31,7 @@ import br.com.ide.presentation.feature.login.LoginEvent
 import br.com.ide.presentation.feature.login.LoginScreen
 import br.com.ide.presentation.feature.login.LoginViewModel
 import br.com.ide.presentation.feature.mission.MissionScreen
+import br.com.ide.presentation.feature.missionlocations.MissionLocationsScreen
 import br.com.ide.presentation.feature.missionplanning.MissionPlanningScreen
 import br.com.ide.presentation.feature.profile.ProfileEvent
 import br.com.ide.presentation.feature.profile.ProfileScreen
@@ -330,10 +331,12 @@ fun AppNavGraph(
 
                 HomeScreen(
 
-                    onMissionClick = { _ ->
+                    onMissionClick = { missionId ->
 
                         navController.navigate(
-                            Mission
+                            MissionPlanning(
+                                missionId = missionId
+                            )
                         )
                     },
 
@@ -424,16 +427,38 @@ fun AppNavGraph(
                         route.missionId,
 
                     onBackClick = {
+                        navController.popBackStack()
+                    },
 
-                        /*
-                         * CreateMission já foi removida
-                         * da pilha.
-                         *
-                         * Portanto essa seta volta
-                         * naturalmente para a Home.
-                         */
-                        navController
-                            .popBackStack()
+                    onLocationsClick = {
+
+                        navController.navigate(
+                            MissionLocations(
+                                missionId =
+                                    route.missionId
+                            )
+                        )
+                    }
+                )
+            }
+
+            composable<MissionLocations> {
+                    backStackEntry ->
+
+                val route =
+                    backStackEntry
+                        .toRoute<MissionLocations>()
+
+                MissionLocationsScreen(
+                    missionId =
+                        route.missionId,
+
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+
+                    onSaved = {
+                        navController.popBackStack()
                     }
                 )
             }
