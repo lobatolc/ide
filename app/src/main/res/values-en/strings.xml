@@ -437,4 +437,31 @@
     <string name="create_mission_survey_required">Configure at least one survey question.</string>
     <string name="create_mission_survey_question_required">Enter the question text.</string>
     <string name="create_mission_survey_options_required">Choice questions must have at least two filled options.</string>
+
+    <string name="create_mission_locations_title">Locations</string>
+    <string name="create_mission_locations_subtitle">Define the mission locations.</string>
+    <string name="create_mission_departure_title">Meeting / departure point</string>
+    <string name="create_mission_departure_hint">Tap the map to select the meeting location.</string>
+    <string name="create_mission_departure_selected">Selected location</string>
+    <string name="create_mission_departure_required">Select the mission meeting point.</string>
+
+    <string name="create_mission_departure_church">Select a church (optional)</string>
+
+    <string name="create_mission_summary_title">Summary</string>
+    <string name="create_mission_summary_subtitle">Review the information before creating the mission.</string>
+
+    <string name="create_mission_summary_general">General</string>
+    <string name="create_mission_summary_participants">Participants</string>
+    <string name="create_mission_summary_actions">Actions</string>
+
+    <string name="create_mission_summary_edit">Edit</string>
+
+    <string name="create_mission_summary_leader_church">Participating church</string>
+    <string name="create_mission_summary_selected_churches">%1$d church(es) selected</string>
+
+    <string name="create_mission_summary_activities">Activities</string>
+    <string name="create_mission_summary_questions_count">%1$d question(s) configured</string>
+
+    <string name="create_mission_confirm">Create mission</string>
+    <string name="create_mission_back_to_edit">Go back and edit</string>
 </resources>

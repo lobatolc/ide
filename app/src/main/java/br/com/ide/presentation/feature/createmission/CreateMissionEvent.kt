@@ -9,122 +9,170 @@ import java.time.LocalTime
 
 sealed interface CreateMissionEvent {
 
-    // Etapa 1
+    // =========================================================
+    // Categorias
+    // =========================================================
+
+    sealed interface General :
+        CreateMissionEvent
+
+    sealed interface Participants :
+        CreateMissionEvent
+
+    sealed interface Actions :
+        CreateMissionEvent
+
+    sealed interface Materials :
+        CreateMissionEvent
+
+    sealed interface Survey :
+        CreateMissionEvent
+
+    sealed interface Summary :
+        CreateMissionEvent
+
+    sealed interface Navigation :
+        CreateMissionEvent
+
+    // =========================================================
+    // Etapa 1 - Geral
+    // =========================================================
 
     data class NameChanged(
         val value: String
-    ) : CreateMissionEvent
+    ) : General
 
     data class DateChanged(
         val value: LocalDate
-    ) : CreateMissionEvent
+    ) : General
 
     data class TimeChanged(
         val value: LocalTime
-    ) : CreateMissionEvent
+    ) : General
 
     data class DescriptionChanged(
         val value: String
-    ) : CreateMissionEvent
+    ) : General
 
     data class MovementChanged(
         val movement: MissionMovement
-    ) : CreateMissionEvent
+    ) : General
 
     data class CustomMovementNameChanged(
         val value: String
-    ) : CreateMissionEvent
+    ) : General
 
-    // Etapa 2
+    // =========================================================
+    // Etapa 2 - Participantes
+    // =========================================================
 
     data class DistrictToggled(
         val districtId: String
-    ) : CreateMissionEvent
+    ) : Participants
 
     data class ChurchToggled(
         val churchId: String
-    ) : CreateMissionEvent
+    ) : Participants
 
     data object SelectAllChurches :
-        CreateMissionEvent
+        Participants
 
-    // Etapa 3
+    // =========================================================
+    // Etapa 3 - Ações
+    // =========================================================
 
     data class ActivityToggled(
         val activity: MissionActivityType
-    ) : CreateMissionEvent
+    ) : Actions
 
     data class CustomActivityNameChanged(
         val value: String
-    ) : CreateMissionEvent
+    ) : Actions
 
+    // =========================================================
     // Materiais
+    // =========================================================
 
     data object OpenMaterials :
-        CreateMissionEvent
+        Materials
 
     data object CloseMaterials :
-        CreateMissionEvent
+        Materials
 
     data class MaterialToggled(
         val material: MissionMaterialType
-    ) : CreateMissionEvent
+    ) : Materials
 
     data class CustomMaterialNameChanged(
         val value: String
-    ) : CreateMissionEvent
+    ) : Materials
 
     data object SaveMaterials :
-        CreateMissionEvent
+        Materials
 
+    // =========================================================
     // Pesquisa
+    // =========================================================
 
     data object OpenSurvey :
-        CreateMissionEvent
+        Survey
 
     data object CloseSurvey :
-        CreateMissionEvent
+        Survey
 
     data object AddSurveyQuestion :
-        CreateMissionEvent
+        Survey
 
     data class RemoveSurveyQuestion(
         val questionId: String
-    ) : CreateMissionEvent
+    ) : Survey
 
     data class SurveyQuestionChanged(
         val questionId: String,
         val value: String
-    ) : CreateMissionEvent
+    ) : Survey
 
     data class SurveyQuestionTypeChanged(
         val questionId: String,
         val type: SurveyQuestionType
-    ) : CreateMissionEvent
+    ) : Survey
 
     data class AddSurveyOption(
         val questionId: String
-    ) : CreateMissionEvent
+    ) : Survey
 
     data class SurveyOptionChanged(
         val questionId: String,
         val optionIndex: Int,
         val value: String
-    ) : CreateMissionEvent
+    ) : Survey
 
     data class RemoveSurveyOption(
         val questionId: String,
         val optionIndex: Int
-    ) : CreateMissionEvent
+    ) : Survey
 
     data object SaveSurvey :
-        CreateMissionEvent
+        Survey
 
+    // =========================================================
+    // Resumo
+    // =========================================================
+
+    data class GoToStep(
+        val step: Int
+    ) : Summary
+
+    data object ReturnToSummary :
+        Summary
+
+    // =========================================================
     // Navegação
+    // =========================================================
 
     data object PreviousStep :
-        CreateMissionEvent
+        Navigation
 
     data object Next :
-        CreateMissionEvent
+        Navigation
 }

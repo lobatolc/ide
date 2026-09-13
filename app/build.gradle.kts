@@ -65,6 +65,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("androidx.lifecycle:lifecycle-runtime-compose")
+    implementation("org.maplibre.gl:android-sdk:13.6.1")
     ksp("com.google.dagger:hilt-android-compiler:2.60")
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

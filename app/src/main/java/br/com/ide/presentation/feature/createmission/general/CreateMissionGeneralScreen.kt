@@ -78,7 +78,7 @@ fun CreateMissionGeneralScreen(
                 stringResource(
                     R.string.create_mission_step,
                     1,
-                    4
+                    5
                 ),
             title =
                 stringResource(

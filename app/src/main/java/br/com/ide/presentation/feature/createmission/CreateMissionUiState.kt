@@ -13,7 +13,20 @@ import java.time.LocalTime
 
 data class CreateMissionUiState(
 
+    // =========================================================
+    // Wizard
+    // =========================================================
+
+    val currentStep: Int = 1,
+
+    val editingFromSummary: Boolean = false,
+
+    val subScreen: CreateMissionSubScreen =
+        CreateMissionSubScreen.NONE,
+
+    // =========================================================
     // Etapa 1 - Geral
+    // =========================================================
 
     val name: String = "",
     val date: LocalDate? = null,
@@ -38,15 +51,9 @@ data class CreateMissionUiState(
     @StringRes
     val customMovementNameError: Int? = null,
 
-    // Wizard
-
-    val currentStep: Int = 1,
-
-    val subScreen:
-    CreateMissionSubScreen =
-        CreateMissionSubScreen.NONE,
-
+    // =========================================================
     // Etapa 2 - Participantes
+    // =========================================================
 
     val creatorRole: UserRole? = null,
 
@@ -65,13 +72,14 @@ data class CreateMissionUiState(
     @StringRes
     val participantsError: Int? = null,
 
+    // =========================================================
     // Etapa 3 - Ações
+    // =========================================================
 
     val selectedActivities:
     Set<MissionActivityType> = emptySet(),
 
-    val customActivityName:
-    String = "",
+    val customActivityName: String = "",
 
     @StringRes
     val activitiesError: Int? = null,
@@ -79,13 +87,14 @@ data class CreateMissionUiState(
     @StringRes
     val customActivityNameError: Int? = null,
 
+    // =========================================================
     // Materiais
+    // =========================================================
 
     val selectedMaterials:
     Set<MissionMaterialType> = emptySet(),
 
-    val customMaterialName:
-    String = "",
+    val customMaterialName: String = "",
 
     @StringRes
     val materialsError: Int? = null,
@@ -93,7 +102,9 @@ data class CreateMissionUiState(
     @StringRes
     val customMaterialNameError: Int? = null,
 
+    // =========================================================
     // Pesquisa
+    // =========================================================
 
     val surveyQuestions:
     List<SurveyQuestionDraft> = emptyList(),
@@ -101,7 +112,9 @@ data class CreateMissionUiState(
     @StringRes
     val surveyError: Int? = null,
 
-    // Geral
+    // =========================================================
+    // Estado global
+    // =========================================================
 
     @StringRes
     val errorMessage: Int? = null,

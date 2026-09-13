@@ -70,7 +70,7 @@ fun CreateMissionParticipantsScreen(
                 stringResource(
                     R.string.create_mission_step,
                     2,
-                    4
+                    5
                 ),
             title =
                 stringResource(

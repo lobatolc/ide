@@ -550,4 +550,31 @@
     <string name="create_mission_survey_required">Configure pelo menos uma pergunta para a pesquisa.</string>
     <string name="create_mission_survey_question_required">Informe o texto da pergunta.</string>
     <string name="create_mission_survey_options_required">Perguntas de escolha precisam ter pelo menos duas opções preenchidas.</string>
+
+    <string name="create_mission_locations_title">Locais</string>
+    <string name="create_mission_locations_subtitle">Defina os locais da missão.</string>
+    <string name="create_mission_departure_title">Ponto de encontro / saída</string>
+    <string name="create_mission_departure_hint">Toque no mapa para selecionar o local de encontro.</string>
+    <string name="create_mission_departure_selected">Local selecionado</string>
+    <string name="create_mission_departure_required">Selecione o ponto de encontro da missão.</string>
+
+    <string name="create_mission_departure_church">Selecionar uma igreja (opcional)</string>
+
+    <string name="create_mission_summary_title">Resumo</string>
+    <string name="create_mission_summary_subtitle">Revise os dados antes de criar a missão.</string>
+
+    <string name="create_mission_summary_general">Geral</string>
+    <string name="create_mission_summary_participants">Participantes</string>
+    <string name="create_mission_summary_actions">Ações</string>
+
+    <string name="create_mission_summary_edit">Editar</string>
+
+    <string name="create_mission_summary_leader_church">Igreja participante</string>
+    <string name="create_mission_summary_selected_churches">%1$d igreja(s) selecionada(s)</string>
+
+    <string name="create_mission_summary_activities">Atividades</string>
+    <string name="create_mission_summary_questions_count">%1$d pergunta(s) configurada(s)</string>
+
+    <string name="create_mission_confirm">Criar missão</string>
+    <string name="create_mission_back_to_edit">Voltar e editar</string>
 </resources>
