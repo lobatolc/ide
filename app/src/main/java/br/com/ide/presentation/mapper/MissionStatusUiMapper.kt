@@ -5,6 +5,10 @@ import br.com.ide.domain.model.MissionStatus
 
 fun MissionStatus.toStringRes(): Int {
     return when (this) {
+
+        MissionStatus.PLANNING ->
+            R.string.mission_status_planning
+
         MissionStatus.SCHEDULED ->
             R.string.mission_status_scheduled
 

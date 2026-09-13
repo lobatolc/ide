@@ -166,6 +166,8 @@ sealed interface CreateMissionEvent {
     data object ReturnToSummary :
         Summary
 
+    data object CreateMission :
+        Summary
     // =========================================================
     // Navegação
     // =========================================================

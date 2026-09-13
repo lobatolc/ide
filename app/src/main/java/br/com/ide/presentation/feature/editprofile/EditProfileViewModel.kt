@@ -6,6 +6,9 @@ import br.com.ide.R
 import br.com.ide.domain.model.UserProfile
 import br.com.ide.domain.usecase.GetCurrentUserProfileUseCase
 import br.com.ide.domain.usecase.UpdateUserProfileUseCase
+import br.com.ide.presentation.components.snackbar.IdeSnackbarManager
+import br.com.ide.presentation.components.snackbar.IdeSnackbarMessage
+import br.com.ide.presentation.components.snackbar.IdeSnackbarType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,17 +21,26 @@ import javax.inject.Inject
 class EditProfileViewModel @Inject constructor(
     private val getCurrentUserProfileUseCase:
     GetCurrentUserProfileUseCase,
+
     private val updateUserProfileUseCase:
-    UpdateUserProfileUseCase
+    UpdateUserProfileUseCase,
+
+    private val snackbarManager:
+    IdeSnackbarManager
 ) : ViewModel() {
 
     private val _uiState =
-        MutableStateFlow(EditProfileUiState())
+        MutableStateFlow(
+            EditProfileUiState()
+        )
 
-    val uiState: StateFlow<EditProfileUiState> =
+    val uiState:
+            StateFlow<EditProfileUiState> =
         _uiState.asStateFlow()
 
-    private var currentUserProfile: UserProfile? = null
+    private var currentUserProfile:
+            UserProfile? =
+        null
 
     init {
         loadProfile()
@@ -37,35 +49,48 @@ class EditProfileViewModel @Inject constructor(
     fun onEvent(
         event: EditProfileEvent
     ) {
+
         when (event) {
 
             is EditProfileEvent.FirstNameChanged -> {
+
                 _uiState.update {
                     it.copy(
-                        firstName = event.firstName,
-                        firstNameError = null,
-                        errorMessage = null
+                        firstName =
+                            event.firstName,
+                        firstNameError =
+                            null,
+                        errorMessage =
+                            null
                     )
                 }
             }
 
             is EditProfileEvent.LastNameChanged -> {
+
                 _uiState.update {
                     it.copy(
-                        lastName = event.lastName,
-                        lastNameError = null,
-                        errorMessage = null
+                        lastName =
+                            event.lastName,
+                        lastNameError =
+                            null,
+                        errorMessage =
+                            null
                     )
                 }
             }
 
-            is EditProfileEvent.SabbathSchoolClassChanged -> {
+            is EditProfileEvent
+            .SabbathSchoolClassChanged -> {
+
                 _uiState.update {
                     it.copy(
                         sabbathSchoolClass =
                             event.sabbathSchoolClass,
-                        sabbathSchoolClassError = null,
-                        errorMessage = null
+                        sabbathSchoolClassError =
+                            null,
+                        errorMessage =
+                            null
                     )
                 }
             }
@@ -76,29 +101,41 @@ class EditProfileViewModel @Inject constructor(
         }
     }
 
+    // =========================================================
+    // Carregamento
+    // =========================================================
+
     private fun loadProfile() {
+
         viewModelScope.launch {
 
             _uiState.update {
                 it.copy(
-                    isLoading = true,
-                    errorMessage = null
+                    isLoading =
+                        true,
+                    errorMessage =
+                        null
                 )
             }
 
             getCurrentUserProfileUseCase()
                 .onSuccess { user ->
 
-                    currentUserProfile = user
+                    currentUserProfile =
+                        user
 
                     _uiState.update {
                         it.copy(
-                            firstName = user.firstName,
-                            lastName = user.lastName,
-                            email = user.email,
+                            firstName =
+                                user.firstName,
+                            lastName =
+                                user.lastName,
+                            email =
+                                user.email,
                             sabbathSchoolClass =
                                 user.sabbathSchoolClass,
-                            isLoading = false
+                            isLoading =
+                                false
                         )
                     }
                 }
@@ -106,36 +143,53 @@ class EditProfileViewModel @Inject constructor(
 
                     _uiState.update {
                         it.copy(
-                            isLoading = false,
+                            isLoading =
+                                false,
                             errorMessage =
-                                R.string.profile_loading_error
+                                R.string
+                                    .profile_loading_error
                         )
                     }
                 }
         }
     }
 
+    // =========================================================
+    // Salvamento
+    // =========================================================
+
     private fun saveChanges() {
 
-        val state = _uiState.value
+        val state =
+            _uiState.value
 
         val firstNameError =
-            if (state.firstName.isBlank()) {
-                R.string.error_first_name_required
+            if (
+                state.firstName.isBlank()
+            ) {
+                R.string
+                    .error_first_name_required
             } else {
                 null
             }
 
         val lastNameError =
-            if (state.lastName.isBlank()) {
-                R.string.error_last_name_required
+            if (
+                state.lastName.isBlank()
+            ) {
+                R.string
+                    .error_last_name_required
             } else {
                 null
             }
 
         val sabbathSchoolClassError =
-            if (state.sabbathSchoolClass == null) {
-                R.string.error_sabbath_school_class_required
+            if (
+                state.sabbathSchoolClass ==
+                null
+            ) {
+                R.string
+                    .error_sabbath_school_class_required
             } else {
                 null
             }
@@ -145,10 +199,13 @@ class EditProfileViewModel @Inject constructor(
             lastNameError != null ||
             sabbathSchoolClassError != null
         ) {
+
             _uiState.update {
                 it.copy(
-                    firstNameError = firstNameError,
-                    lastNameError = lastNameError,
+                    firstNameError =
+                        firstNameError,
+                    lastNameError =
+                        lastNameError,
                     sabbathSchoolClassError =
                         sabbathSchoolClassError
                 )
@@ -167,8 +224,12 @@ class EditProfileViewModel @Inject constructor(
 
         val updatedUser =
             currentUser.copy(
-                firstName = state.firstName.trim(),
-                lastName = state.lastName.trim(),
+                firstName =
+                    state.firstName
+                        .trim(),
+                lastName =
+                    state.lastName
+                        .trim(),
                 sabbathSchoolClass =
                     sabbathSchoolClass
             )
@@ -177,8 +238,10 @@ class EditProfileViewModel @Inject constructor(
 
             _uiState.update {
                 it.copy(
-                    isSaving = true,
-                    errorMessage = null
+                    isSaving =
+                        true,
+                    errorMessage =
+                        null
                 )
             }
 
@@ -192,20 +255,41 @@ class EditProfileViewModel @Inject constructor(
 
                     _uiState.update {
                         it.copy(
-                            isSaving = false,
-                            isSaved = true
+                            isSaving =
+                                false,
+                            isSaved =
+                                true
                         )
                     }
+
+                    snackbarManager.show(
+                        IdeSnackbarMessage(
+                            messageRes =
+                                R.string
+                                    .edit_profile_success,
+                            type =
+                                IdeSnackbarType.SUCCESS
+                        )
+                    )
                 }
                 .onFailure {
 
                     _uiState.update {
                         it.copy(
-                            isSaving = false,
-                            errorMessage =
-                                R.string.profile_save_error
+                            isSaving =
+                                false
                         )
                     }
+
+                    snackbarManager.show(
+                        IdeSnackbarMessage(
+                            messageRes =
+                                R.string
+                                    .edit_profile_error,
+                            type =
+                                IdeSnackbarType.ERROR
+                        )
+                    )
                 }
         }
     }

@@ -464,4 +464,24 @@
 
     <string name="create_mission_confirm">Crear misión</string>
     <string name="create_mission_back_to_edit">Volver y editar</string>
+
+    <string name="mission_status_planning">En planificación</string>
+
+    <string name="create_mission_success">
+    ¡Misión creada correctamente!
+</string>
+
+    <string name="create_mission_error">
+    No se pudo crear la misión.
+</string>
+
+    <string name="create_mission_user_error">
+    No se pudo identificar al usuario.
+</string>
+
+    <string name="edit_profile_success">¡Perfil actualizado correctamente!</string>
+    <string name="edit_profile_error">No se pudo actualizar el perfil.</string>
+
+    <string name="user_management_update_success">¡Persona actualizada correctamente!</string>
+    <string name="user_management_update_error">No se pudo actualizar la persona.</string>
 </resources>

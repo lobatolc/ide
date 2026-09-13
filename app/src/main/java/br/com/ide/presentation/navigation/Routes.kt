@@ -21,6 +21,11 @@ data object Home
 data object Mission
 
 @Serializable
+data class MissionPlanning(
+    val missionId: String
+)
+
+@Serializable
 data object Profile
 
 @Serializable

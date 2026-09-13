@@ -33,6 +33,10 @@ class SummaryEventHandler @Inject constructor(
                         state
                     )
             }
+
+            CreateMissionEvent.CreateMission -> {
+                state
+            }
         }
     }
 }

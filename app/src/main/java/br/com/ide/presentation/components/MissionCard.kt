@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -38,84 +36,137 @@ fun MissionCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+    val dateFormatter =
+        DateTimeFormatter.ofPattern(
+            "dd/MM/yyyy"
+        )
+
+    val timeFormatter =
+        DateTimeFormatter.ofPattern(
+            "HH:mm"
+        )
 
     Card(
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        ),
-        modifier = modifier
-            .fillMaxWidth()
-            .semantics {
-                role = Role.Button
-            }
-            .clickable {
-                onClick()
-            }
+        shape =
+            RoundedCornerShape(
+                24.dp
+            ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    MaterialTheme
+                        .colorScheme
+                        .surface
+            ),
+        elevation =
+            CardDefaults.cardElevation(
+                defaultElevation =
+                    2.dp
+            ),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .semantics {
+                    role =
+                        Role.Button
+                }
+                .clickable {
+                    onClick()
+                }
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        20.dp
+                    )
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = mission.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
 
-                Spacer(
-                    modifier = Modifier.height(0.dp)
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
+                verticalAlignment =
+                    Alignment.Top,
+                horizontalArrangement =
+                    Arrangement
+                        .SpaceBetween
+            ) {
+
+                Text(
+                    text =
+                        mission.name,
+                    style =
+                        MaterialTheme
+                            .typography
+                            .titleLarge,
+                    fontWeight =
+                        FontWeight.Bold,
+                    color =
+                        MaterialTheme
+                            .colorScheme
+                            .onSurface,
+                    modifier =
+                        Modifier
+                            .weight(
+                                1f
+                            ),
+                    maxLines =
+                        2,
+                    overflow =
+                        TextOverflow
+                            .Ellipsis
                 )
 
                 MissionStatusBadge(
-                    text = statusText
+                    text =
+                        statusText
                 )
             }
 
             Spacer(
-                modifier = Modifier.height(14.dp)
+                modifier =
+                    Modifier
+                        .height(
+                            14.dp
+                        )
             )
 
             MissionInfoRow(
-                icon = Icons.Outlined.CalendarMonth,
-                text = mission.scheduledAt
-                    .toLocalDate()
-                    .format(dateFormatter)
+                icon =
+                    Icons
+                        .Outlined
+                        .CalendarMonth,
+                text =
+                    mission
+                        .scheduledAt
+                        .toLocalDate()
+                        .format(
+                            dateFormatter
+                        )
             )
 
             Spacer(
-                modifier = Modifier.height(8.dp)
+                modifier =
+                    Modifier
+                        .height(
+                            8.dp
+                        )
             )
 
             MissionInfoRow(
-                icon = Icons.Outlined.Schedule,
-                text = mission.scheduledAt
-                    .toLocalTime()
-                    .format(timeFormatter)
-            )
-
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
-
-            MissionInfoRow(
-                icon = Icons.Outlined.LocationOn,
-                text = mission.address
+                icon =
+                    Icons
+                        .Outlined
+                        .Schedule,
+                text =
+                    mission
+                        .scheduledAt
+                        .toLocalTime()
+                        .format(
+                            timeFormatter
+                        )
             )
         }
     }
@@ -123,28 +174,52 @@ fun MissionCard(
 
 @Composable
 private fun MissionInfoRow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon:
+    androidx.compose.ui.graphics.vector.ImageVector,
     text: String
 ) {
+
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment =
+            Alignment.CenterVertically
     ) {
+
         Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
+            imageVector =
+                icon,
+            contentDescription =
+                null,
+            tint =
+                MaterialTheme
+                    .colorScheme
+                    .primary
         )
 
         Spacer(
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier =
+                Modifier
+                    .padding(
+                        horizontal =
+                            4.dp
+                    )
         )
 
         Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            text =
+                text,
+            style =
+                MaterialTheme
+                    .typography
+                    .bodyMedium,
+            color =
+                MaterialTheme
+                    .colorScheme
+                    .onSurfaceVariant,
+            maxLines =
+                2,
+            overflow =
+                TextOverflow
+                    .Ellipsis
         )
     }
 }
@@ -153,19 +228,40 @@ private fun MissionInfoRow(
 private fun MissionStatusBadge(
     text: String
 ) {
+
     androidx.compose.material3.Surface(
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.primaryContainer
+        shape =
+            RoundedCornerShape(
+                50
+            ),
+        color =
+            MaterialTheme
+                .colorScheme
+                .primaryContainer
     ) {
+
         Text(
-            text = text,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.padding(
-                horizontal = 12.dp,
-                vertical = 6.dp
-            )
+            text =
+                text,
+            style =
+                MaterialTheme
+                    .typography
+                    .labelMedium,
+            fontWeight =
+                FontWeight
+                    .SemiBold,
+            color =
+                MaterialTheme
+                    .colorScheme
+                    .onPrimaryContainer,
+            modifier =
+                Modifier
+                    .padding(
+                        horizontal =
+                            12.dp,
+                        vertical =
+                            6.dp
+                    )
         )
     }
 }

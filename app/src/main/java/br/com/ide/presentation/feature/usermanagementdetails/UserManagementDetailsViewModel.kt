@@ -3,6 +3,7 @@ package br.com.ide.presentation.feature.usermanagementdetails
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.ide.R
+import br.com.ide.domain.model.UserProfile
 import br.com.ide.domain.model.UserRole
 import br.com.ide.domain.policy.UserManagementPolicy
 import br.com.ide.domain.usecase.GetChurchesByDistrictUseCase
@@ -11,7 +12,9 @@ import br.com.ide.domain.usecase.GetCurrentUserProfileUseCase
 import br.com.ide.domain.usecase.GetDistrictsUseCase
 import br.com.ide.domain.usecase.GetUserByIdUseCase
 import br.com.ide.domain.usecase.UpdateUserAssignmentUseCase
-import br.com.ide.presentation.mapper.toUserManagementErrorRes
+import br.com.ide.presentation.components.snackbar.IdeSnackbarManager
+import br.com.ide.presentation.components.snackbar.IdeSnackbarMessage
+import br.com.ide.presentation.components.snackbar.IdeSnackbarType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,18 +27,27 @@ import javax.inject.Inject
 class UserManagementDetailsViewModel @Inject constructor(
     private val getCurrentUserProfileUseCase:
     GetCurrentUserProfileUseCase,
+
     private val getUserByIdUseCase:
     GetUserByIdUseCase,
+
     private val getDistrictsUseCase:
     GetDistrictsUseCase,
+
     private val getChurchesUseCase:
     GetChurchesUseCase,
+
     private val getChurchesByDistrictUseCase:
     GetChurchesByDistrictUseCase,
+
     private val updateUserAssignmentUseCase:
     UpdateUserAssignmentUseCase,
+
     private val userManagementPolicy:
-    UserManagementPolicy
+    UserManagementPolicy,
+
+    private val snackbarManager:
+    IdeSnackbarManager
 ) : ViewModel() {
 
     private val _uiState =
@@ -47,52 +59,77 @@ class UserManagementDetailsViewModel @Inject constructor(
             StateFlow<UserManagementDetailsUiState> =
         _uiState.asStateFlow()
 
-    private var loadedUserId: String? = null
+    private var loadedUserId:
+            String? =
+        null
+
+    // =========================================================
+    // Carregamento
+    // =========================================================
 
     fun load(
         userId: String
     ) {
-        if (loadedUserId == userId) {
+
+        if (
+            loadedUserId ==
+            userId
+        ) {
             return
         }
 
-        loadedUserId = userId
+        loadedUserId =
+            userId
 
         viewModelScope.launch {
 
             _uiState.update {
                 it.copy(
-                    isLoading = true,
-                    errorMessage = null
+                    isLoading =
+                        true,
+                    errorMessage =
+                        null
                 )
             }
 
             val manager =
                 getCurrentUserProfileUseCase()
                     .getOrElse {
+
                         showLoadingError()
+
                         return@launch
                     }
 
             val target =
                 getUserByIdUseCase(
                     userId
-                ).getOrElse {
-                    showLoadingError()
-                    return@launch
-                }
+                )
+                    .getOrElse {
+
+                        showLoadingError()
+
+                        return@launch
+                    }
 
             if (
-                !userManagementPolicy.canManageUser(
-                    manager = manager,
-                    target = target
-                )
+                !userManagementPolicy
+                    .canManageUser(
+                        manager =
+                            manager,
+                        target =
+                            target
+                    )
             ) {
+
                 _uiState.update {
                     it.copy(
-                        manager = manager,
-                        target = target,
-                        isLoading = false,
+                        manager =
+                            manager,
+                        target =
+                            target,
+                        isLoading =
+                            false,
                         errorMessage =
                             R.string
                                 .user_management_access_denied
@@ -105,32 +142,46 @@ class UserManagementDetailsViewModel @Inject constructor(
             val roles =
                 userManagementPolicy
                     .getAssignableRoles(
-                        manager = manager,
-                        target = target
+                        manager =
+                            manager,
+                        target =
+                            target
                     )
 
-            when (manager.role) {
+            when (
+                manager.role
+            ) {
 
                 UserRole.PASTOR -> {
+
                     loadPastorData(
-                        manager = manager,
-                        target = target,
-                        roles = roles
+                        manager =
+                            manager,
+                        target =
+                            target,
+                        roles =
+                            roles
                     )
                 }
 
                 UserRole.ADMIN -> {
+
                     loadAdminData(
-                        manager = manager,
-                        target = target,
-                        roles = roles
+                        manager =
+                            manager,
+                        target =
+                            target,
+                        roles =
+                            roles
                     )
                 }
 
                 else -> {
+
                     _uiState.update {
                         it.copy(
-                            isLoading = false,
+                            isLoading =
+                                false,
                             errorMessage =
                                 R.string
                                     .user_management_access_denied
@@ -141,48 +192,68 @@ class UserManagementDetailsViewModel @Inject constructor(
         }
     }
 
+    // =========================================================
+    // Eventos
+    // =========================================================
+
     fun onEvent(
-        event: UserManagementDetailsEvent
+        event:
+        UserManagementDetailsEvent
     ) {
-        when (event) {
+
+        when (
+            event
+        ) {
 
             is UserManagementDetailsEvent.RoleSelected -> {
+
                 selectRole(
                     event.role
                 )
             }
 
             is UserManagementDetailsEvent.DistrictSelected -> {
+
                 selectDistrict(
                     event.districtId
                 )
             }
 
             is UserManagementDetailsEvent.ChurchSelected -> {
+
                 _uiState.update {
                     it.copy(
                         selectedChurchId =
                             event.churchId,
-                        errorMessage = null
+                        errorMessage =
+                            null
                     )
                 }
             }
 
             UserManagementDetailsEvent.Save -> {
+
                 save()
             }
         }
     }
 
+    // =========================================================
+    // Dados do pastor
+    // =========================================================
+
     private suspend fun loadPastorData(
-        manager: br.com.ide.domain.model.UserProfile,
-        target: br.com.ide.domain.model.UserProfile,
+        manager: UserProfile,
+        target: UserProfile,
         roles: List<UserRole>
     ) {
+
         val districtId =
             manager.districtId
                 ?: run {
+
                     showLoadingError()
+
                     return
                 }
 
@@ -195,31 +266,47 @@ class UserManagementDetailsViewModel @Inject constructor(
         val churches =
             getChurchesByDistrictUseCase(
                 districtId
-            ).getOrDefault(
-                emptyList()
             )
+                .getOrDefault(
+                    emptyList()
+                )
 
         _uiState.update {
             it.copy(
-                manager = manager,
-                target = target,
-                roles = roles,
-                districts = districts,
-                churches = churches,
-                selectedRole = target.role,
-                selectedDistrictId = districtId,
-                selectedChurchId = target.churchId,
-                isLoading = false,
-                errorMessage = null
+                manager =
+                    manager,
+                target =
+                    target,
+                roles =
+                    roles,
+                districts =
+                    districts,
+                churches =
+                    churches,
+                selectedRole =
+                    target.role,
+                selectedDistrictId =
+                    districtId,
+                selectedChurchId =
+                    target.churchId,
+                isLoading =
+                    false,
+                errorMessage =
+                    null
             )
         }
     }
 
+    // =========================================================
+    // Dados do administrador
+    // =========================================================
+
     private suspend fun loadAdminData(
-        manager: br.com.ide.domain.model.UserProfile,
-        target: br.com.ide.domain.model.UserProfile,
+        manager: UserProfile,
+        target: UserProfile,
         roles: List<UserRole>
     ) {
+
         val districts =
             getDistrictsUseCase()
                 .getOrDefault(
@@ -234,65 +321,101 @@ class UserManagementDetailsViewModel @Inject constructor(
 
         _uiState.update {
             it.copy(
-                manager = manager,
-                target = target,
-                roles = roles,
-                districts = districts,
-                churches = churches,
-                selectedRole = target.role,
+                manager =
+                    manager,
+                target =
+                    target,
+                roles =
+                    roles,
+                districts =
+                    districts,
+                churches =
+                    churches,
+                selectedRole =
+                    target.role,
                 selectedDistrictId =
                     target.districtId,
                 selectedChurchId =
                     target.churchId,
-                isLoading = false,
-                errorMessage = null
+                isLoading =
+                    false,
+                errorMessage =
+                    null
             )
         }
     }
 
+    // =========================================================
+    // Seleção de função
+    // =========================================================
+
     private fun selectRole(
         role: UserRole
     ) {
+
         _uiState.update { state ->
 
-            when (role) {
+            when (
+                role
+            ) {
 
                 UserRole.PASTOR -> {
+
                     state.copy(
-                        selectedRole = role,
-                        selectedChurchId = null,
-                        errorMessage = null
+                        selectedRole =
+                            role,
+                        selectedChurchId =
+                            null,
+                        errorMessage =
+                            null
                     )
                 }
 
                 UserRole.ADMIN -> {
+
                     state.copy(
-                        selectedRole = role,
-                        selectedDistrictId = null,
-                        selectedChurchId = null,
-                        errorMessage = null
+                        selectedRole =
+                            role,
+                        selectedDistrictId =
+                            null,
+                        selectedChurchId =
+                            null,
+                        errorMessage =
+                            null
                     )
                 }
 
                 UserRole.MISSIONARY,
                 UserRole.LEADER -> {
+
                     state.copy(
-                        selectedRole = role,
-                        errorMessage = null
+                        selectedRole =
+                            role,
+                        errorMessage =
+                            null
                     )
                 }
             }
         }
     }
 
+    // =========================================================
+    // Seleção de distrito
+    // =========================================================
+
     private fun selectDistrict(
         districtId: String
     ) {
+
         val manager =
-            _uiState.value.manager
+            _uiState.value
+                .manager
                 ?: return
 
-        if (manager.role != UserRole.ADMIN) {
+        if (
+            manager.role !=
+            UserRole.ADMIN
+        ) {
             return
         }
 
@@ -300,13 +423,20 @@ class UserManagementDetailsViewModel @Inject constructor(
             it.copy(
                 selectedDistrictId =
                     districtId,
-                selectedChurchId = null,
-                errorMessage = null
+                selectedChurchId =
+                    null,
+                errorMessage =
+                    null
             )
         }
     }
 
+    // =========================================================
+    // Salvamento
+    // =========================================================
+
     private fun save() {
+
         val state =
             _uiState.value
 
@@ -326,45 +456,78 @@ class UserManagementDetailsViewModel @Inject constructor(
 
             _uiState.update {
                 it.copy(
-                    isSaving = true,
-                    errorMessage = null
+                    isSaving =
+                        true,
+                    errorMessage =
+                        null
                 )
             }
 
             updateUserAssignmentUseCase(
-                manager = manager,
-                target = target,
-                newRole = role,
+                manager =
+                    manager,
+                target =
+                    target,
+                newRole =
+                    role,
                 newDistrictId =
                     state.selectedDistrictId,
                 newChurchId =
                     state.selectedChurchId
             )
                 .onSuccess {
+
                     _uiState.update {
                         it.copy(
-                            isSaving = false,
-                            isSaved = true
+                            isSaving =
+                                false,
+                            isSaved =
+                                true
                         )
                     }
+
+                    snackbarManager.show(
+                        IdeSnackbarMessage(
+                            messageRes =
+                                R.string
+                                    .user_management_update_success,
+                            type =
+                                IdeSnackbarType.SUCCESS
+                        )
+                    )
                 }
-                .onFailure { error ->
+                .onFailure {
+
                     _uiState.update {
                         it.copy(
-                            isSaving = false,
-                            errorMessage =
-                                error
-                                    .toUserManagementErrorRes()
+                            isSaving =
+                                false
                         )
                     }
+
+                    snackbarManager.show(
+                        IdeSnackbarMessage(
+                            messageRes =
+                                R.string
+                                    .user_management_update_error,
+                            type =
+                                IdeSnackbarType.ERROR
+                        )
+                    )
                 }
         }
     }
 
+    // =========================================================
+    // Erro de carregamento
+    // =========================================================
+
     private fun showLoadingError() {
+
         _uiState.update {
             it.copy(
-                isLoading = false,
+                isLoading =
+                    false,
                 errorMessage =
                     R.string
                         .user_management_loading_error

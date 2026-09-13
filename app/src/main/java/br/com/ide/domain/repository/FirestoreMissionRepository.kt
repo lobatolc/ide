@@ -1,10 +1,16 @@
 package br.com.ide.data.repository
 
 import br.com.ide.domain.model.Mission
-import br.com.ide.domain.model.MissionAction
+import br.com.ide.domain.model.MissionActivityType
+import br.com.ide.domain.model.MissionMaterialType
+import br.com.ide.domain.model.MissionMovement
 import br.com.ide.domain.model.MissionStatus
+import br.com.ide.domain.model.MissionSurveyQuestion
+import br.com.ide.domain.model.SurveyQuestionType
+import br.com.ide.domain.model.UserRole
 import br.com.ide.domain.repository.MissionRepository
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
@@ -17,70 +23,14 @@ class FirestoreMissionRepository @Inject constructor(
 ) : MissionRepository {
 
     override suspend fun getMissions(): List<Mission> {
+
         return firestore
             .collection("missions")
             .get()
             .await()
             .documents
             .mapNotNull { document ->
-
-                val scheduledTimestamp =
-                    document.getTimestamp("scheduledAt")
-                        ?: return@mapNotNull null
-
-                val statusName =
-                    document.getString("status")
-                        ?: return@mapNotNull null
-
-                val status =
-                    runCatching {
-                        MissionStatus.valueOf(statusName)
-                    }.getOrNull()
-                        ?: return@mapNotNull null
-
-                val actions =
-                    (document.get("actions") as? List<*>)
-                        ?.mapNotNull { item ->
-
-                            val action =
-                                item as? Map<*, *>
-                                    ?: return@mapNotNull null
-
-                            val id =
-                                action["id"] as? String
-                                    ?: return@mapNotNull null
-
-                            val name =
-                                action["name"] as? String
-                                    ?: return@mapNotNull null
-
-                            MissionAction(
-                                id = id,
-                                name = name
-                            )
-                        }
-                        ?: emptyList()
-
-                Mission(
-                    id = document.id,
-                    name = document.getString("name").orEmpty(),
-                    scheduledAt =
-                        scheduledTimestamp.toLocalDateTime(),
-                    address =
-                        document.getString("address").orEmpty(),
-                    description =
-                        document.getString("description").orEmpty(),
-                    status = status,
-                    photoUrl =
-                        document.getString("photoUrl"),
-                    actions = actions,
-                    totalDurationMinutes =
-                        document.getLong(
-                            "totalDurationMinutes"
-                        ),
-                    createdBy =
-                        document.getString("createdBy").orEmpty()
-                )
+                document.toMission()
             }
     }
 
@@ -95,76 +45,25 @@ class FirestoreMissionRepository @Inject constructor(
                 .get()
                 .await()
 
-        if (!document.exists()) {
+        if (
+            !document.exists()
+        ) {
             return null
         }
 
-        val scheduledTimestamp =
-            document.getTimestamp("scheduledAt")
-                ?: return null
-
-        val statusName =
-            document.getString("status")
-                ?: return null
-
-        val status =
-            runCatching {
-                MissionStatus.valueOf(statusName)
-            }.getOrNull()
-                ?: return null
-
-        val actions =
-            (document.get("actions") as? List<*>)
-                ?.mapNotNull { item ->
-
-                    val action =
-                        item as? Map<*, *>
-                            ?: return@mapNotNull null
-
-                    val id =
-                        action["id"] as? String
-                            ?: return@mapNotNull null
-
-                    val name =
-                        action["name"] as? String
-                            ?: return@mapNotNull null
-
-                    MissionAction(
-                        id = id,
-                        name = name
-                    )
-                }
-                ?: emptyList()
-
-        return Mission(
-            id = document.id,
-            name = document.getString("name").orEmpty(),
-            scheduledAt =
-                scheduledTimestamp.toLocalDateTime(),
-            address =
-                document.getString("address").orEmpty(),
-            description =
-                document.getString("description").orEmpty(),
-            status = status,
-            photoUrl =
-                document.getString("photoUrl"),
-            actions = actions,
-            totalDurationMinutes =
-                document.getLong(
-                    "totalDurationMinutes"
-                ),
-            createdBy =
-                document.getString("createdBy").orEmpty()
-        )
+        return document.toMission()
     }
 
     override suspend fun createMission(
         mission: Mission
-    ): Result<Unit> {
+    ): Result<String> {
+
         return try {
 
             val document =
-                if (mission.id.isBlank()) {
+                if (
+                    mission.id.isBlank()
+                ) {
                     firestore
                         .collection("missions")
                         .document()
@@ -180,21 +79,31 @@ class FirestoreMissionRepository @Inject constructor(
                 )
                 .await()
 
-            Result.success(Unit)
+            Result.success(
+                document.id
+            )
 
-        } catch (exception: Exception) {
-            Result.failure(exception)
+        } catch (
+            exception: Exception
+        ) {
+
+            Result.failure(
+                exception
+            )
         }
     }
 
     override suspend fun updateMission(
         mission: Mission
     ): Result<Unit> {
+
         return try {
 
             firestore
                 .collection("missions")
-                .document(mission.id)
+                .document(
+                    mission.id
+                )
                 .set(
                     mission.toFirestoreMap()
                 )
@@ -202,36 +111,348 @@ class FirestoreMissionRepository @Inject constructor(
 
             Result.success(Unit)
 
-        } catch (exception: Exception) {
-            Result.failure(exception)
+        } catch (
+            exception: Exception
+        ) {
+
+            Result.failure(
+                exception
+            )
         }
     }
 
-    private fun Mission.toFirestoreMap(): Map<String, Any?> {
-        return mapOf(
-            "name" to name,
-            "scheduledAt" to scheduledAt.toTimestamp(),
-            "address" to address,
-            "description" to description,
-            "status" to status.name,
-            "photoUrl" to photoUrl,
-            "actions" to actions.map { action ->
-                mapOf(
-                    "id" to action.id,
-                    "name" to action.name
+    private fun DocumentSnapshot.toMission():
+            Mission? {
+
+        val scheduledTimestamp =
+            getTimestamp(
+                "scheduledAt"
+            )
+                ?: return null
+
+        val status =
+            getString(
+                "status"
+            )
+                ?.let {
+                    runCatching {
+                        MissionStatus.valueOf(
+                            it
+                        )
+                    }.getOrNull()
+                }
+                ?: return null
+
+        val movement =
+            getString(
+                "movement"
+            )
+                ?.let {
+                    runCatching {
+                        MissionMovement.valueOf(
+                            it
+                        )
+                    }.getOrNull()
+                }
+                ?: return null
+
+        val creatorRole =
+            getString(
+                "creatorRole"
+            )
+                ?.let {
+                    runCatching {
+                        UserRole.valueOf(
+                            it
+                        )
+                    }.getOrNull()
+                }
+                ?: return null
+
+        val activities =
+            getStringList(
+                "activities"
+            )
+                .mapNotNull { value ->
+
+                    runCatching {
+                        MissionActivityType.valueOf(
+                            value
+                        )
+                    }.getOrNull()
+                }
+
+        val materials =
+            getStringList(
+                "materials"
+            )
+                .mapNotNull { value ->
+
+                    runCatching {
+                        MissionMaterialType.valueOf(
+                            value
+                        )
+                    }.getOrNull()
+                }
+
+        val surveyQuestions =
+            readSurveyQuestions()
+
+        return Mission(
+            id =
+                id,
+
+            name =
+                getString(
+                    "name"
+                ).orEmpty(),
+
+            scheduledAt =
+                scheduledTimestamp
+                    .toLocalDateTime(),
+
+            description =
+                getString(
+                    "description"
+                ).orEmpty(),
+
+            movement =
+                movement,
+
+            customMovementName =
+                getString(
+                    "customMovementName"
+                ),
+
+            participatingChurchIds =
+                getStringList(
+                    "participatingChurchIds"
+                ),
+
+            activities =
+                activities,
+
+            customActivityName =
+                getString(
+                    "customActivityName"
+                ),
+
+            materials =
+                materials,
+
+            customMaterialName =
+                getString(
+                    "customMaterialName"
+                ),
+
+            surveyQuestions =
+                surveyQuestions,
+
+            status =
+                status,
+
+            createdBy =
+                getString(
+                    "createdBy"
+                ).orEmpty(),
+
+            creatorRole =
+                creatorRole,
+
+            creatorChurchId =
+                getString(
+                    "creatorChurchId"
+                ),
+
+            creatorDistrictId =
+                getString(
+                    "creatorDistrictId"
+                ),
+
+            photoUrl =
+                getString(
+                    "photoUrl"
+                ),
+
+            totalDurationMinutes =
+                getLong(
+                    "totalDurationMinutes"
                 )
-            },
-            "totalDurationMinutes" to
-                    totalDurationMinutes,
-            "createdBy" to createdBy
         )
     }
 
-    private fun LocalDateTime.toTimestamp(): Timestamp {
+    private fun DocumentSnapshot
+            .getStringList(
+        field: String
+    ): List<String> {
+
+        return (
+                get(field)
+                        as? List<*>
+                )
+            ?.mapNotNull {
+                it as? String
+            }
+            ?: emptyList()
+    }
+
+    private fun DocumentSnapshot
+            .readSurveyQuestions():
+            List<MissionSurveyQuestion> {
+
+        return (
+                get(
+                    "surveyQuestions"
+                )
+                        as? List<*>
+                )
+            ?.mapNotNull { item ->
+
+                val map =
+                    item as? Map<*, *>
+                        ?: return@mapNotNull null
+
+                val id =
+                    map["id"]
+                            as? String
+                        ?: return@mapNotNull null
+
+                val question =
+                    map["question"]
+                            as? String
+                        ?: return@mapNotNull null
+
+                val type =
+                    (
+                            map["type"]
+                                    as? String
+                            )
+                        ?.let { value ->
+
+                            runCatching {
+                                SurveyQuestionType
+                                    .valueOf(
+                                        value
+                                    )
+                            }.getOrNull()
+                        }
+                        ?: return@mapNotNull null
+
+                val options =
+                    (
+                            map["options"]
+                                    as? List<*>
+                            )
+                        ?.mapNotNull {
+                            it as? String
+                        }
+                        ?: emptyList()
+
+                MissionSurveyQuestion(
+                    id =
+                        id,
+                    question =
+                        question,
+                    type =
+                        type,
+                    options =
+                        options
+                )
+            }
+            ?: emptyList()
+    }
+
+    private fun Mission.toFirestoreMap():
+            Map<String, Any?> {
+
+        return mapOf(
+            "name" to
+                    name,
+
+            "scheduledAt" to
+                    scheduledAt
+                        .toTimestamp(),
+
+            "description" to
+                    description,
+
+            "movement" to
+                    movement.name,
+
+            "customMovementName" to
+                    customMovementName,
+
+            "participatingChurchIds" to
+                    participatingChurchIds,
+
+            "activities" to
+                    activities
+                        .map {
+                            it.name
+                        },
+
+            "customActivityName" to
+                    customActivityName,
+
+            "materials" to
+                    materials
+                        .map {
+                            it.name
+                        },
+
+            "customMaterialName" to
+                    customMaterialName,
+
+            "surveyQuestions" to
+                    surveyQuestions
+                        .map { question ->
+
+                            mapOf(
+                                "id" to
+                                        question.id,
+
+                                "question" to
+                                        question.question,
+
+                                "type" to
+                                        question.type.name,
+
+                                "options" to
+                                        question.options
+                            )
+                        },
+
+            "status" to
+                    status.name,
+
+            "createdBy" to
+                    createdBy,
+
+            "creatorRole" to
+                    creatorRole.name,
+
+            "creatorChurchId" to
+                    creatorChurchId,
+
+            "creatorDistrictId" to
+                    creatorDistrictId,
+
+            "photoUrl" to
+                    photoUrl,
+
+            "totalDurationMinutes" to
+                    totalDurationMinutes
+        )
+    }
+
+    private fun LocalDateTime.toTimestamp():
+            Timestamp {
+
         val instant =
             atZone(
                 ZoneId.systemDefault()
-            ).toInstant()
+            )
+                .toInstant()
 
         return Timestamp(
             instant.epochSecond,
@@ -252,4 +473,6 @@ class FirestoreMissionRepository @Inject constructor(
             )
             .toLocalDateTime()
     }
+
+
 }

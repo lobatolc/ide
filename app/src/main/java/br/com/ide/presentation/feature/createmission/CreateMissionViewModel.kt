@@ -2,6 +2,11 @@ package br.com.ide.presentation.feature.createmission
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.ide.R
+import br.com.ide.domain.usecase.CreateMissionUseCase
+import br.com.ide.domain.usecase.GetCurrentUserProfileUseCase
+import br.com.ide.presentation.components.snackbar.IdeSnackbarManager
+import br.com.ide.presentation.components.snackbar.IdeSnackbarMessage
 import br.com.ide.presentation.feature.createmission.actions.ActionsEventHandler
 import br.com.ide.presentation.feature.createmission.actions.ActionsStepValidator
 import br.com.ide.presentation.feature.createmission.general.GeneralEventHandler
@@ -22,6 +27,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import br.com.ide.presentation.components.snackbar.IdeSnackbarType
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 @HiltViewModel
 class CreateMissionViewModel @Inject constructor(
@@ -85,9 +94,21 @@ class CreateMissionViewModel @Inject constructor(
     CreateMissionNavigationReducer,
 
     private val subScreenReducer:
-    CreateMissionSubScreenReducer
+    CreateMissionSubScreenReducer,
 
-) : ViewModel() {
+    private val createMissionMapper:
+    CreateMissionMapper,
+
+    private val createMissionUseCase:
+    CreateMissionUseCase,
+
+    private val getCurrentUserProfileUseCase:
+    GetCurrentUserProfileUseCase,
+    private val snackbarManager:
+    IdeSnackbarManager,
+
+
+    ) : ViewModel() {
 
     private val _uiState =
         MutableStateFlow(
@@ -97,6 +118,13 @@ class CreateMissionViewModel @Inject constructor(
     val uiState:
             StateFlow<CreateMissionUiState> =
         _uiState.asStateFlow()
+
+    private val _effects =
+        MutableSharedFlow<CreateMissionEffect>()
+
+    val effects:
+            SharedFlow<CreateMissionEffect> =
+        _effects.asSharedFlow()
 
     // =========================================================
     // Eventos
@@ -206,6 +234,15 @@ class CreateMissionViewModel @Inject constructor(
             // -------------------------------------------------
 
             is CreateMissionEvent.Summary -> {
+
+                if (
+                    event ==
+                    CreateMissionEvent.CreateMission
+                ) {
+
+                    createMission()
+                    return
+                }
 
                 _uiState.update { state ->
 
@@ -625,4 +662,101 @@ class CreateMissionViewModel @Inject constructor(
             }
         }
     }
+
+    // =========================================================
+// Criação da missão
+// =========================================================
+
+    private fun createMission() {
+
+        if (
+            _uiState.value.isLoading
+        ) {
+            return
+        }
+
+        viewModelScope.launch {
+
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    errorMessage = null
+                )
+            }
+
+            val userProfile =
+                getCurrentUserProfileUseCase()
+                    .getOrElse {
+
+                        _uiState.update { state ->
+                            state.copy(
+                                isLoading = false
+                            )
+                        }
+
+                        snackbarManager.show(
+                            IdeSnackbarMessage(
+                                messageRes =
+                                    R.string.create_mission_user_error,
+                                type =
+                                    IdeSnackbarType.ERROR
+                            )
+                        )
+
+                        return@launch
+                    }
+
+            val mission =
+                createMissionMapper.map(
+                    state = _uiState.value,
+                    createdBy = userProfile.id
+                )
+
+            createMissionUseCase(
+                mission
+            )
+                .onSuccess { missionId ->
+
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    snackbarManager.show(
+                        IdeSnackbarMessage(
+                            messageRes =
+                                R.string.create_mission_success,
+                            type =
+                                IdeSnackbarType.SUCCESS
+                        )
+                    )
+
+                    _effects.emit(
+                        CreateMissionEffect.MissionCreated(
+                            missionId = missionId
+                        )
+                    )
+                }
+                .onFailure {
+
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    snackbarManager.show(
+                        IdeSnackbarMessage(
+                            messageRes =
+                                R.string.create_mission_error,
+                            type =
+                                IdeSnackbarType.ERROR
+                        )
+                    )
+                }
+        }
+    }
+
+
 }

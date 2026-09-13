@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.ide.R
 import br.com.ide.domain.model.Mission
-import br.com.ide.domain.model.MissionStatus
 import br.com.ide.domain.usecase.GetCurrentUserProfileUseCase
 import br.com.ide.domain.usecase.GetMissionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,23 +16,38 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getMissionsUseCase: GetMissionsUseCase,
+    private val getMissionsUseCase:
+    GetMissionsUseCase,
+
     private val getCurrentUserProfileUseCase:
     GetCurrentUserProfileUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> =
+    private val _uiState =
+        MutableStateFlow(
+            HomeUiState()
+        )
+
+    val uiState:
+            StateFlow<HomeUiState> =
         _uiState.asStateFlow()
 
-    private var allMissions: List<Mission> = emptyList()
+    private var allMissions:
+            List<Mission> =
+        emptyList()
 
     init {
         loadUserProfile()
-        onEvent(HomeEvent.LoadMissions)
+
+        onEvent(
+            HomeEvent.LoadMissions
+        )
     }
 
-    fun onEvent(event: HomeEvent) {
+    fun onEvent(
+        event: HomeEvent
+    ) {
+
         when (event) {
 
             HomeEvent.LoadMissions -> {
@@ -41,9 +55,11 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeEvent.SearchChanged -> {
+
                 _uiState.update {
                     it.copy(
-                        searchQuery = event.query
+                        searchQuery =
+                            event.query
                     )
                 }
 
@@ -51,9 +67,11 @@ class HomeViewModel @Inject constructor(
             }
 
             is HomeEvent.StatusSelected -> {
+
                 _uiState.update {
                     it.copy(
-                        selectedStatus = event.status
+                        selectedStatus =
+                            event.status
                     )
                 }
 
@@ -67,33 +85,43 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadMissions() {
+
         viewModelScope.launch {
 
             _uiState.update {
                 it.copy(
-                    isLoading = true,
-                    errorMessage = null
+                    isLoading =
+                        true,
+                    errorMessage =
+                        null
                 )
             }
 
             try {
-                val missions = getMissionsUseCase()
 
-                allMissions = missions
+                val missions =
+                    getMissionsUseCase()
+
+                allMissions =
+                    missions
 
                 _uiState.update {
                     it.copy(
-                        isLoading = false
+                        isLoading =
+                            false
                     )
                 }
 
                 applyFilters()
 
-            } catch (exception: Exception) {
+            } catch (
+                exception: Exception
+            ) {
 
                 _uiState.update {
                     it.copy(
-                        isLoading = false,
+                        isLoading =
+                            false,
                         errorMessage =
                             R.string.home_loading_error
                     )
@@ -104,40 +132,66 @@ class HomeViewModel @Inject constructor(
 
     private fun applyFilters() {
 
-        val state = _uiState.value
+        val state =
+            _uiState.value
 
-        val filteredMissions = allMissions
-            .filter { mission ->
+        val query =
+            state.searchQuery
+                .trim()
 
-                val matchesSearch =
-                    state.searchQuery.isBlank() ||
-                            mission.name.contains(
-                                state.searchQuery,
-                                ignoreCase = true
-                            ) ||
-                            mission.address.contains(
-                                state.searchQuery,
-                                ignoreCase = true
-                            )
+        val filteredMissions =
+            allMissions
+                .filter { mission ->
 
-                val matchesStatus =
-                    state.selectedStatus == null ||
-                            mission.status == state.selectedStatus
+                    val matchesSearch =
+                        query.isBlank() ||
+                                mission.name.contains(
+                                    query,
+                                    ignoreCase = true
+                                ) ||
+                                mission.description.contains(
+                                    query,
+                                    ignoreCase = true
+                                ) ||
+                                mission.customMovementName
+                                    ?.contains(
+                                        query,
+                                        ignoreCase = true
+                                    ) == true ||
+                                mission.customActivityName
+                                    ?.contains(
+                                        query,
+                                        ignoreCase = true
+                                    ) == true ||
+                                mission.customMaterialName
+                                    ?.contains(
+                                        query,
+                                        ignoreCase = true
+                                    ) == true
 
-                matchesSearch && matchesStatus
-            }
-            .sortedBy { mission ->
-                mission.scheduledAt
-            }
+                    val matchesStatus =
+                        state.selectedStatus ==
+                                null ||
+                                mission.status ==
+                                state.selectedStatus
+
+                    matchesSearch &&
+                            matchesStatus
+                }
+                .sortedBy { mission ->
+                    mission.scheduledAt
+                }
 
         _uiState.update {
             it.copy(
-                missions = filteredMissions
+                missions =
+                    filteredMissions
             )
         }
     }
 
     private fun loadUserProfile() {
+
         viewModelScope.launch {
 
             getCurrentUserProfileUseCase()
@@ -145,8 +199,10 @@ class HomeViewModel @Inject constructor(
 
                     _uiState.update {
                         it.copy(
-                            userName = user.firstName,
-                            userRole = user.role
+                            userName =
+                                user.firstName,
+                            userRole =
+                                user.role
                         )
                     }
                 }

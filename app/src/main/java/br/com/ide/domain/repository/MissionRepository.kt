@@ -12,7 +12,7 @@ interface MissionRepository {
 
     suspend fun createMission(
         mission: Mission
-    ): Result<Unit>
+    ): Result<String>
 
     suspend fun updateMission(
         mission: Mission
