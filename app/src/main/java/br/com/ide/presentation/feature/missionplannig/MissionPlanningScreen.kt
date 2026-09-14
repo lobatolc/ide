@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.LocationOn
@@ -22,17 +23,26 @@ import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.ide.R
 import br.com.ide.presentation.components.IdeBackButton
 import br.com.ide.presentation.components.IdeScreenSubtitle
@@ -41,6 +51,99 @@ import br.com.ide.presentation.components.IdeScreenTitle
 @Composable
 fun MissionPlanningScreen(
     missionId: String,
+    onBackClick: () -> Unit,
+    onLocationsClick: () -> Unit,
+    viewModel: MissionPlanningViewModel =
+        hiltViewModel()
+) {
+
+    val uiState by
+    viewModel.uiState
+        .collectAsStateWithLifecycle()
+
+    val lifecycleOwner =
+        LocalLifecycleOwner.current
+
+    LaunchedEffect(
+        missionId
+    ) {
+
+        viewModel.load(
+            missionId
+        )
+    }
+
+    // Atualiza a missão ao voltar da tela de Locais.
+    DisposableEffect(
+        lifecycleOwner,
+        missionId
+    ) {
+
+        val observer =
+            LifecycleEventObserver {
+                    _,
+                    event ->
+
+                if (
+                    event ==
+                    Lifecycle.Event.ON_RESUME
+                ) {
+
+                    viewModel.refresh(
+                        missionId
+                    )
+                }
+            }
+
+        lifecycleOwner.lifecycle
+            .addObserver(
+                observer
+            )
+
+        onDispose {
+
+            lifecycleOwner.lifecycle
+                .removeObserver(
+                    observer
+                )
+        }
+    }
+
+    if (
+        uiState.isLoading &&
+        uiState.missionName.isBlank()
+    ) {
+
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding(),
+            verticalArrangement =
+                Arrangement.Center,
+            horizontalAlignment =
+                Alignment.CenterHorizontally
+        ) {
+
+            CircularProgressIndicator()
+        }
+
+        return
+    }
+
+    MissionPlanningContent(
+        uiState =
+            uiState,
+        onBackClick =
+            onBackClick,
+        onLocationsClick =
+            onLocationsClick
+    )
+}
+
+@Composable
+private fun MissionPlanningContent(
+    uiState: MissionPlanningUiState,
     onBackClick: () -> Unit,
     onLocationsClick: () -> Unit
 ) {
@@ -109,9 +212,11 @@ fun MissionPlanningScreen(
 
                 IdeScreenSubtitle(
                     text =
-                        stringResource(
-                            R.string.mission_planning_subtitle
-                        )
+                        uiState.missionName.ifBlank {
+                            stringResource(
+                                R.string.mission_planning_subtitle
+                            )
+                        }
                 )
             }
         }
@@ -124,7 +229,7 @@ fun MissionPlanningScreen(
         )
 
         // =====================================================
-        // Card principal
+        // Destaque
         // =====================================================
 
         PlanningHeroCard()
@@ -139,7 +244,8 @@ fun MissionPlanningScreen(
         Text(
             text =
                 stringResource(
-                    R.string.mission_planning_configuration_title
+                    R.string
+                        .mission_planning_configuration_title
                 ),
             style =
                 MaterialTheme
@@ -163,7 +269,8 @@ fun MissionPlanningScreen(
         Text(
             text =
                 stringResource(
-                    R.string.mission_planning_configuration_description
+                    R.string
+                        .mission_planning_configuration_description
                 ),
             style =
                 MaterialTheme
@@ -186,27 +293,12 @@ fun MissionPlanningScreen(
         // Locais
         // =====================================================
 
-        PlanningOptionCard(
-            icon =
-                Icons.Outlined.LocationOn,
+        LocationsPlanningCard(
+            hasDepartureLocation =
+                uiState.hasDepartureLocation,
 
-            title =
-                stringResource(
-                    R.string.mission_planning_locations_title
-                ),
-
-            description =
-                stringResource(
-                    R.string.mission_planning_locations_description
-                ),
-
-            badge =
-                stringResource(
-                    R.string.mission_planning_required
-                ),
-
-            enabled =
-                true,
+            hasReturnLocation =
+                uiState.hasReturnLocation,
 
             onClick =
                 onLocationsClick
@@ -229,17 +321,20 @@ fun MissionPlanningScreen(
 
             title =
                 stringResource(
-                    R.string.mission_planning_groups_title
+                    R.string
+                        .mission_planning_groups_title
                 ),
 
             description =
                 stringResource(
-                    R.string.mission_planning_groups_description
+                    R.string
+                        .mission_planning_groups_description
                 ),
 
             badge =
                 stringResource(
-                    R.string.mission_planning_optional
+                    R.string
+                        .mission_planning_optional
                 ),
 
             enabled =
@@ -256,7 +351,7 @@ fun MissionPlanningScreen(
         )
 
         // =====================================================
-        // Área de atuação
+        // Área
         // =====================================================
 
         PlanningOptionCard(
@@ -265,17 +360,20 @@ fun MissionPlanningScreen(
 
             title =
                 stringResource(
-                    R.string.mission_planning_area_title
+                    R.string
+                        .mission_planning_area_title
                 ),
 
             description =
                 stringResource(
-                    R.string.mission_planning_area_description
+                    R.string
+                        .mission_planning_area_description
                 ),
 
             badge =
                 stringResource(
-                    R.string.mission_planning_optional
+                    R.string
+                        .mission_planning_optional
                 ),
 
             enabled =
@@ -291,10 +389,6 @@ fun MissionPlanningScreen(
                 )
         )
 
-        // =====================================================
-        // Informação
-        // =====================================================
-
         PlanningInfoCard()
 
         Spacer(
@@ -302,6 +396,280 @@ fun MissionPlanningScreen(
                 Modifier.height(
                     24.dp
                 )
+        )
+    }
+}
+
+@Composable
+private fun LocationsPlanningCard(
+    hasDepartureLocation: Boolean,
+    hasReturnLocation: Boolean,
+    onClick: () -> Unit
+) {
+
+    Card(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(
+                    onClick =
+                        onClick
+                ),
+        shape =
+            RoundedCornerShape(
+                22.dp
+            ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    MaterialTheme
+                        .colorScheme
+                        .surface
+            ),
+        elevation =
+            CardDefaults.cardElevation(
+                defaultElevation =
+                    2.dp
+            )
+    ) {
+
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        18.dp
+                    ),
+            verticalAlignment =
+                Alignment.CenterVertically,
+            horizontalArrangement =
+                Arrangement.spacedBy(
+                    16.dp
+                )
+        ) {
+
+            Surface(
+                shape =
+                    RoundedCornerShape(
+                        16.dp
+                    ),
+                color =
+                    if (
+                        hasDepartureLocation
+                    ) {
+                        MaterialTheme
+                            .colorScheme
+                            .primaryContainer
+                    } else {
+                        MaterialTheme
+                            .colorScheme
+                            .surfaceVariant
+                    }
+            ) {
+
+                Icon(
+                    imageVector =
+                        if (
+                            hasDepartureLocation
+                        ) {
+                            Icons.Outlined.CheckCircle
+                        } else {
+                            Icons.Outlined.LocationOn
+                        },
+                    contentDescription =
+                        null,
+                    tint =
+                        if (
+                            hasDepartureLocation
+                        ) {
+                            MaterialTheme
+                                .colorScheme
+                                .primary
+                        } else {
+                            MaterialTheme
+                                .colorScheme
+                                .onSurfaceVariant
+                        },
+                    modifier =
+                        Modifier
+                            .padding(
+                                12.dp
+                            )
+                            .size(
+                                26.dp
+                            )
+                )
+            }
+
+            Column(
+                modifier =
+                    Modifier.weight(
+                        1f
+                    )
+            ) {
+
+                Row(
+                    verticalAlignment =
+                        Alignment.CenterVertically,
+                    horizontalArrangement =
+                        Arrangement.spacedBy(
+                            8.dp
+                        )
+                ) {
+
+                    Text(
+                        text =
+                            stringResource(
+                                R.string
+                                    .mission_planning_locations_title
+                            ),
+                        style =
+                            MaterialTheme
+                                .typography
+                                .titleMedium,
+                        fontWeight =
+                            FontWeight.SemiBold
+                    )
+
+                    PlanningBadge(
+                        text =
+                            stringResource(
+                                R.string
+                                    .mission_planning_required
+                            )
+                    )
+                }
+
+                Spacer(
+                    modifier =
+                        Modifier.height(
+                            8.dp
+                        )
+                )
+
+                PlanningLocationStatus(
+                    completed =
+                        hasDepartureLocation,
+                    text =
+                        if (
+                            hasDepartureLocation
+                        ) {
+                            stringResource(
+                                R.string
+                                    .mission_planning_departure_defined
+                            )
+                        } else {
+                            stringResource(
+                                R.string
+                                    .mission_planning_departure_not_defined
+                            )
+                        }
+                )
+
+                Spacer(
+                    modifier =
+                        Modifier.height(
+                            5.dp
+                        )
+                )
+
+                PlanningLocationStatus(
+                    completed =
+                        hasReturnLocation,
+                    text =
+                        if (
+                            hasReturnLocation
+                        ) {
+                            stringResource(
+                                R.string
+                                    .mission_planning_return_defined
+                            )
+                        } else {
+                            stringResource(
+                                R.string
+                                    .mission_planning_return_not_defined
+                            )
+                        }
+                )
+            }
+
+            Icon(
+                imageVector =
+                    Icons.Outlined.ChevronRight,
+                contentDescription =
+                    null,
+                tint =
+                    MaterialTheme
+                        .colorScheme
+                        .onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlanningLocationStatus(
+    completed: Boolean,
+    text: String
+) {
+
+    Row(
+        verticalAlignment =
+            Alignment.CenterVertically,
+        horizontalArrangement =
+            Arrangement.spacedBy(
+                7.dp
+            )
+    ) {
+
+        Icon(
+            imageVector =
+                if (
+                    completed
+                ) {
+                    Icons.Outlined.CheckCircle
+                } else {
+                    Icons.Outlined.LocationOn
+                },
+            contentDescription =
+                null,
+            modifier =
+                Modifier.size(
+                    17.dp
+                ),
+            tint =
+                if (
+                    completed
+                ) {
+                    MaterialTheme
+                        .colorScheme
+                        .primary
+                } else {
+                    MaterialTheme
+                        .colorScheme
+                        .onSurfaceVariant
+                }
+        )
+
+        Text(
+            text =
+                text,
+            style =
+                MaterialTheme
+                    .typography
+                    .bodyMedium,
+            color =
+                if (
+                    completed
+                ) {
+                    MaterialTheme
+                        .colorScheme
+                        .primary
+                } else {
+                    MaterialTheme
+                        .colorScheme
+                        .onSurfaceVariant
+                }
         )
     }
 }
@@ -375,18 +743,15 @@ private fun PlanningHeroCard() {
             Text(
                 text =
                     stringResource(
-                        R.string.mission_planning_hero_title
+                        R.string
+                            .mission_planning_hero_title
                     ),
                 style =
                     MaterialTheme
                         .typography
                         .titleLarge,
                 fontWeight =
-                    FontWeight.Bold,
-                color =
-                    MaterialTheme
-                        .colorScheme
-                        .onPrimaryContainer
+                    FontWeight.Bold
             )
 
             Spacer(
@@ -399,16 +764,13 @@ private fun PlanningHeroCard() {
             Text(
                 text =
                     stringResource(
-                        R.string.mission_planning_hero_description
+                        R.string
+                            .mission_planning_hero_description
                     ),
                 style =
                     MaterialTheme
                         .typography
-                        .bodyMedium,
-                color =
-                    MaterialTheme
-                        .colorScheme
-                        .onPrimaryContainer
+                        .bodyMedium
             )
         }
     }
@@ -430,10 +792,10 @@ private fun PlanningOptionCard(
                 .fillMaxWidth()
                 .clickable(
                     enabled =
-                        enabled
-                ) {
-                    onClick()
-                },
+                        enabled,
+                    onClick =
+                        onClick
+                ),
         shape =
             RoundedCornerShape(
                 22.dp
@@ -444,17 +806,6 @@ private fun PlanningOptionCard(
                     MaterialTheme
                         .colorScheme
                         .surface
-            ),
-        elevation =
-            CardDefaults.cardElevation(
-                defaultElevation =
-                    if (
-                        enabled
-                    ) {
-                        2.dp
-                    } else {
-                        0.dp
-                    }
             )
     ) {
 
@@ -528,11 +879,7 @@ private fun PlanningOptionCard(
                                 .typography
                                 .titleMedium,
                         fontWeight =
-                            FontWeight.SemiBold,
-                        color =
-                            MaterialTheme
-                                .colorScheme
-                                .onSurface
+                            FontWeight.SemiBold
                     )
 
                     PlanningBadge(
@@ -575,7 +922,8 @@ private fun PlanningOptionCard(
                     Text(
                         text =
                             stringResource(
-                                R.string.mission_planning_coming_soon
+                                R.string
+                                    .mission_planning_coming_soon
                             ),
                         style =
                             MaterialTheme
@@ -587,22 +935,6 @@ private fun PlanningOptionCard(
                                 .primary
                     )
                 }
-            }
-
-            if (
-                enabled
-            ) {
-
-                Icon(
-                    imageVector =
-                        Icons.Outlined.ChevronRight,
-                    contentDescription =
-                        null,
-                    tint =
-                        MaterialTheme
-                            .colorScheme
-                            .onSurfaceVariant
-                )
             }
         }
     }
@@ -665,7 +997,8 @@ private fun PlanningInfoCard() {
         Text(
             text =
                 stringResource(
-                    R.string.mission_planning_edit_until_start
+                    R.string
+                        .mission_planning_edit_until_start
                 ),
             style =
                 MaterialTheme

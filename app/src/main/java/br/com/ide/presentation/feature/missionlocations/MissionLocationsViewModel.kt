@@ -11,6 +11,7 @@ import br.com.ide.presentation.components.snackbar.IdeSnackbarManager
 import br.com.ide.presentation.components.snackbar.IdeSnackbarMessage
 import br.com.ide.presentation.components.snackbar.IdeSnackbarType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,6 +45,10 @@ class MissionLocationsViewModel @Inject constructor(
 
     private var loadedMissionId:
             String? =
+        null
+
+    private var geocodingJob:
+            Job? =
         null
 
     // =========================================================
@@ -119,6 +124,9 @@ class MissionLocationsViewModel @Inject constructor(
                         isLoading =
                             false,
 
+                        isGeocoding =
+                            false,
+
                         errorMessage =
                             null
                     )
@@ -132,6 +140,10 @@ class MissionLocationsViewModel @Inject constructor(
                     it.copy(
                         isLoading =
                             false,
+
+                        isGeocoding =
+                            false,
+
                         errorMessage =
                             R.string
                                 .mission_locations_loading_error
@@ -167,6 +179,7 @@ class MissionLocationsViewModel @Inject constructor(
                 selectLocation(
                     latitude =
                         event.latitude,
+
                     longitude =
                         event.longitude
                 )
@@ -193,10 +206,16 @@ class MissionLocationsViewModel @Inject constructor(
         type: MissionLocationType
     ) {
 
+        geocodingJob?.cancel()
+
         _uiState.update {
             it.copy(
                 selectedLocationType =
                     type,
+
+                isGeocoding =
+                    false,
+
                 errorMessage =
                     null
             )
@@ -216,64 +235,100 @@ class MissionLocationsViewModel @Inject constructor(
             _uiState.value
                 .selectedLocationType
 
-        viewModelScope.launch {
+        // Cancela uma busca anterior caso o usuário
+        // toque rapidamente em outro ponto do mapa.
+        geocodingJob?.cancel()
 
-            val geocodedAddress =
-                reverseGeocodeUseCase(
-                    latitude =
-                        latitude,
-                    longitude =
-                        longitude
-                )
-                    .getOrNull()
+        geocodingJob =
+            viewModelScope.launch {
 
-            val location =
-                MissionLocation(
-                    name =
-                        geocodedAddress
-                            ?.name
-                            .orEmpty(),
+                _uiState.update {
+                    it.copy(
+                        isGeocoding =
+                            true,
 
-                    address =
-                        geocodedAddress
-                            ?.address
-                            .orEmpty(),
+                        errorMessage =
+                            null
+                    )
+                }
 
-                    latitude =
-                        latitude,
+                try {
 
-                    longitude =
-                        longitude
-                )
+                    val geocodedAddress =
+                        reverseGeocodeUseCase(
+                            latitude =
+                                latitude,
 
-            _uiState.update { state ->
-
-                when (
-                    selectedType
-                ) {
-
-                    MissionLocationType.DEPARTURE -> {
-
-                        state.copy(
-                            departureLocation =
-                                location,
-                            errorMessage =
-                                null
+                            longitude =
+                                longitude
                         )
+                            .getOrNull()
+
+                    val location =
+                        MissionLocation(
+                            name =
+                                geocodedAddress
+                                    ?.name
+                                    .orEmpty(),
+
+                            address =
+                                geocodedAddress
+                                    ?.address
+                                    .orEmpty(),
+
+                            latitude =
+                                latitude,
+
+                            longitude =
+                                longitude
+                        )
+
+                    _uiState.update { state ->
+
+                        when (
+                            selectedType
+                        ) {
+
+                            MissionLocationType.DEPARTURE -> {
+
+                                state.copy(
+                                    departureLocation =
+                                        location,
+
+                                    isGeocoding =
+                                        false,
+
+                                    errorMessage =
+                                        null
+                                )
+                            }
+
+                            MissionLocationType.RETURN -> {
+
+                                state.copy(
+                                    returnLocation =
+                                        location,
+
+                                    isGeocoding =
+                                        false,
+
+                                    errorMessage =
+                                        null
+                                )
+                            }
+                        }
                     }
 
-                    MissionLocationType.RETURN -> {
+                } finally {
 
-                        state.copy(
-                            returnLocation =
-                                location,
-                            errorMessage =
-                                null
+                    _uiState.update {
+                        it.copy(
+                            isGeocoding =
+                                false
                         )
                     }
                 }
             }
-        }
     }
 
     // =========================================================
@@ -282,12 +337,19 @@ class MissionLocationsViewModel @Inject constructor(
 
     private fun removeReturnLocation() {
 
+        geocodingJob?.cancel()
+
         _uiState.update {
             it.copy(
                 returnLocation =
                     null,
+
                 selectedLocationType =
                     MissionLocationType.DEPARTURE,
+
+                isGeocoding =
+                    false,
+
                 errorMessage =
                     null
             )
@@ -304,7 +366,8 @@ class MissionLocationsViewModel @Inject constructor(
             _uiState.value
 
         if (
-            state.isSaving
+            state.isSaving ||
+            state.isGeocoding
         ) {
             return
         }
@@ -340,6 +403,7 @@ class MissionLocationsViewModel @Inject constructor(
                 it.copy(
                     isSaving =
                         true,
+
                     errorMessage =
                         null
                 )
@@ -361,6 +425,7 @@ class MissionLocationsViewModel @Inject constructor(
                         it.copy(
                             isSaving =
                                 false,
+
                             isSaved =
                                 true
                         )
@@ -371,6 +436,7 @@ class MissionLocationsViewModel @Inject constructor(
                             messageRes =
                                 R.string
                                     .mission_locations_save_success,
+
                             type =
                                 IdeSnackbarType.SUCCESS
                         )
@@ -390,11 +456,19 @@ class MissionLocationsViewModel @Inject constructor(
                             messageRes =
                                 R.string
                                     .mission_locations_save_error,
+
                             type =
                                 IdeSnackbarType.ERROR
                         )
                     )
                 }
         }
+    }
+
+    override fun onCleared() {
+
+        geocodingJob?.cancel()
+
+        super.onCleared()
     }
 }

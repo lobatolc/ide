@@ -22,6 +22,7 @@ data class MissionLocationsUiState(
 
     // Controle
     val isLoading: Boolean = false,
+    val isGeocoding: Boolean = false,
     val isSaving: Boolean = false,
     val isSaved: Boolean = false,
 

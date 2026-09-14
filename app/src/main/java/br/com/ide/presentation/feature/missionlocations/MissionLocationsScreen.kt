@@ -478,6 +478,66 @@ private fun MissionLocationsContent(
                         }
                     )
                 }
+
+                if (
+                    uiState.isGeocoding
+                ) {
+
+                    Spacer(
+                        modifier =
+                            Modifier.height(
+                                14.dp
+                            )
+                    )
+
+                    Row(
+                        modifier =
+                            Modifier.fillMaxWidth(),
+                        verticalAlignment =
+                            Alignment.CenterVertically,
+                        horizontalArrangement =
+                            Arrangement.Center
+                    ) {
+
+                        CircularProgressIndicator(
+                            modifier =
+                                Modifier.size(
+                                    18.dp
+                                ),
+                            strokeWidth =
+                                2.dp,
+                            color =
+                                MaterialTheme
+                                    .colorScheme
+                                    .primary
+                        )
+
+                        Spacer(
+                            modifier =
+                                Modifier.size(
+                                    10.dp
+                                )
+                        )
+
+                        Text(
+                            text =
+                                stringResource(
+                                    R.string
+                                        .mission_locations_geocoding
+                                ),
+                            style =
+                                MaterialTheme
+                                    .typography
+                                    .bodyMedium,
+                            color =
+                                MaterialTheme
+                                    .colorScheme
+                                    .primary,
+                            fontWeight =
+                                FontWeight.Medium
+                        )
+                    }
+                }
             }
         }
 
@@ -641,7 +701,8 @@ private fun MissionLocationsContent(
                 isLoading =
                     uiState.isSaving,
                 enabled =
-                    !uiState.isSaving,
+                    !uiState.isSaving &&
+                            !uiState.isGeocoding,
                 modifier =
                     Modifier.fillMaxWidth()
             )
@@ -1044,7 +1105,8 @@ private fun LocationCard(
                     val locationName =
                         location.name.ifBlank {
                             stringResource(
-                                R.string.mission_locations_selected_location
+                                R.string
+                                    .mission_locations_selected_location
                             )
                         }
 

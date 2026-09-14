@@ -667,4 +667,11 @@
     <string name="mission_locations_defined_subtitle">Confira os pontos configurados para a missão.</string>
 
     <string name="mission_locations_selected_location">Local selecionado</string>
+
+    <string name="mission_locations_geocoding">Buscando endereço...</string>
+
+    <string name="mission_planning_departure_defined">Saída definida</string>
+    <string name="mission_planning_departure_not_defined">Saída ainda não definida</string>
+    <string name="mission_planning_return_defined">Retorno definido</string>
+    <string name="mission_planning_return_not_defined">Retorno opcional não definido</string>
 </resources>
