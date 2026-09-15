@@ -27,7 +27,8 @@ data class Mission(
     // Planejamento
     val departureLocation: MissionLocation? = null,
     val returnLocation: MissionLocation? = null,
-
+    val groups: List<MissionGroup> = emptyList(),
+    val area: MissionArea? = null,
     // Pesquisa
     val surveyQuestions: List<MissionSurveyQuestion> = emptyList(),
 
@@ -42,4 +43,6 @@ data class Mission(
     // Dados preenchidos posteriormente
     val photoUrl: String? = null,
     val totalDurationMinutes: Long? = null
+
+
 )

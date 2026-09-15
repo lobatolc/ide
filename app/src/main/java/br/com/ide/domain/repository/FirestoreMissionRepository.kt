@@ -2,6 +2,9 @@ package br.com.ide.data.repository
 
 import br.com.ide.domain.model.Mission
 import br.com.ide.domain.model.MissionActivityType
+import br.com.ide.domain.model.MissionArea
+import br.com.ide.domain.model.MissionCoordinate
+import br.com.ide.domain.model.MissionGroup
 import br.com.ide.domain.model.MissionLocation
 import br.com.ide.domain.model.MissionMaterialType
 import br.com.ide.domain.model.MissionMovement
@@ -23,6 +26,10 @@ class FirestoreMissionRepository @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : MissionRepository {
 
+    // =========================================================
+    // Buscar missões
+    // =========================================================
+
     override suspend fun getMissions(): List<Mission> {
 
         return firestore
@@ -35,6 +42,10 @@ class FirestoreMissionRepository @Inject constructor(
             }
     }
 
+    // =========================================================
+    // Buscar missão por ID
+    // =========================================================
+
     override suspend fun getMissionById(
         missionId: String
     ): Mission? {
@@ -42,7 +53,9 @@ class FirestoreMissionRepository @Inject constructor(
         val document =
             firestore
                 .collection("missions")
-                .document(missionId)
+                .document(
+                    missionId
+                )
                 .get()
                 .await()
 
@@ -55,6 +68,10 @@ class FirestoreMissionRepository @Inject constructor(
         return document.toMission()
     }
 
+    // =========================================================
+    // Criar missão
+    // =========================================================
+
     override suspend fun createMission(
         mission: Mission
     ): Result<String> {
@@ -65,10 +82,13 @@ class FirestoreMissionRepository @Inject constructor(
                 if (
                     mission.id.isBlank()
                 ) {
+
                     firestore
                         .collection("missions")
                         .document()
+
                 } else {
+
                     firestore
                         .collection("missions")
                         .document(
@@ -95,6 +115,10 @@ class FirestoreMissionRepository @Inject constructor(
             )
         }
     }
+
+    // =========================================================
+    // Atualizar missão completa
+    // =========================================================
 
     override suspend fun updateMission(
         mission: Mission
@@ -126,6 +150,10 @@ class FirestoreMissionRepository @Inject constructor(
         }
     }
 
+    // =========================================================
+    // Atualizar locais
+    // =========================================================
+
     override suspend fun updateMissionLocations(
         missionId: String,
         departureLocation: MissionLocation,
@@ -136,7 +164,9 @@ class FirestoreMissionRepository @Inject constructor(
 
             firestore
                 .collection("missions")
-                .document(missionId)
+                .document(
+                    missionId
+                )
                 .update(
                     mapOf(
                         "departureLocation" to
@@ -147,6 +177,80 @@ class FirestoreMissionRepository @Inject constructor(
                                 returnLocation
                                     ?.toFirestoreMap()
                     )
+                )
+                .await()
+
+            Result.success(
+                Unit
+            )
+
+        } catch (
+            exception: Exception
+        ) {
+
+            Result.failure(
+                exception
+            )
+        }
+    }
+
+    // =========================================================
+    // Atualizar grupos
+    // =========================================================
+
+    override suspend fun updateMissionGroups(
+        missionId: String,
+        groups: List<MissionGroup>
+    ): Result<Unit> {
+
+        return try {
+
+            firestore
+                .collection("missions")
+                .document(
+                    missionId
+                )
+                .update(
+                    "groups",
+                    groups.map { group ->
+                        group.toFirestoreMap()
+                    }
+                )
+                .await()
+
+            Result.success(
+                Unit
+            )
+
+        } catch (
+            exception: Exception
+        ) {
+
+            Result.failure(
+                exception
+            )
+        }
+    }
+
+    // =========================================================
+    // Atualizar área
+    // =========================================================
+
+    override suspend fun updateMissionArea(
+        missionId: String,
+        area: MissionArea?
+    ): Result<Unit> {
+
+        return try {
+
+            firestore
+                .collection("missions")
+                .document(
+                    missionId
+                )
+                .update(
+                    "area",
+                    area?.toFirestoreMap()
                 )
                 .await()
 
@@ -181,11 +285,14 @@ class FirestoreMissionRepository @Inject constructor(
             getString(
                 "status"
             )
-                ?.let {
+                ?.let { value ->
+
                     runCatching {
+
                         MissionStatus.valueOf(
-                            it
+                            value
                         )
+
                     }.getOrNull()
                 }
                 ?: return null
@@ -194,11 +301,14 @@ class FirestoreMissionRepository @Inject constructor(
             getString(
                 "movement"
             )
-                ?.let {
+                ?.let { value ->
+
                     runCatching {
+
                         MissionMovement.valueOf(
-                            it
+                            value
                         )
+
                     }.getOrNull()
                 }
                 ?: return null
@@ -207,11 +317,14 @@ class FirestoreMissionRepository @Inject constructor(
             getString(
                 "creatorRole"
             )
-                ?.let {
+                ?.let { value ->
+
                     runCatching {
+
                         UserRole.valueOf(
-                            it
+                            value
                         )
+
                     }.getOrNull()
                 }
                 ?: return null
@@ -223,9 +336,11 @@ class FirestoreMissionRepository @Inject constructor(
                 .mapNotNull { value ->
 
                     runCatching {
+
                         MissionActivityType.valueOf(
                             value
                         )
+
                     }.getOrNull()
                 }
 
@@ -236,16 +351,25 @@ class FirestoreMissionRepository @Inject constructor(
                 .mapNotNull { value ->
 
                     runCatching {
+
                         MissionMaterialType.valueOf(
                             value
                         )
+
                     }.getOrNull()
                 }
 
         val surveyQuestions =
             readSurveyQuestions()
 
+        val groups =
+            readGroups()
+
+        val area =
+            readArea()
+
         return Mission(
+
             id =
                 id,
 
@@ -328,6 +452,12 @@ class FirestoreMissionRepository @Inject constructor(
                 readLocation(
                     "returnLocation"
                 ),
+
+            groups =
+                groups,
+
+            area =
+                area,
 
             // -------------------------------------------------
             // Controle
@@ -462,6 +592,131 @@ class FirestoreMissionRepository @Inject constructor(
                 )
             }
             ?: emptyList()
+    }
+
+    // =========================================================
+    // Grupos
+    // =========================================================
+
+    private fun DocumentSnapshot
+            .readGroups():
+            List<MissionGroup> {
+
+        return (
+                get(
+                    "groups"
+                ) as? List<*>
+                )
+            ?.mapNotNull { item ->
+
+                val map =
+                    item as? Map<*, *>
+                        ?: return@mapNotNull null
+
+                val id =
+                    map["id"]
+                            as? String
+                        ?: return@mapNotNull null
+
+                val name =
+                    map["name"]
+                            as? String
+                        ?: return@mapNotNull null
+
+                val colorHex =
+                    map["colorHex"]
+                            as? String
+                        ?: return@mapNotNull null
+
+                val participantIds =
+                    (
+                            map["participantIds"]
+                                    as? List<*>
+                            )
+                        ?.mapNotNull {
+                            it as? String
+                        }
+                        ?: emptyList()
+
+                val supportUserId =
+                    map["supportUserId"]
+                            as? String
+
+                MissionGroup(
+                    id =
+                        id,
+
+                    name =
+                        name,
+
+                    colorHex =
+                        colorHex,
+
+                    participantIds =
+                        participantIds,
+
+                    supportUserId =
+                        supportUserId
+                )
+            }
+            ?: emptyList()
+    }
+
+    // =========================================================
+    // Área de atuação
+    // =========================================================
+
+    private fun DocumentSnapshot.readArea():
+            MissionArea? {
+
+        val map =
+            get(
+                "area"
+            ) as? Map<*, *>
+                ?: return null
+
+        val rawPoints =
+            map["polygonPoints"]
+                    as? List<*>
+                ?: return null
+
+        val points =
+            rawPoints
+                .mapNotNull { item ->
+
+                    val pointMap =
+                        item as? Map<*, *>
+                            ?: return@mapNotNull null
+
+                    val latitude =
+                        pointMap["latitude"]
+                                as? Number
+                            ?: return@mapNotNull null
+
+                    val longitude =
+                        pointMap["longitude"]
+                                as? Number
+                            ?: return@mapNotNull null
+
+                    MissionCoordinate(
+                        latitude =
+                            latitude.toDouble(),
+
+                        longitude =
+                            longitude.toDouble()
+                    )
+                }
+
+        if (
+            points.size < 3
+        ) {
+            return null
+        }
+
+        return MissionArea(
+            polygonPoints =
+                points
+        )
     }
 
     // =========================================================
@@ -612,6 +867,16 @@ class FirestoreMissionRepository @Inject constructor(
                     returnLocation
                         ?.toFirestoreMap(),
 
+            "groups" to
+                    groups
+                        .map { group ->
+                            group.toFirestoreMap()
+                        },
+
+            "area" to
+                    area
+                        ?.toFirestoreMap(),
+
             // -------------------------------------------------
             // Controle
             // -------------------------------------------------
@@ -657,6 +922,63 @@ class FirestoreMissionRepository @Inject constructor(
             "address" to
                     address,
 
+            "latitude" to
+                    latitude,
+
+            "longitude" to
+                    longitude
+        )
+    }
+
+    // =========================================================
+    // MissionGroup -> Firestore
+    // =========================================================
+
+    private fun MissionGroup.toFirestoreMap():
+            Map<String, Any?> {
+
+        return mapOf(
+            "id" to
+                    id,
+
+            "name" to
+                    name,
+
+            "colorHex" to
+                    colorHex,
+
+            "participantIds" to
+                    participantIds,
+
+            "supportUserId" to
+                    supportUserId
+        )
+    }
+
+    // =========================================================
+    // MissionArea -> Firestore
+    // =========================================================
+
+    private fun MissionArea.toFirestoreMap():
+            Map<String, Any?> {
+
+        return mapOf(
+            "polygonPoints" to
+                    polygonPoints
+                        .map { point ->
+                            point.toFirestoreMap()
+                        }
+        )
+    }
+
+    // =========================================================
+    // MissionCoordinate -> Firestore
+    // =========================================================
+
+    private fun MissionCoordinate.toFirestoreMap():
+            Map<String, Any?> {
+
+        return mapOf(
             "latitude" to
                     latitude,
 

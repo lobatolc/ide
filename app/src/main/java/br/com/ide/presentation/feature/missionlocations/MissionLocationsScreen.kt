@@ -32,6 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -154,13 +157,26 @@ private fun MissionLocationsContent(
                 ?.longitude
             ?: -47.9260
 
+    val scrollState =
+        rememberScrollState()
+
+    var isMapInteracting by
+    remember {
+        mutableStateOf(
+            false
+        )
+    }
+
     Column(
         modifier =
             Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .verticalScroll(
-                    rememberScrollState()
+                    state =
+                        scrollState,
+                    enabled =
+                        !isMapInteracting
                 )
                 .padding(
                     horizontal = 20.dp,
@@ -450,6 +466,10 @@ private fun MissionLocationsContent(
                                 ?.longitude,
                         isDarkTheme =
                             isDarkTheme,
+                        onInteractionChanged = {
+                            isMapInteracting =
+                                it
+                        },
                         recenterKey =
                             selectedLocation
                                 ?.let {

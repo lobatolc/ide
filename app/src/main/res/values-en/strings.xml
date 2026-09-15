@@ -561,4 +561,104 @@
     <string name="mission_planning_departure_not_defined">Departure not defined yet</string>
     <string name="mission_planning_return_defined">Return defined</string>
     <string name="mission_planning_return_not_defined">Optional return not defined</string>
+
+    <string name="mission_groups_loading_error">Unable to load the mission groups.</string>
+    <string name="mission_groups_save_success">Groups saved successfully!</string>
+    <string name="mission_groups_save_error">Unable to save the groups.</string>
+
+    <string name="mission_groups_back">Back</string>
+    <string name="mission_groups_title">Groups</string>
+
+    <string name="mission_groups_section_title">Group organization</string>
+    <string name="mission_groups_section_description">Distribute participants and assign a Support person to each group if needed.</string>
+
+    <string name="mission_groups_create_group">Create group</string>
+    <string name="mission_groups_edit">Edit</string>
+    <string name="mission_groups_save">Save groups</string>
+
+    <string name="mission_groups_empty_title">No groups created</string>
+    <string name="mission_groups_empty_description">All %1$d participants will work together while no groups are created.</string>
+
+    <string name="mission_groups_no_participants">No participants in this group.</string>
+
+    <string name="mission_groups_support">Support</string>
+    <string name="mission_groups_support_name">Support: %1$s</string>
+
+    <string name="mission_groups_unassigned_title">Participants without a group</string>
+    <string name="mission_groups_unassigned_description">These people have not been assigned to a group yet.</string>
+    <string name="mission_groups_unassigned_empty">All participants are already organized into groups.</string>
+
+    <string name="mission_groups_create_dialog_title">Create group</string>
+    <string name="mission_groups_create_dialog_description">Give the group a name to identify it during the mission.</string>
+
+    <string name="mission_groups_edit_dialog_title">Edit group</string>
+
+    <string name="mission_groups_name">Group name</string>
+
+    <string name="mission_groups_participants_title">Participants</string>
+    <string name="mission_groups_participants_description">Choose who will be part of this group.</string>
+
+    <string name="mission_groups_support_title">Support</string>
+    <string name="mission_groups_support_description">Choose a member responsible for support and material replenishment.</string>
+    <string name="mission_groups_support_none">No Support</string>
+
+    <string name="mission_groups_delete">Delete group</string>
+    <string name="mission_groups_cancel">Cancel</string>
+    <string name="mission_groups_create">Create</string>
+    <string name="mission_groups_confirm">Confirm</string>
+
+    <string name="mission_groups_read_only">Groups can no longer be changed because the mission has already started.</string>
+
+    <string name="mission_groups_all_assigned">All participants are already in groups</string>
+
+    <string name="mission_planning_groups_not_defined">No groups defined</string>
+    <string name="mission_planning_groups_everyone_together">All participants will work together.</string>
+
+    <string name="mission_planning_groups_defined">%1$d groups defined</string>
+    <string name="mission_planning_grouped_participants">%1$d participants organized</string>
+    <string name="mission_planning_unassigned_participants">%1$d participants without a group</string>
+    <string name="mission_planning_all_participants_grouped">All participants organized</string>
+
+    <string name="mission_area_title">Mission area</string>
+    <string name="mission_area_back">Back</string>
+
+    <string name="mission_area_load_error">Unable to load the mission area.</string>
+    <string name="mission_area_save_error">Unable to save the mission area.</string>
+    <string name="mission_area_save_success">Mission area saved successfully!</string>
+
+    <string name="mission_area_minimum_points_error">Mark at least 3 points to define an area.</string>
+
+    <string name="mission_area_free_title">Free area</string>
+    <string name="mission_area_free_description">The mission may operate freely without a defined perimeter.</string>
+
+    <string name="mission_area_defined_title">Defined area</string>
+    <string name="mission_area_defined_description">Define on the map the general perimeter where the mission will operate.</string>
+
+    <string name="mission_area_map_title">Define the area</string>
+    <string name="mission_area_map_description">Tap the map to mark the mission boundaries.</string>
+
+    <string name="mission_area_point_count">%1$d points marked</string>
+    <string name="mission_area_undo">Undo</string>
+    <string name="mission_area_clear">Clear</string>
+
+    <string name="mission_area_save_defined">Save area</string>
+    <string name="mission_area_use_free">Use free area</string>
+
+    <string name="mission_area_minimum_points">At least 3 points are required to form the perimeter.</string>
+
+    <string name="mission_area_read_only">The mission area can no longer be changed because the mission has already started.</string>
+
+    <string name="mission_area_hero_title">Define the mission area</string>
+    <string name="mission_area_hero_description">Choose whether the mission will have an area limit and, if necessary, define the perimeter on the map.</string>
+
+    <string name="mission_area_mode_title">How will the mission operate?</string>
+    <string name="mission_area_mode_description">Choose whether the mission will have a geographic operating limit.</string>
+
+    <string name="mission_area_save_free">Save free area</string>
+    <string name="mission_area_perimeter_ready">The perimeter is ready to be saved.</string>
+
+    <string name="mission_planning_area_free">Free area</string>
+    <string name="mission_planning_area_free_description">No geographic limit defined.</string>
+    <string name="mission_planning_area_defined">Defined area</string>
+    <string name="mission_planning_area_points">%1$d points in the perimeter</string>
 </resources>

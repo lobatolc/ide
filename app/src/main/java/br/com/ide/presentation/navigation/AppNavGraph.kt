@@ -31,6 +31,8 @@ import br.com.ide.presentation.feature.login.LoginEvent
 import br.com.ide.presentation.feature.login.LoginScreen
 import br.com.ide.presentation.feature.login.LoginViewModel
 import br.com.ide.presentation.feature.mission.MissionScreen
+import br.com.ide.presentation.feature.missionarea.MissionAreaScreen
+import br.com.ide.presentation.feature.missiongroups.MissionGroupsScreen
 import br.com.ide.presentation.feature.missionlocations.MissionLocationsScreen
 import br.com.ide.presentation.feature.missionplanning.MissionPlanningScreen
 import br.com.ide.presentation.feature.profile.ProfileEvent
@@ -46,6 +48,7 @@ import br.com.ide.presentation.model.AppLanguage
 import br.com.ide.presentation.model.AppTheme
 import br.com.ide.presentation.snackbar.AppSnackbarViewModel
 import br.com.ide.presentation.util.forLanguage
+import androidx.compose.foundation.layout.navigationBarsPadding
 
 @Composable
 fun AppNavGraph(
@@ -114,7 +117,11 @@ fun AppNavGraph(
             navController =
                 navController,
             startDestination =
-                startDestination
+                startDestination,
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding()
         ) {
 
             // =====================================================
@@ -415,8 +422,7 @@ fun AppNavGraph(
             // Planejamento da missão
             // =====================================================
 
-            composable<MissionPlanning> {
-                    backStackEntry ->
+            composable<MissionPlanning> { backStackEntry ->
 
                 val route =
                     backStackEntry
@@ -438,6 +444,25 @@ fun AppNavGraph(
                                     route.missionId
                             )
                         )
+                    },
+
+                    onGroupsClick = {
+
+                        navController.navigate(
+                            MissionGroups(
+                                missionId =
+                                    route.missionId
+                            )
+                        )
+                    },
+
+                    onAreaClick = {
+                        navController.navigate(
+                            MissionArea(
+                                missionId =
+                                    route.missionId
+                            )
+                        )
                     }
                 )
             }
@@ -450,6 +475,46 @@ fun AppNavGraph(
                         .toRoute<MissionLocations>()
 
                 MissionLocationsScreen(
+                    missionId =
+                        route.missionId,
+
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+
+                    onSaved = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
+            composable<MissionGroups> { backStackEntry ->
+
+                val route =
+                    backStackEntry
+                        .toRoute<MissionGroups>()
+
+                MissionGroupsScreen(
+                    missionId =
+                        route.missionId,
+
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+
+                    onSaved = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
+            composable<MissionArea> { backStackEntry ->
+
+                val route =
+                    backStackEntry
+                        .toRoute<MissionArea>()
+
+                MissionAreaScreen(
                     missionId =
                         route.missionId,
 
@@ -786,6 +851,7 @@ fun AppNavGraph(
                     .align(
                         Alignment.BottomCenter
                     )
+                    .navigationBarsPadding()
                     .padding(
                         16.dp
                     )

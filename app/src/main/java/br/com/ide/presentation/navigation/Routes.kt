@@ -32,6 +32,16 @@ data class MissionLocations(
 )
 
 @Serializable
+data class MissionGroups(
+    val missionId: String
+)
+
+@Serializable
+data class MissionArea(
+    val missionId: String
+)
+
+@Serializable
 data object Profile
 
 @Serializable

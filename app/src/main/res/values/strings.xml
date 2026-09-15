@@ -674,4 +674,103 @@
     <string name="mission_planning_departure_not_defined">Saída ainda não definida</string>
     <string name="mission_planning_return_defined">Retorno definido</string>
     <string name="mission_planning_return_not_defined">Retorno opcional não definido</string>
+
+    <string name="mission_groups_loading_error">Não foi possível carregar os grupos da missão.</string>
+    <string name="mission_groups_save_success">Grupos salvos com sucesso!</string>
+    <string name="mission_groups_save_error">Não foi possível salvar os grupos.</string>
+
+    <string name="mission_groups_back">Voltar</string>
+    <string name="mission_groups_title">Grupos</string>
+
+    <string name="mission_groups_section_title">Organização dos grupos</string>
+    <string name="mission_groups_section_description">Distribua os participantes e defina um Apoio para cada grupo, se necessário.</string>
+
+    <string name="mission_groups_create_group">Criar grupo</string>
+    <string name="mission_groups_edit">Editar</string>
+    <string name="mission_groups_save">Salvar grupos</string>
+
+    <string name="mission_groups_empty_title">Nenhum grupo criado</string>
+    <string name="mission_groups_empty_description">Os %1$d participantes atuarão juntos enquanto nenhum grupo for criado.</string>
+
+    <string name="mission_groups_no_participants">Nenhum participante neste grupo.</string>
+
+    <string name="mission_groups_support">Apoio</string>
+    <string name="mission_groups_support_name">Apoio: %1$s</string>
+
+    <string name="mission_groups_unassigned_title">Participantes sem grupo</string>
+    <string name="mission_groups_unassigned_description">Essas pessoas ainda não foram atribuídas a um grupo.</string>
+    <string name="mission_groups_unassigned_empty">Todos os participantes já estão organizados em grupos.</string>
+
+    <string name="mission_groups_create_dialog_title">Criar grupo</string>
+    <string name="mission_groups_create_dialog_description">Dê um nome para identificar o grupo durante a missão.</string>
+
+    <string name="mission_groups_edit_dialog_title">Editar grupo</string>
+
+    <string name="mission_groups_name">Nome do grupo</string>
+
+    <string name="mission_groups_participants_title">Participantes</string>
+    <string name="mission_groups_participants_description">Escolha quem fará parte deste grupo.</string>
+
+    <string name="mission_groups_support_title">Apoio</string>
+    <string name="mission_groups_support_description">Escolha um integrante responsável pelo apoio e reposição de materiais.</string>
+    <string name="mission_groups_support_none">Sem Apoio</string>
+
+    <string name="mission_groups_delete">Excluir grupo</string>
+    <string name="mission_groups_cancel">Cancelar</string>
+    <string name="mission_groups_create">Criar</string>
+    <string name="mission_groups_confirm">Confirmar</string>
+
+    <string name="mission_groups_read_only">Os grupos não podem mais ser alterados porque a missão já foi iniciada.</string>
+
+    <string name="mission_groups_all_assigned">Todos os participantes já estão em grupos</string>
+
+    <string name="mission_planning_groups_not_defined">Nenhum grupo definido</string>
+    <string name="mission_planning_groups_everyone_together">Todos os participantes atuarão juntos.</string>
+
+    <string name="mission_planning_groups_defined">%1$d grupos definidos</string>
+    <string name="mission_planning_grouped_participants">%1$d participantes organizados</string>
+    <string name="mission_planning_unassigned_participants">%1$d participantes sem grupo</string>
+    <string name="mission_planning_all_participants_grouped">Todos os participantes organizados</string>
+    <string name="mission_area_title">Área de atuação</string>
+    <string name="mission_area_back">Voltar</string>
+
+    <string name="mission_area_load_error">Não foi possível carregar a área de atuação.</string>
+    <string name="mission_area_save_error">Não foi possível salvar a área de atuação.</string>
+    <string name="mission_area_save_success">Área de atuação salva com sucesso!</string>
+
+    <string name="mission_area_minimum_points_error">Marque pelo menos 3 pontos para delimitar uma área.</string>
+
+    <string name="mission_area_free_title">Área livre</string>
+    <string name="mission_area_free_description">A missão poderá atuar livremente, sem um perímetro definido.</string>
+
+    <string name="mission_area_defined_title">Área delimitada</string>
+    <string name="mission_area_defined_description">Defina no mapa o perímetro geral onde a missão será realizada.</string>
+
+    <string name="mission_area_map_title">Delimite a área</string>
+    <string name="mission_area_map_description">Toque no mapa para marcar os limites da missão.</string>
+
+    <string name="mission_area_point_count">%1$d pontos marcados</string>
+    <string name="mission_area_undo">Desfazer</string>
+    <string name="mission_area_clear">Limpar</string>
+
+    <string name="mission_area_save_defined">Salvar área</string>
+    <string name="mission_area_use_free">Usar área livre</string>
+
+    <string name="mission_area_minimum_points">São necessários pelo menos 3 pontos para formar o perímetro.</string>
+
+    <string name="mission_area_read_only">A área de atuação não pode mais ser alterada porque a missão já foi iniciada.</string>
+
+    <string name="mission_area_hero_title">Defina a área de atuação</string>
+    <string name="mission_area_hero_description">Informe se a missão terá um limite de área e, se necessário, delimite o perímetro no mapa.</string>
+
+    <string name="mission_area_mode_title">Como a missão será realizada?</string>
+    <string name="mission_area_mode_description">Escolha se haverá um limite geográfico para a atuação.</string>
+
+    <string name="mission_area_save_free">Salvar área livre</string>
+    <string name="mission_area_perimeter_ready">Perímetro pronto para ser salvo.</string>
+
+    <string name="mission_planning_area_free">Área livre</string>
+    <string name="mission_planning_area_free_description">Sem limite geográfico definido.</string>
+    <string name="mission_planning_area_defined">Área delimitada</string>
+    <string name="mission_planning_area_points">%1$d pontos no perímetro</string>
 </resources>
