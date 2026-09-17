@@ -29,6 +29,7 @@ data class Mission(
     val returnLocation: MissionLocation? = null,
     val groups: List<MissionGroup> = emptyList(),
     val area: MissionArea? = null,
+
     // Pesquisa
     val surveyQuestions: List<MissionSurveyQuestion> = emptyList(),
 
@@ -40,9 +41,10 @@ data class Mission(
     val creatorChurchId: String? = null,
     val creatorDistrictId: String? = null,
 
+    // Execução
+    val startedAt: LocalDateTime? = null,
+
     // Dados preenchidos posteriormente
     val photoUrl: String? = null,
     val totalDurationMinutes: Long? = null
-
-
 )

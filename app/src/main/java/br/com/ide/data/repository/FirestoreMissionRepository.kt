@@ -15,12 +15,14 @@ import br.com.ide.domain.model.UserRole
 import br.com.ide.domain.repository.MissionRepository
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
+import kotlin.collections.get
 
 class FirestoreMissionRepository @Inject constructor(
     private val firestore: FirebaseFirestore
@@ -53,9 +55,7 @@ class FirestoreMissionRepository @Inject constructor(
         val document =
             firestore
                 .collection("missions")
-                .document(
-                    missionId
-                )
+                .document(missionId)
                 .get()
                 .await()
 
@@ -233,8 +233,8 @@ class FirestoreMissionRepository @Inject constructor(
     }
 
     // =========================================================
-    // Atualizar área
-    // =========================================================
+// Atualizar área
+// =========================================================
 
     override suspend fun updateMissionArea(
         missionId: String,
@@ -266,6 +266,141 @@ class FirestoreMissionRepository @Inject constructor(
                 exception
             )
         }
+    }
+
+    // =========================================================
+    // Atualizar status
+    // =========================================================
+
+    override suspend fun updateMissionStatus(
+        missionId: String,
+        status: MissionStatus
+    ): Result<Unit> {
+
+        return try {
+
+            firestore
+                .collection("missions")
+                .document(
+                    missionId
+                )
+                .update(
+                    "status",
+                    status.name
+                )
+                .await()
+
+            Result.success(
+                Unit
+            )
+
+        } catch (
+            exception: Exception
+        ) {
+
+            Result.failure(
+                exception
+            )
+        }
+    }
+
+    // =========================================================
+    // Iniciar missão
+    // =========================================================
+
+    override suspend fun startMission(
+        missionId: String
+    ): Result<Unit> {
+
+        return try {
+
+            firestore
+                .collection("missions")
+                .document(
+                    missionId
+                )
+                .update(
+                    mapOf(
+                        "status" to
+                                MissionStatus
+                                    .IN_PROGRESS
+                                    .name,
+
+                        "startedAt" to
+                                FieldValue
+                                    .serverTimestamp()
+                    )
+                )
+                .await()
+
+            Result.success(
+                Unit
+            )
+
+        } catch (
+            exception: Exception
+        ) {
+
+            Result.failure(
+                exception
+            )
+        }
+    }
+
+    // =========================================================
+// Área de atuação
+// =========================================================
+
+    private fun DocumentSnapshot.readArea():
+            MissionArea? {
+
+        val map =
+            get(
+                "area"
+            ) as? Map<*, *>
+                ?: return null
+
+        val rawPoints =
+            map["polygonPoints"]
+                    as? List<*>
+                ?: return null
+
+        val points =
+            rawPoints
+                .mapNotNull { item ->
+
+                    val pointMap =
+                        item as? Map<*, *>
+                            ?: return@mapNotNull null
+
+                    val latitude =
+                        pointMap["latitude"]
+                                as? Number
+                            ?: return@mapNotNull null
+
+                    val longitude =
+                        pointMap["longitude"]
+                                as? Number
+                            ?: return@mapNotNull null
+
+                    MissionCoordinate(
+                        latitude =
+                            latitude.toDouble(),
+                        longitude =
+                            longitude.toDouble()
+                    )
+                }
+
+        if (
+            points.size < 3
+        ) {
+            return null
+        }
+
+        return MissionArea(
+            polygonPoints =
+                points
+        )
     }
 
     // =========================================================
@@ -365,9 +500,6 @@ class FirestoreMissionRepository @Inject constructor(
         val groups =
             readGroups()
 
-        val area =
-            readArea()
-
         return Mission(
 
             id =
@@ -457,7 +589,7 @@ class FirestoreMissionRepository @Inject constructor(
                 groups,
 
             area =
-                area,
+                readArea(),
 
             // -------------------------------------------------
             // Controle
@@ -483,6 +615,16 @@ class FirestoreMissionRepository @Inject constructor(
                 getString(
                     "creatorDistrictId"
                 ),
+
+            // -------------------------------------------------
+            // Execução
+            // -------------------------------------------------
+
+            startedAt =
+                getTimestamp(
+                    "startedAt"
+                )
+                    ?.toLocalDateTime(),
 
             // -------------------------------------------------
             // Dados posteriores
@@ -663,63 +805,6 @@ class FirestoreMissionRepository @Inject constructor(
     }
 
     // =========================================================
-    // Área de atuação
-    // =========================================================
-
-    private fun DocumentSnapshot.readArea():
-            MissionArea? {
-
-        val map =
-            get(
-                "area"
-            ) as? Map<*, *>
-                ?: return null
-
-        val rawPoints =
-            map["polygonPoints"]
-                    as? List<*>
-                ?: return null
-
-        val points =
-            rawPoints
-                .mapNotNull { item ->
-
-                    val pointMap =
-                        item as? Map<*, *>
-                            ?: return@mapNotNull null
-
-                    val latitude =
-                        pointMap["latitude"]
-                                as? Number
-                            ?: return@mapNotNull null
-
-                    val longitude =
-                        pointMap["longitude"]
-                                as? Number
-                            ?: return@mapNotNull null
-
-                    MissionCoordinate(
-                        latitude =
-                            latitude.toDouble(),
-
-                        longitude =
-                            longitude.toDouble()
-                    )
-                }
-
-        if (
-            points.size < 3
-        ) {
-            return null
-        }
-
-        return MissionArea(
-            polygonPoints =
-                points
-        )
-    }
-
-    // =========================================================
     // Localização
     // =========================================================
 
@@ -895,6 +980,14 @@ class FirestoreMissionRepository @Inject constructor(
 
             "creatorDistrictId" to
                     creatorDistrictId,
+
+            // -------------------------------------------------
+            // Execução
+            // -------------------------------------------------
+
+            "startedAt" to
+                    startedAt
+                        ?.toTimestamp(),
 
             // -------------------------------------------------
             // Dados posteriores

@@ -10,6 +10,7 @@ plugins {
 
 android {
     namespace = "br.com.ide"
+
     compileSdk {
         version = release(37)
     }
@@ -21,7 +22,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner =
+            "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -31,10 +33,12 @@ android {
             }
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
     }
@@ -49,34 +53,46 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+
     implementation("androidx.navigation:navigation-compose:2.9.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
+
     implementation(platform(libs.firebase.bom))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+
     implementation("androidx.compose.material:material-icons-extended")
+
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
-    implementation("androidx.appcompat:appcompat:1.7.1")
+
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("androidx.lifecycle:lifecycle-runtime-compose")
+
     implementation("org.maplibre.gl:android-sdk:13.6.1")
+
+    // Room - armazenamento local do trajeto
+    val roomVersion = "2.8.5"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+
     ksp("com.google.dagger:hilt-android-compiler:2.60")
+
     testImplementation(libs.junit)
+
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
-
-
-
-
 }

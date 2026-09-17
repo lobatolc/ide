@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +20,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import br.com.ide.domain.model.MissionStatus
 import br.com.ide.domain.model.SabbathSchoolClass
 import br.com.ide.presentation.components.snackbar.IdeSnackbarHost
 import br.com.ide.presentation.components.snackbar.IdeSnackbarVisuals
@@ -32,6 +35,7 @@ import br.com.ide.presentation.feature.login.LoginScreen
 import br.com.ide.presentation.feature.login.LoginViewModel
 import br.com.ide.presentation.feature.mission.MissionScreen
 import br.com.ide.presentation.feature.missionarea.MissionAreaScreen
+import br.com.ide.presentation.feature.missionexecution.MissionExecutionScreen
 import br.com.ide.presentation.feature.missiongroups.MissionGroupsScreen
 import br.com.ide.presentation.feature.missionlocations.MissionLocationsScreen
 import br.com.ide.presentation.feature.missionplanning.MissionPlanningScreen
@@ -59,7 +63,10 @@ fun AppNavGraph(
     onThemeChanged: (AppTheme) -> Unit,
     startDestination: Any,
     onSessionChanged: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    supportNotificationMissionId: String? = null,
+    supportNotificationUserId: String? = null,
+    onSupportNotificationHandled: () -> Unit = {}
 ) {
 
     val snackbarViewModel:
@@ -73,6 +80,62 @@ fun AppNavGraph(
 
     val context =
         LocalContext.current
+
+    var supportFocusMissionId by
+    remember {
+        mutableStateOf<String?>(
+            null
+        )
+    }
+
+    var supportFocusUserId by
+    remember {
+        mutableStateOf<String?>(
+            null
+        )
+    }
+
+    LaunchedEffect(
+        supportNotificationMissionId,
+        supportNotificationUserId
+    ) {
+
+        val missionId =
+            supportNotificationMissionId
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+
+        val userId =
+            supportNotificationUserId
+                ?.takeIf {
+                    it.isNotBlank()
+                }
+
+        if (
+            missionId != null &&
+            userId != null
+        ) {
+
+            supportFocusMissionId =
+                missionId
+
+            supportFocusUserId =
+                userId
+
+            navController.navigate(
+                MissionExecution(
+                    missionId =
+                        missionId
+                )
+            ) {
+                launchSingleTop =
+                    true
+            }
+
+            onSupportNotificationHandled()
+        }
+    }
 
     // =========================================================
     // Snackbar global
@@ -338,13 +401,34 @@ fun AppNavGraph(
 
                 HomeScreen(
 
-                    onMissionClick = { missionId ->
+                    onMissionClick = {
+                            missionId,
+                            missionStatus ->
 
-                        navController.navigate(
-                            MissionPlanning(
-                                missionId = missionId
-                            )
-                        )
+                        when (
+                            missionStatus
+                        ) {
+
+                            MissionStatus.IN_PROGRESS -> {
+
+                                navController.navigate(
+                                    MissionExecution(
+                                        missionId =
+                                            missionId
+                                    )
+                                )
+                            }
+
+                            else -> {
+
+                                navController.navigate(
+                                    MissionPlanning(
+                                        missionId =
+                                            missionId
+                                    )
+                                )
+                            }
+                        }
                     },
 
                     onMetricsClick = {
@@ -463,6 +547,83 @@ fun AppNavGraph(
                                     route.missionId
                             )
                         )
+                    },
+
+                    onMissionStarted = {
+
+                        navController.navigate(
+                            MissionExecution(
+                                missionId =
+                                    route.missionId
+                            )
+                        ) {
+
+                            popUpTo<MissionPlanning> {
+                                inclusive =
+                                    true
+                            }
+                        }
+                    }
+                )
+            }
+
+            // =====================================================
+            // Execução da missão
+            // =====================================================
+
+            composable<MissionExecution> { backStackEntry ->
+
+                val route =
+                    backStackEntry
+                        .toRoute<MissionExecution>()
+
+                MissionExecutionScreen(
+                    missionId =
+                        route.missionId,
+
+                    focusParticipantUserId =
+                        supportFocusUserId
+                            ?.takeIf {
+                                supportFocusMissionId ==
+                                        route.missionId
+                            },
+
+                    onFocusParticipantHandled = {
+
+                        supportFocusMissionId =
+                            null
+
+                        supportFocusUserId =
+                            null
+                    },
+
+                    onBackClick = {
+                        navController
+                            .popBackStack()
+                    },
+
+                    onRegisterEncounterClick = {
+                        /*
+                         * Próxima etapa:
+                         * abrir o cadastro de encontro.
+                         */
+                    },
+
+                    onGroupsClick = {
+
+                        navController.navigate(
+                            MissionGroups(
+                                missionId =
+                                    route.missionId
+                            )
+                        )
+                    },
+
+                    onFinishMissionClick = {
+                        /*
+                         * Próxima etapa:
+                         * finalizar a missão.
+                         */
                     }
                 )
             }

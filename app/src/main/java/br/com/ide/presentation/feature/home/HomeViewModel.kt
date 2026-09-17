@@ -37,6 +37,7 @@ class HomeViewModel @Inject constructor(
         emptyList()
 
     init {
+
         loadUserProfile()
 
         onEvent(
@@ -48,10 +49,24 @@ class HomeViewModel @Inject constructor(
         event: HomeEvent
     ) {
 
-        when (event) {
+        when (
+            event
+        ) {
 
             HomeEvent.LoadMissions -> {
-                loadMissions()
+
+                loadMissions(
+                    showLoading =
+                        true
+                )
+            }
+
+            HomeEvent.Refresh -> {
+
+                loadMissions(
+                    showLoading =
+                        allMissions.isEmpty()
+                )
             }
 
             is HomeEvent.SearchChanged -> {
@@ -79,19 +94,25 @@ class HomeViewModel @Inject constructor(
             }
 
             HomeEvent.Retry -> {
-                loadMissions()
+
+                loadMissions(
+                    showLoading =
+                        true
+                )
             }
         }
     }
 
-    private fun loadMissions() {
+    private fun loadMissions(
+        showLoading: Boolean
+    ) {
 
         viewModelScope.launch {
 
             _uiState.update {
                 it.copy(
                     isLoading =
-                        true,
+                        showLoading,
                     errorMessage =
                         null
                 )
@@ -123,7 +144,8 @@ class HomeViewModel @Inject constructor(
                         isLoading =
                             false,
                         errorMessage =
-                            R.string.home_loading_error
+                            R.string
+                                .home_loading_error
                     )
                 }
             }
@@ -147,27 +169,35 @@ class HomeViewModel @Inject constructor(
                         query.isBlank() ||
                                 mission.name.contains(
                                     query,
-                                    ignoreCase = true
+                                    ignoreCase =
+                                        true
                                 ) ||
                                 mission.description.contains(
                                     query,
-                                    ignoreCase = true
+                                    ignoreCase =
+                                        true
                                 ) ||
                                 mission.customMovementName
                                     ?.contains(
                                         query,
-                                        ignoreCase = true
-                                    ) == true ||
+                                        ignoreCase =
+                                            true
+                                    ) ==
+                                true ||
                                 mission.customActivityName
                                     ?.contains(
                                         query,
-                                        ignoreCase = true
-                                    ) == true ||
+                                        ignoreCase =
+                                            true
+                                    ) ==
+                                true ||
                                 mission.customMaterialName
                                     ?.contains(
                                         query,
-                                        ignoreCase = true
-                                    ) == true
+                                        ignoreCase =
+                                            true
+                                    ) ==
+                                true
 
                     val matchesStatus =
                         state.selectedStatus ==

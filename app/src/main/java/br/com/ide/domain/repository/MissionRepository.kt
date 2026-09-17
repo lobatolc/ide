@@ -4,6 +4,7 @@ import br.com.ide.domain.model.Mission
 import br.com.ide.domain.model.MissionArea
 import br.com.ide.domain.model.MissionGroup
 import br.com.ide.domain.model.MissionLocation
+import br.com.ide.domain.model.MissionStatus
 
 interface MissionRepository {
 
@@ -36,5 +37,14 @@ interface MissionRepository {
     suspend fun updateMissionArea(
         missionId: String,
         area: MissionArea?
+    ): Result<Unit>
+
+    suspend fun updateMissionStatus(
+        missionId: String,
+        status: MissionStatus
+    ): Result<Unit>
+
+    suspend fun startMission(
+        missionId: String
     ): Result<Unit>
 }

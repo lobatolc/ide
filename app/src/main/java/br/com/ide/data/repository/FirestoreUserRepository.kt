@@ -4,6 +4,7 @@ import br.com.ide.domain.model.SabbathSchoolClass
 import br.com.ide.domain.model.UserProfile
 import br.com.ide.domain.model.UserRole
 import br.com.ide.domain.repository.UserRepository
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -227,7 +228,7 @@ class FirestoreUserRepository @Inject constructor(
     }
 
     private fun
-            com.google.firebase.firestore.DocumentSnapshot
+            DocumentSnapshot
             .toUserProfile(): UserProfile {
 
         val sabbathSchoolClass =

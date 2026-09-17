@@ -20,7 +20,11 @@ import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Map
+import androidx.compose.material.icons.outlined.Cancel
+import androidx.compose.material.icons.outlined.DoneAll
 import androidx.compose.material.icons.outlined.PersonOutline
+import androidx.compose.material.icons.outlined.PlayCircleOutline
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,7 +49,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.ide.R
+import br.com.ide.domain.model.MissionStatus
 import br.com.ide.presentation.components.IdeBackButton
+import br.com.ide.presentation.components.IdePrimaryButton
 import br.com.ide.presentation.components.IdeScreenSubtitle
 import br.com.ide.presentation.components.IdeScreenTitle
 
@@ -56,6 +62,7 @@ fun MissionPlanningScreen(
     onLocationsClick: () -> Unit,
     onGroupsClick: () -> Unit,
     onAreaClick: () -> Unit,
+    onMissionStarted: () -> Unit,
     viewModel: MissionPlanningViewModel =
         hiltViewModel()
 ) {
@@ -79,6 +86,23 @@ fun MissionPlanningScreen(
         viewModel.load(
             missionId
         )
+    }
+
+    // =========================================================
+    // Abrir execução quando a missão iniciar
+    // =========================================================
+
+    LaunchedEffect(
+        uiState.missionStatus
+    ) {
+
+        if (
+            uiState.missionStatus ==
+            MissionStatus.IN_PROGRESS
+        ) {
+
+            onMissionStarted()
+        }
     }
 
     // =========================================================
@@ -163,7 +187,13 @@ fun MissionPlanningScreen(
             onGroupsClick,
 
         onAreaClick =
-            onAreaClick
+            onAreaClick,
+
+        onScheduleClick =
+            viewModel::scheduleMission,
+
+        onStartClick =
+            viewModel::startMission
     )
 }
 
@@ -173,7 +203,9 @@ private fun MissionPlanningContent(
     onBackClick: () -> Unit,
     onLocationsClick: () -> Unit,
     onGroupsClick: () -> Unit,
-    onAreaClick: () -> Unit
+    onAreaClick: () -> Unit,
+    onScheduleClick: () -> Unit,
+    onStartClick: () -> Unit
 ) {
 
     Column(
@@ -268,6 +300,22 @@ private fun MissionPlanningContent(
         // =====================================================
 
         PlanningHeroCard()
+
+        Spacer(
+            modifier =
+                Modifier.height(
+                    18.dp
+                )
+        )
+
+        // =====================================================
+        // Status da missão
+        // =====================================================
+
+        MissionStatusCard(
+            missionStatus =
+                uiState.missionStatus
+        )
 
         Spacer(
             modifier =
@@ -407,7 +455,65 @@ private fun MissionPlanningContent(
         // Informação
         // =====================================================
 
-        PlanningInfoCard()
+        if (
+            uiState.missionStatus ==
+            MissionStatus.PLANNING ||
+            uiState.missionStatus ==
+            MissionStatus.SCHEDULED
+        ) {
+
+            PlanningInfoCard()
+        }
+
+        when (
+            uiState.missionStatus
+        ) {
+
+            MissionStatus.PLANNING -> {
+
+                Spacer(
+                    modifier =
+                        Modifier.height(
+                            20.dp
+                        )
+                )
+
+                ScheduleMissionSection(
+                    hasDepartureLocation =
+                        uiState.hasDepartureLocation,
+
+                    isScheduling =
+                        uiState.isScheduling,
+
+                    onScheduleClick =
+                        onScheduleClick
+                )
+            }
+
+            MissionStatus.SCHEDULED -> {
+
+                Spacer(
+                    modifier =
+                        Modifier.height(
+                            20.dp
+                        )
+                )
+
+                StartMissionSection(
+                    hasDepartureLocation =
+                        uiState.hasDepartureLocation,
+
+                    isStarting =
+                        uiState.isStarting,
+
+                    onStartClick =
+                        onStartClick
+                )
+            }
+
+            else ->
+                Unit
+        }
 
         Spacer(
             modifier =
@@ -415,6 +521,427 @@ private fun MissionPlanningContent(
                     24.dp
                 )
         )
+    }
+}
+
+// =============================================================
+// Status da missão
+// =============================================================
+
+@Composable
+private fun MissionStatusCard(
+    missionStatus: MissionStatus?
+) {
+
+    val icon =
+        when (
+            missionStatus
+        ) {
+
+            MissionStatus.PLANNING ->
+                Icons.Outlined.TaskAlt
+
+            MissionStatus.SCHEDULED ->
+                Icons.Outlined.Schedule
+
+            MissionStatus.IN_PROGRESS ->
+                Icons.Outlined.PlayCircleOutline
+
+            MissionStatus.COMPLETED ->
+                Icons.Outlined.DoneAll
+
+            MissionStatus.CANCELLED ->
+                Icons.Outlined.Cancel
+
+            null ->
+                Icons.Outlined.TaskAlt
+        }
+
+    val titleRes =
+        when (
+            missionStatus
+        ) {
+
+            MissionStatus.PLANNING ->
+                R.string
+                    .mission_planning_status_planning
+
+            MissionStatus.SCHEDULED ->
+                R.string
+                    .mission_planning_status_scheduled
+
+            MissionStatus.IN_PROGRESS ->
+                R.string
+                    .mission_planning_status_in_progress
+
+            MissionStatus.COMPLETED ->
+                R.string
+                    .mission_planning_status_completed
+
+            MissionStatus.CANCELLED ->
+                R.string
+                    .mission_planning_status_cancelled
+
+            null ->
+                R.string
+                    .mission_planning_status_loading
+        }
+
+    val descriptionRes =
+        when (
+            missionStatus
+        ) {
+
+            MissionStatus.PLANNING ->
+                R.string
+                    .mission_planning_status_planning_description
+
+            MissionStatus.SCHEDULED ->
+                R.string
+                    .mission_planning_status_scheduled_description
+
+            MissionStatus.IN_PROGRESS ->
+                R.string
+                    .mission_planning_status_in_progress_description
+
+            MissionStatus.COMPLETED ->
+                R.string
+                    .mission_planning_status_completed_description
+
+            MissionStatus.CANCELLED ->
+                R.string
+                    .mission_planning_status_cancelled_description
+
+            null ->
+                R.string
+                    .mission_planning_status_loading_description
+        }
+
+    val highlighted =
+        missionStatus ==
+                MissionStatus.SCHEDULED ||
+                missionStatus ==
+                MissionStatus.IN_PROGRESS ||
+                missionStatus ==
+                MissionStatus.COMPLETED
+
+    Card(
+        modifier =
+            Modifier.fillMaxWidth(),
+        shape =
+            RoundedCornerShape(
+                22.dp
+            ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    if (
+                        highlighted
+                    ) {
+                        MaterialTheme
+                            .colorScheme
+                            .primaryContainer
+                    } else {
+                        MaterialTheme
+                            .colorScheme
+                            .surface
+                    }
+            ),
+        elevation =
+            CardDefaults.cardElevation(
+                defaultElevation =
+                    2.dp
+            )
+    ) {
+
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        18.dp
+                    ),
+            verticalAlignment =
+                Alignment.CenterVertically,
+            horizontalArrangement =
+                Arrangement.spacedBy(
+                    16.dp
+                )
+        ) {
+
+            Surface(
+                shape =
+                    RoundedCornerShape(
+                        16.dp
+                    ),
+                color =
+                    if (
+                        highlighted
+                    ) {
+                        MaterialTheme
+                            .colorScheme
+                            .primary
+                    } else {
+                        MaterialTheme
+                            .colorScheme
+                            .secondaryContainer
+                    }
+            ) {
+
+                Icon(
+                    imageVector =
+                        icon,
+                    contentDescription =
+                        null,
+                    tint =
+                        if (
+                            highlighted
+                        ) {
+                            MaterialTheme
+                                .colorScheme
+                                .onPrimary
+                        } else {
+                            MaterialTheme
+                                .colorScheme
+                                .onSecondaryContainer
+                        },
+                    modifier =
+                        Modifier
+                            .padding(
+                                12.dp
+                            )
+                            .size(
+                                26.dp
+                            )
+                )
+            }
+
+            Column(
+                modifier =
+                    Modifier.weight(
+                        1f
+                    )
+            ) {
+
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_planning_status_title
+                        ),
+                    style =
+                        MaterialTheme
+                            .typography
+                            .labelLarge,
+                    fontWeight =
+                        FontWeight.SemiBold,
+                    color =
+                        if (
+                            highlighted
+                        ) {
+                            MaterialTheme
+                                .colorScheme
+                                .primary
+                        } else {
+                            MaterialTheme
+                                .colorScheme
+                                .onSurfaceVariant
+                        }
+                )
+
+                Spacer(
+                    modifier =
+                        Modifier.height(
+                            4.dp
+                        )
+                )
+
+                Text(
+                    text =
+                        stringResource(
+                            titleRes
+                        ),
+                    style =
+                        MaterialTheme
+                            .typography
+                            .titleMedium,
+                    fontWeight =
+                        FontWeight.Bold,
+                    color =
+                        if (
+                            highlighted
+                        ) {
+                            MaterialTheme
+                                .colorScheme
+                                .onPrimaryContainer
+                        } else {
+                            MaterialTheme
+                                .colorScheme
+                                .onSurface
+                        }
+                )
+
+                Spacer(
+                    modifier =
+                        Modifier.height(
+                            4.dp
+                        )
+                )
+
+                Text(
+                    text =
+                        stringResource(
+                            descriptionRes
+                        ),
+                    style =
+                        MaterialTheme
+                            .typography
+                            .bodyMedium,
+                    color =
+                        if (
+                            highlighted
+                        ) {
+                            MaterialTheme
+                                .colorScheme
+                                .onPrimaryContainer
+                        } else {
+                            MaterialTheme
+                                .colorScheme
+                                .onSurfaceVariant
+                        }
+                )
+            }
+        }
+    }
+}
+
+// =============================================================
+// Agendar missão
+// =============================================================
+
+@Composable
+private fun ScheduleMissionSection(
+    hasDepartureLocation: Boolean,
+    isScheduling: Boolean,
+    onScheduleClick: () -> Unit
+) {
+
+    Column(
+        modifier =
+            Modifier.fillMaxWidth()
+    ) {
+
+        IdePrimaryButton(
+            text =
+                stringResource(
+                    R.string
+                        .mission_planning_schedule_button
+                ),
+            onClick =
+                onScheduleClick,
+            isLoading =
+                isScheduling,
+            enabled =
+                hasDepartureLocation &&
+                        !isScheduling,
+            modifier =
+                Modifier.fillMaxWidth()
+        )
+
+        if (
+            !hasDepartureLocation
+        ) {
+
+            Spacer(
+                modifier =
+                    Modifier.height(
+                        8.dp
+                    )
+            )
+
+            Text(
+                text =
+                    stringResource(
+                        R.string
+                            .mission_planning_schedule_departure_hint
+                    ),
+                style =
+                    MaterialTheme
+                        .typography
+                        .bodySmall,
+                color =
+                    MaterialTheme
+                        .colorScheme
+                        .onSurfaceVariant,
+                modifier =
+                    Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+// =============================================================
+// Iniciar missão
+// =============================================================
+
+@Composable
+private fun StartMissionSection(
+    hasDepartureLocation: Boolean,
+    isStarting: Boolean,
+    onStartClick: () -> Unit
+) {
+
+    Column(
+        modifier =
+            Modifier.fillMaxWidth()
+    ) {
+
+        IdePrimaryButton(
+            text =
+                stringResource(
+                    R.string
+                        .mission_planning_start_button
+                ),
+            onClick =
+                onStartClick,
+            isLoading =
+                isStarting,
+            enabled =
+                hasDepartureLocation &&
+                        !isStarting,
+            modifier =
+                Modifier.fillMaxWidth()
+        )
+
+        if (
+            !hasDepartureLocation
+        ) {
+
+            Spacer(
+                modifier =
+                    Modifier.height(
+                        8.dp
+                    )
+            )
+
+            Text(
+                text =
+                    stringResource(
+                        R.string
+                            .mission_planning_start_departure_hint
+                    ),
+                style =
+                    MaterialTheme
+                        .typography
+                        .bodySmall,
+                color =
+                    MaterialTheme
+                        .colorScheme
+                        .onSurfaceVariant,
+                modifier =
+                    Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 

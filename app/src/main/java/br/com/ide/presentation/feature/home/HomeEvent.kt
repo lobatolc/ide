@@ -4,7 +4,11 @@ import br.com.ide.domain.model.MissionStatus
 
 sealed interface HomeEvent {
 
-    data object LoadMissions : HomeEvent
+    data object LoadMissions :
+        HomeEvent
+
+    data object Refresh :
+        HomeEvent
 
     data class SearchChanged(
         val query: String
@@ -14,5 +18,6 @@ sealed interface HomeEvent {
         val status: MissionStatus?
     ) : HomeEvent
 
-    data object Retry : HomeEvent
+    data object Retry :
+        HomeEvent
 }

@@ -661,4 +661,63 @@
     <string name="mission_planning_area_free_description">No geographic limit defined.</string>
     <string name="mission_planning_area_defined">Defined area</string>
     <string name="mission_planning_area_points">%1$d points in the perimeter</string>
+
+    <string name="mission_planning_schedule_success">Mission scheduled successfully.</string>
+    <string name="mission_planning_schedule_error">The mission could not be scheduled.</string>
+    <string name="mission_planning_departure_required">Set the departure location before scheduling the mission.</string>
+
+    <string name="mission_planning_status_title">Mission status</string>
+    <string name="mission_planning_status_planning">Planning</string>
+    <string name="mission_planning_status_planning_description">Configure the mission and schedule it when everything is ready.</string>
+    <string name="mission_planning_status_scheduled">Scheduled</string>
+    <string name="mission_planning_status_scheduled_description">The mission is scheduled and can still be adjusted until it starts.</string>
+    <string name="mission_planning_status_in_progress">In progress</string>
+    <string name="mission_planning_status_in_progress_description">The mission has started and planning is now locked.</string>
+    <string name="mission_planning_status_completed">Completed</string>
+    <string name="mission_planning_status_completed_description">The mission has been completed.</string>
+    <string name="mission_planning_status_cancelled">Cancelled</string>
+    <string name="mission_planning_status_cancelled_description">This mission has been cancelled.</string>
+    <string name="mission_planning_status_loading">Loading status</string>
+    <string name="mission_planning_status_loading_description">Please wait while the mission data is loaded.</string>
+
+    <string name="mission_planning_schedule_button">Schedule mission</string>
+    <string name="mission_planning_schedule_departure_hint">Set the departure location to enable scheduling.</string>
+
+    <string name="mission_planning_start_button">Start mission</string>
+    <string name="mission_planning_start_success">Mission started successfully.</string>
+    <string name="mission_planning_start_error">The mission could not be started.</string>
+    <string name="mission_planning_start_departure_required">Set the departure location before starting the mission.</string>
+    <string name="mission_planning_start_departure_hint">Set the departure location to enable starting the mission.</string>
+
+    <string name="mission_execution_loading_error">The mission could not be loaded.</string>
+    <string name="mission_execution_not_in_progress">This mission is not in progress.</string>
+
+    <string name="mission_execution_back">Back</string>
+    <string name="mission_execution_status_in_progress">In progress</string>
+    <string name="mission_execution_recenter">Recenter map</string>
+    <string name="mission_execution_groups">Groups</string>
+    <string name="mission_execution_elapsed_time">Time</string>
+    <string name="mission_execution_encounters">Encounters</string>
+    <string name="mission_execution_register_encounter">Register encounter</string>
+    <string name="mission_execution_finish_mission">Finish mission</string>
+
+    <string name="mission_execution_more_options">More options</string>
+    <string name="mission_execution_general_metrics">General metrics</string>
+    <string name="mission_execution_filter_groups">Filter groups</string>
+    <string name="mission_execution_my_group">My group</string>
+    <string name="mission_execution_metrics">Metrics</string>
+    <string name="mission_execution_new_encounter">New encounter</string>
+    <string name="mission_execution_request_support">Request support</string>
+    <string name="mission_execution_end_participation">End participation</string>
+    <string name="mission_execution_open_actions">Open actions</string>
+    <string name="mission_execution_close_actions">Close actions</string>
+
+    <string name="mission_location_notification_channel_name">Mission location</string>
+    <string name="mission_location_notification_channel_description">Keeps your location updated while you participate in a mission.</string>
+    <string name="mission_location_notification_title">Mission in progress</string>
+    <string name="mission_location_notification_text">Your location is being shared during the mission.</string>
+    <string name="mission_execution_support_received">I received support</string>
+
+
+
 </resources>

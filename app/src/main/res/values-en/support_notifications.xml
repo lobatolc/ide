@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mission_support_notification_channel_name">Support requests</string>
+    <string name="mission_support_notification_channel_description">Alerts when a group participant requests support during a mission.</string>
+    <string name="mission_support_notification_title">Support request</string>
+    <string name="mission_support_notification_text">%1$s requested support. Tap to locate them on the map.</string>
+    <string name="mission_support_notification_unknown_user">A participant</string>
+</resources>

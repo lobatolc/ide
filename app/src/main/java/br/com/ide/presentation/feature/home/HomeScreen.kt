@@ -25,13 +25,17 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.ide.R
 import br.com.ide.domain.model.MissionStatus
@@ -47,7 +51,7 @@ import br.com.ide.presentation.mapper.toStringRes
 
 @Composable
 fun HomeScreen(
-    onMissionClick: (String) -> Unit,
+    onMissionClick: (String, MissionStatus) -> Unit,
     onCreateMissionClick: () -> Unit,
     onMetricsClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -56,6 +60,45 @@ fun HomeScreen(
 ) {
     val uiState by
     viewModel.uiState.collectAsStateWithLifecycle()
+
+    val lifecycleOwner =
+        LocalLifecycleOwner.current
+
+    DisposableEffect(
+        lifecycleOwner
+    ) {
+
+        val observer =
+            LifecycleEventObserver {
+                    _,
+                    event ->
+
+                if (
+                    event ==
+                    Lifecycle.Event.ON_RESUME
+                ) {
+
+                    viewModel.onEvent(
+                        HomeEvent.Refresh
+                    )
+                }
+            }
+
+        lifecycleOwner
+            .lifecycle
+            .addObserver(
+                observer
+            )
+
+        onDispose {
+
+            lifecycleOwner
+                .lifecycle
+                .removeObserver(
+                    observer
+                )
+        }
+    }
 
     HomeContent(
         uiState = uiState,
@@ -72,7 +115,7 @@ fun HomeScreen(
 private fun HomeContent(
     uiState: HomeUiState,
     onEvent: (HomeEvent) -> Unit,
-    onMissionClick: (String) -> Unit,
+    onMissionClick: (String, MissionStatus) -> Unit,
     onCreateMissionClick: () -> Unit,
     onMetricsClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -241,7 +284,8 @@ private fun HomeContent(
 
                                 onClick = {
                                     onMissionClick(
-                                        mission.id
+                                        mission.id,
+                                        mission.status
                                     )
                                 }
                             )
@@ -312,6 +356,16 @@ private fun MissionStatusFilters(
     selectedStatus: MissionStatus?,
     onStatusSelected: (MissionStatus?) -> Unit
 ) {
+
+    val statuses =
+        listOf(
+            MissionStatus.PLANNING,
+            MissionStatus.SCHEDULED,
+            MissionStatus.IN_PROGRESS,
+            MissionStatus.COMPLETED,
+            MissionStatus.CANCELLED
+        )
+
     LazyRow(
         modifier =
             Modifier.fillMaxWidth(),
@@ -330,63 +384,40 @@ private fun MissionStatusFilters(
 
         item {
             MissionStatusChip(
-                text = stringResource(
-                    R.string.mission_filter_all
-                ),
-                selected =
-                    selectedStatus == null,
-                onClick = {
-                    onStatusSelected(null)
-                }
-            )
-        }
-
-        item {
-            MissionStatusChip(
-                text = stringResource(
-                    R.string
-                        .mission_status_in_progress
-                ),
+                text =
+                    stringResource(
+                        R.string.mission_filter_all
+                    ),
                 selected =
                     selectedStatus ==
-                            MissionStatus.IN_PROGRESS,
+                            null,
                 onClick = {
                     onStatusSelected(
-                        MissionStatus.IN_PROGRESS
+                        null
                     )
                 }
             )
         }
 
-        item {
-            MissionStatusChip(
-                text = stringResource(
-                    R.string
-                        .mission_status_scheduled
-                ),
-                selected =
-                    selectedStatus ==
-                            MissionStatus.SCHEDULED,
-                onClick = {
-                    onStatusSelected(
-                        MissionStatus.SCHEDULED
-                    )
-                }
-            )
-        }
+        items(
+            items =
+                statuses,
+            key = {
+                it.name
+            }
+        ) { status ->
 
-        item {
             MissionStatusChip(
-                text = stringResource(
-                    R.string
-                        .mission_status_completed
-                ),
+                text =
+                    stringResource(
+                        status.toStringRes()
+                    ),
                 selected =
                     selectedStatus ==
-                            MissionStatus.COMPLETED,
+                            status,
                 onClick = {
                     onStatusSelected(
-                        MissionStatus.COMPLETED
+                        status
                     )
                 }
             )

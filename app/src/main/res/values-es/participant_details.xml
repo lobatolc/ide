@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mission_participant_group">Grupo</string>
+    <string name="mission_participant_no_group">Sin grupo</string>
+    <string name="mission_participant_group_support">Apoyo del grupo</string>
+    <string name="mission_participant_requested_support">Solicitó apoyo</string>
+    <string name="mission_participant_active">Activo</string>
+    <string name="mission_participant_trace_route">Trazar ruta</string>
+    <string name="mission_participant_choose_map_app">Elegir app de mapas</string>
+    <string name="mission_participant_no_map_app">No se encontró una app de mapas compatible.</string>
+    <string name="mission_participant_destination">Participante</string>
+    <string name="mission_participant_role_missionary">Misionero</string>
+    <string name="mission_participant_role_leader">Líder</string>
+    <string name="mission_participant_role_pastor">Pastor</string>
+    <string name="mission_participant_role_admin">Administrador</string>
+    <string name="mission_participant_role_unknown">Función no informada</string>
+</resources>

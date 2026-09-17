@@ -1,6 +1,7 @@
 package br.com.ide.data.repository
 
 import android.content.Context
+import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import br.com.ide.domain.model.GeocodedAddress
@@ -128,7 +129,7 @@ class AndroidGeocodingRepository @Inject constructor(
         geocoder: Geocoder,
         latitude: Double,
         longitude: Double
-    ): android.location.Address? {
+    ): Address? {
 
         if (
             Build.VERSION.SDK_INT <
