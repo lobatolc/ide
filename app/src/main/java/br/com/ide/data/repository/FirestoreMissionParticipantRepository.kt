@@ -312,41 +312,21 @@ class FirestoreMissionParticipantRepository @Inject constructor(
         longitude: Double
     ): Result<Unit> {
 
-        return try {
-
-            participantsCollection(
-                missionId
-            )
-                .document(
-                    userId
+        return upsertParticipantFields(
+            missionId =
+                missionId,
+            userId =
+                userId,
+            update =
+                mapOf(
+                    "latitude" to
+                            latitude,
+                    "longitude" to
+                            longitude,
+                    "locationUpdatedAt" to
+                            FieldValue.serverTimestamp()
                 )
-                .update(
-                    mapOf(
-                        "latitude" to
-                                latitude,
-
-                        "longitude" to
-                                longitude,
-
-                        "locationUpdatedAt" to
-                                FieldValue
-                                    .serverTimestamp()
-                    )
-                )
-                .await()
-
-            Result.success(
-                Unit
-            )
-
-        } catch (
-            exception: Exception
-        ) {
-
-            Result.failure(
-                exception
-            )
-        }
+        )
     }
 
     override suspend fun updateStatus(
@@ -355,57 +335,229 @@ class FirestoreMissionParticipantRepository @Inject constructor(
         status: MissionParticipantStatus
     ): Result<Unit> {
 
-        return try {
+        val update =
+            mutableMapOf<String, Any?>(
+                "status" to
+                        status.name
+            )
 
-            val update =
-                mutableMapOf<String, Any?>(
-                    "status" to
-                            status.name
-                )
+        when (
+            status
+        ) {
 
-            when (
-                status
-            ) {
+            MissionParticipantStatus.ACTIVE -> {
+                update[
+                    "supportRequestedAt"
+                ] = null
 
-                MissionParticipantStatus.ACTIVE -> {
-                    update[
-                        "supportRequestedAt"
-                    ] = null
+                update[
+                    "endedAt"
+                ] = null
 
-                    update[
-                        "endedAt"
-                    ] = null
-                }
-
-                MissionParticipantStatus.NEEDS_SUPPORT -> {
-                    update[
-                        "supportRequestedAt"
-                    ] = FieldValue
-                        .serverTimestamp()
-                }
-
-                MissionParticipantStatus.FINISHED -> {
-                    update[
-                        "endedAt"
-                    ] = FieldValue
-                        .serverTimestamp()
-
-                    update[
-                        "supportRequestedAt"
-                    ] = null
-                }
+                update[
+                    "endedByMission"
+                ] = false
             }
 
-            participantsCollection(
-                missionId
-            )
-                .document(
-                    userId
+            MissionParticipantStatus.NEEDS_SUPPORT -> {
+                update[
+                    "supportRequestedAt"
+                ] = FieldValue
+                    .serverTimestamp()
+
+                update[
+                    "endedByMission"
+                ] = false
+            }
+
+            MissionParticipantStatus.FINISHED -> {
+                update[
+                    "endedAt"
+                ] = FieldValue
+                    .serverTimestamp()
+
+                update[
+                    "supportRequestedAt"
+                ] = null
+
+                /*
+                 * FINISHED por esta operação representa encerramento
+                 * voluntário do participante. O encerramento da missão
+                 * define endedByMission = true em outro fluxo.
+                 */
+                update[
+                    "endedByMission"
+                ] = false
+            }
+        }
+
+        return upsertParticipantFields(
+            missionId =
+                missionId,
+            userId =
+                userId,
+            update =
+                update
+        )
+    }
+
+    /*
+     * Atualiza normalmente quando o documento existe. Se algum dado antigo
+     * ou fluxo anterior deixou participants/{userId} ausente, reconstruímos
+     * um estado mínimo coerente e aplicamos a atualização.
+     *
+     * Isso elimina o NOT_FOUND sem esconder a correção principal feita no
+     * StartMissionUseCase.
+     */
+    private suspend fun upsertParticipantFields(
+        missionId: String,
+        userId: String,
+        update: Map<String, Any?>
+    ): Result<Unit> {
+
+        return try {
+
+            val participantReference =
+                participantsCollection(
+                    missionId
                 )
-                .update(
+                    .document(
+                        userId
+                    )
+
+            val participantSnapshot =
+                participantReference
+                    .get()
+                    .await()
+
+            if (
+                participantSnapshot.exists()
+            ) {
+                participantReference
+                    .update(
+                        update
+                    )
+                    .await()
+            } else {
+
+                val missionSnapshot =
+                    firestore
+                        .collection(
+                            "missions"
+                        )
+                        .document(
+                            missionId
+                        )
+                        .get()
+                        .await()
+
+                if (
+                    !missionSnapshot.exists()
+                ) {
+                    return Result.failure(
+                        IllegalStateException(
+                            "Mission not found."
+                        )
+                    )
+                }
+
+                val groups =
+                    (
+                            missionSnapshot[
+                                "groups"
+                            ] as? List<*>
+                            )
+                        ?.mapNotNull {
+                            it as? Map<*, *>
+                        }
+                        .orEmpty()
+
+                val matchedGroup =
+                    groups
+                        .firstOrNull { group ->
+
+                            val participantIds =
+                                (
+                                        group[
+                                            "participantIds"
+                                        ] as? List<*>
+                                        )
+                                    ?.mapNotNull {
+                                        it as? String
+                                    }
+                                    .orEmpty()
+
+                            val supportUserId =
+                                group[
+                                    "supportUserId"
+                                ] as? String
+
+                            userId in participantIds ||
+                                    supportUserId ==
+                                    userId
+                        }
+
+                val groupId =
+                    matchedGroup
+                        ?.get(
+                            "id"
+                        ) as? String
+
+                val supportUserId =
+                    matchedGroup
+                        ?.get(
+                            "supportUserId"
+                        ) as? String
+
+                val initialData =
+                    mutableMapOf<String, Any?>(
+                        "userId" to
+                                userId,
+                        "missionId" to
+                                missionId,
+                        "groupId" to
+                                groupId,
+                        "isSupport" to
+                                (
+                                        supportUserId ==
+                                                userId
+                                        ),
+                        "status" to
+                                MissionParticipantStatus
+                                    .ACTIVE
+                                    .name,
+                        "latitude" to
+                                null,
+                        "longitude" to
+                                null,
+                        "locationUpdatedAt" to
+                                null,
+                        "joinedAt" to
+                                (
+                                        missionSnapshot
+                                            .getTimestamp(
+                                                "startedAt"
+                                            )
+                                            ?: FieldValue.serverTimestamp()
+                                        ),
+                        "supportRequestedAt" to
+                                null,
+                        "endedAt" to
+                                null,
+                        "endedByMission" to
+                                false
+                    )
+
+                initialData.putAll(
                     update
                 )
-                .await()
+
+                participantReference
+                    .set(
+                        initialData
+                    )
+                    .await()
+            }
 
             Result.success(
                 Unit
@@ -414,7 +566,6 @@ class FirestoreMissionParticipantRepository @Inject constructor(
         } catch (
             exception: Exception
         ) {
-
             Result.failure(
                 exception
             )
@@ -528,7 +679,13 @@ class FirestoreMissionParticipantRepository @Inject constructor(
                 getTimestamp(
                     "endedAt"
                 )
-                    ?.toLocalDateTime()
+                    ?.toLocalDateTime(),
+
+            endedByMission =
+                getBoolean(
+                    "endedByMission"
+                )
+                    ?: false
         )
     }
 
@@ -572,7 +729,10 @@ class FirestoreMissionParticipantRepository @Inject constructor(
 
             "endedAt" to
                     endedAt
-                        ?.toTimestamp()
+                        ?.toTimestamp(),
+
+            "endedByMission" to
+                    endedByMission
         )
     }
 
@@ -612,7 +772,10 @@ class FirestoreMissionParticipantRepository @Inject constructor(
                     null,
 
             "endedAt" to
-                    null
+                    null,
+
+            "endedByMission" to
+                    false
         )
     }
 

@@ -27,6 +27,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,16 +49,20 @@ import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -68,6 +76,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -81,6 +90,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.ide.R
+import br.com.ide.domain.model.MissionEncounter
 import br.com.ide.domain.model.MissionParticipantStatus
 import br.com.ide.domain.model.UserRole
 import br.com.ide.presentation.components.map.MissionParticipantMarker
@@ -108,6 +118,71 @@ fun MissionExecutionScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+
+    val endParticipationErrorMessage =
+        uiState
+            .endParticipationErrorMessage
+            ?.let { messageRes ->
+                stringResource(
+                    messageRes
+                )
+            }
+
+    LaunchedEffect(
+        uiState.participationEnded
+    ) {
+        if (
+            uiState.participationEnded
+        ) {
+            viewModel
+                .consumeParticipationEnded()
+
+            onEndParticipationClick()
+        }
+    }
+
+    LaunchedEffect(
+        uiState.missionFinished
+    ) {
+        if (
+            uiState.missionFinished
+        ) {
+            viewModel.consumeMissionFinished()
+
+            onBackClick()
+        }
+    }
+
+    LaunchedEffect(
+        uiState.participationAccessDenied
+    ) {
+        if (
+            uiState.participationAccessDenied
+        ) {
+            viewModel
+                .consumeParticipationAccessDenied()
+
+            onEndParticipationClick()
+        }
+    }
+
+    LaunchedEffect(
+        endParticipationErrorMessage
+    ) {
+        endParticipationErrorMessage
+            ?.let { message ->
+                Toast
+                    .makeText(
+                        context,
+                        message,
+                        Toast.LENGTH_LONG
+                    )
+                    .show()
+
+                viewModel
+                    .consumeEndParticipationError()
+            }
+    }
 
     fun hasLocationPermission(): Boolean {
 
@@ -261,11 +336,15 @@ fun MissionExecutionScreen(
             onFocusParticipantHandled,
         onBackClick = onBackClick,
         onRegisterEncounterClick = onRegisterEncounterClick,
-        onGroupsClick = onGroupsClick,
-        onFinishMissionClick = onFinishMissionClick,
+        onFinishMissionClick =
+            viewModel::finishMission,
         onMetricsClick = onMetricsClick,
         onGeneralMetricsClick = onGeneralMetricsClick,
         onFilterGroupsClick = onFilterGroupsClick,
+        onApplyMapGroupFilter =
+            viewModel::applyMapGroupFilter,
+        onClearMapGroupFilter =
+            viewModel::clearMapGroupFilter,
         onRequestSupportClick = {
             if (
                 uiState.isSupportRequested
@@ -276,7 +355,10 @@ fun MissionExecutionScreen(
                 onRequestSupportClick()
             }
         },
-        onEndParticipationClick = onEndParticipationClick
+        isEndingParticipation =
+            uiState.isEndingParticipation,
+        onEndParticipationClick =
+            viewModel::endParticipation
     )
 }
 
@@ -287,12 +369,17 @@ private fun MissionExecutionContent(
     onFocusParticipantHandled: () -> Unit,
     onBackClick: () -> Unit,
     onRegisterEncounterClick: () -> Unit,
-    onGroupsClick: () -> Unit,
     onFinishMissionClick: () -> Unit,
     onMetricsClick: () -> Unit,
     onGeneralMetricsClick: () -> Unit,
     onFilterGroupsClick: () -> Unit,
+    onApplyMapGroupFilter: (
+        Set<String>,
+        Boolean
+    ) -> Unit,
+    onClearMapGroupFilter: () -> Unit,
     onRequestSupportClick: () -> Unit,
+    isEndingParticipation: Boolean,
     onEndParticipationClick: () -> Unit
 ) {
     val context =
@@ -304,6 +391,28 @@ private fun MissionExecutionContent(
     var recenterKey by remember { mutableIntStateOf(0) }
     var speedDialExpanded by remember { mutableStateOf(false) }
     var headerMenuExpanded by remember { mutableStateOf(false) }
+    var showMyGroup by remember { mutableStateOf(false) }
+    var showGroupFilter by remember { mutableStateOf(false) }
+    var showEndParticipationConfirmation by
+    remember {
+        mutableStateOf(
+            false
+        )
+    }
+
+    var showFinishMissionConfirmation by
+    remember {
+        mutableStateOf(
+            false
+        )
+    }
+
+    var localFocusParticipantUserId by
+    remember {
+        mutableStateOf<String?>(
+            null
+        )
+    }
 
     var selectedParticipantUserId by
     remember {
@@ -312,13 +421,66 @@ private fun MissionExecutionContent(
         )
     }
 
+    var selectedEncounterId by
+    remember {
+        mutableStateOf<String?>(
+            null
+        )
+    }
+
+    val visibleParticipantMarkers =
+        if (
+            uiState.isMapGroupFilterActive
+        ) {
+            uiState
+                .participantMarkers
+                .filter { marker ->
+                    marker.groupId
+                        ?.let {
+                            it in
+                                    uiState.selectedMapGroupIds
+                        }
+                        ?: uiState.includeUngroupedOnMap
+                }
+        } else {
+            uiState.participantMarkers
+        }
+
+    val visibleParticipantTracks =
+        if (
+            uiState.isMapGroupFilterActive
+        ) {
+            uiState
+                .participantTracks
+                .filter { track ->
+                    track.groupId
+                        ?.let {
+                            it in
+                                    uiState.selectedMapGroupIds
+                        }
+                        ?: uiState.includeUngroupedOnMap
+                }
+        } else {
+            uiState.participantTracks
+        }
+
     val selectedParticipant =
         selectedParticipantUserId
             ?.let { userId ->
-                uiState.participantMarkers
+                visibleParticipantMarkers
                     .firstOrNull {
                         it.userId ==
                                 userId
+                    }
+            }
+
+    val selectedEncounter =
+        selectedEncounterId
+            ?.let { encounterId ->
+                uiState.encounters
+                    .firstOrNull {
+                        it.id ==
+                                encounterId
                     }
             }
 
@@ -344,26 +506,52 @@ private fun MissionExecutionContent(
             selectedLongitude =
                 uiState.currentLongitude ?: uiState.departureLongitude,
             polygonPoints = uiState.areaPoints,
-            participantMarkers = uiState.participantMarkers,
-            participantTracks = uiState.participantTracks,
+            participantMarkers = visibleParticipantMarkers,
+            encounterMarkers = uiState.encounterMarkers,
+            participantTracks = visibleParticipantTracks,
             isDarkTheme = isDarkTheme,
             modifier = Modifier.fillMaxSize(),
             recenterKey = recenterKey,
             focusParticipantUserId =
-                focusParticipantUserId,
-            onFocusParticipantHandled =
-                onFocusParticipantHandled,
+                localFocusParticipantUserId
+                    ?: focusParticipantUserId,
+            onFocusParticipantHandled = {
+
+                if (
+                    localFocusParticipantUserId != null
+                ) {
+                    localFocusParticipantUserId =
+                        null
+                } else {
+                    onFocusParticipantHandled()
+                }
+            },
             onParticipantClick = { participant ->
+
+                selectedEncounterId =
+                    null
 
                 selectedParticipantUserId =
                     participant.userId
+            },
+            onEncounterClick = { encounterId ->
+
+                selectedParticipantUserId =
+                    null
+
+                selectedEncounterId =
+                    encounterId
             }
         )
 
         MissionExecutionHeader(
             missionName = uiState.missionName,
             elapsedSeconds = uiState.elapsedSeconds,
+            canViewGeneralMetrics =
+                uiState.canViewGeneralMetrics,
             canManageMission = uiState.canFinishMission,
+            isGroupFilterActive =
+                uiState.isMapGroupFilterActive,
             menuExpanded = headerMenuExpanded,
             onMenuExpandedChange = {
                 headerMenuExpanded = it
@@ -375,11 +563,13 @@ private fun MissionExecutionContent(
             },
             onFilterGroupsClick = {
                 headerMenuExpanded = false
+                showGroupFilter = true
                 onFilterGroupsClick()
             },
             onFinishMissionClick = {
                 headerMenuExpanded = false
-                onFinishMissionClick()
+                showFinishMissionConfirmation =
+                    true
             },
             modifier =
                 Modifier
@@ -407,7 +597,8 @@ private fun MissionExecutionContent(
             },
             onMyGroupClick = {
                 speedDialExpanded = false
-                onGroupsClick()
+                showMyGroup =
+                    true
             },
             onMetricsClick = {
                 speedDialExpanded = false
@@ -421,13 +612,16 @@ private fun MissionExecutionContent(
                 uiState.isSupportRequested,
             isUpdatingSupportStatus =
                 uiState.isUpdatingSupportStatus,
+            isEndingParticipation =
+                isEndingParticipation,
             onRequestSupportClick = {
                 speedDialExpanded = false
                 onRequestSupportClick()
             },
             onEndParticipationClick = {
                 speedDialExpanded = false
-                onEndParticipationClick()
+                showEndParticipationConfirmation =
+                    true
             },
             modifier =
                 Modifier
@@ -438,6 +632,332 @@ private fun MissionExecutionContent(
                         bottom = 16.dp
                     )
         )
+    }
+
+    if (
+        showMyGroup
+    ) {
+
+        MyGroupBottomSheet(
+            groupName =
+                uiState.currentGroupName,
+            groupColorHex =
+                uiState.currentGroupColorHex,
+            members =
+                uiState.currentGroupMembers,
+            onDismiss = {
+                showMyGroup =
+                    false
+            },
+            onMemberClick = { member ->
+
+                val markerExists =
+                    uiState.participantMarkers
+                        .any {
+                            it.userId ==
+                                    member.userId
+                        }
+
+                if (
+                    markerExists
+                ) {
+                    showMyGroup =
+                        false
+
+                    localFocusParticipantUserId =
+                        member.userId
+                }
+            }
+        )
+    }
+
+    if (
+        showGroupFilter
+    ) {
+        MapGroupFilterBottomSheet(
+            groups =
+                uiState.mapGroupFilters,
+            selectedGroupIds =
+                uiState.selectedMapGroupIds,
+            includeUngrouped =
+                uiState.includeUngroupedOnMap,
+            isFilterActive =
+                uiState.isMapGroupFilterActive,
+            /*
+             * groupId == null aparece como Grupo Geral na própria lista de
+             * grupos; não existe mais uma opção paralela "Sem grupo".
+             */
+            ungroupedParticipantCount =
+                0,
+            showUngroupedOption =
+                false,
+            onDismiss = {
+                showGroupFilter = false
+            },
+            onApply = {
+                    selectedGroupIds,
+                    includeUngrouped ->
+
+                onApplyMapGroupFilter(
+                    selectedGroupIds,
+                    includeUngrouped
+                )
+
+                showGroupFilter = false
+            },
+            onClear = {
+                onClearMapGroupFilter()
+                showGroupFilter = false
+            }
+        )
+    }
+
+    if (
+        showFinishMissionConfirmation
+    ) {
+        AlertDialog(
+            onDismissRequest = {
+                if (
+                    !uiState.isFinishing
+                ) {
+                    showFinishMissionConfirmation =
+                        false
+                }
+            },
+            icon = {
+                Icon(
+                    imageVector =
+                        Icons.Outlined.Flag,
+                    contentDescription =
+                        null,
+                    tint =
+                        MaterialTheme
+                            .colorScheme
+                            .error
+                )
+            },
+            title = {
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_finish_title
+                        )
+                )
+            },
+            text = {
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_finish_message
+                        )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick =
+                        onFinishMissionClick,
+                    enabled =
+                        !uiState.isFinishing
+                ) {
+                    Text(
+                        text =
+                            stringResource(
+                                if (
+                                    uiState.isFinishing
+                                ) {
+                                    R.string
+                                        .mission_finish_finishing
+                                } else {
+                                    R.string
+                                        .mission_finish_confirm
+                                }
+                            ),
+                        color =
+                            if (
+                                uiState.isFinishing
+                            ) {
+                                MaterialTheme
+                                    .colorScheme
+                                    .onSurfaceVariant
+                            } else {
+                                MaterialTheme
+                                    .colorScheme
+                                    .error
+                            }
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showFinishMissionConfirmation =
+                            false
+                    },
+                    enabled =
+                        !uiState.isFinishing
+                ) {
+                    Text(
+                        text =
+                            stringResource(
+                                R.string
+                                    .mission_finish_cancel
+                            )
+                    )
+                }
+            }
+        )
+    }
+
+    if (
+        showEndParticipationConfirmation
+    ) {
+        AlertDialog(
+            onDismissRequest = {
+                if (
+                    !isEndingParticipation
+                ) {
+                    showEndParticipationConfirmation =
+                        false
+                }
+            },
+            icon = {
+                Icon(
+                    imageVector =
+                        Icons.Outlined.Logout,
+                    contentDescription =
+                        null,
+                    tint =
+                        MaterialTheme
+                            .colorScheme
+                            .error
+                )
+            },
+            title = {
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_end_participation_title
+                        )
+                )
+            },
+            text = {
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_end_participation_message
+                        )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick =
+                        onEndParticipationClick,
+                    enabled =
+                        !isEndingParticipation
+                ) {
+                    Text(
+                        text =
+                            stringResource(
+                                if (
+                                    isEndingParticipation
+                                ) {
+                                    R.string
+                                        .mission_end_participation_ending
+                                } else {
+                                    R.string
+                                        .mission_end_participation_confirm
+                                }
+                            ),
+                        color =
+                            if (
+                                isEndingParticipation
+                            ) {
+                                MaterialTheme
+                                    .colorScheme
+                                    .onSurfaceVariant
+                            } else {
+                                MaterialTheme
+                                    .colorScheme
+                                    .error
+                            }
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showEndParticipationConfirmation =
+                            false
+                    },
+                    enabled =
+                        !isEndingParticipation
+                ) {
+                    Text(
+                        text =
+                            stringResource(
+                                R.string
+                                    .mission_end_participation_cancel
+                            )
+                    )
+                }
+            }
+        )
+    }
+
+    val customActivityPerformedLabel =
+        uiState
+            .customActivityName
+            ?.trim()
+            ?.takeIf {
+                it.isNotBlank()
+            }
+            ?.let { customActivityName ->
+
+                val genericOtherActivityLabel =
+                    stringResource(
+                        R.string
+                            .new_encounter_activity_other
+                    )
+
+                val performedSuffix =
+                    genericOtherActivityLabel
+                        .substringAfterLast(
+                            " ",
+                            missingDelimiterValue =
+                                ""
+                        )
+                        .trim()
+
+                if (
+                    performedSuffix.isNotBlank()
+                ) {
+                    "$customActivityName $performedSuffix"
+                } else {
+                    customActivityName
+                }
+            }
+
+    /*
+     * Se o encontro for removido ou deixar de existir enquanto
+     * estiver selecionado, limpamos a seleção para não manter
+     * uma referência antiga na tela.
+     */
+    LaunchedEffect(
+        selectedEncounterId,
+        selectedEncounter
+    ) {
+
+        if (
+            selectedEncounterId != null &&
+            selectedEncounter == null
+        ) {
+            selectedEncounterId =
+                null
+        }
     }
 
     if (
@@ -461,9 +981,817 @@ private fun MissionExecutionContent(
             }
         )
     }
+
+    if (
+        selectedEncounter != null
+    ) {
+
+        EncounterDetailsBottomSheet(
+            encounter =
+                selectedEncounter,
+            onDismiss = {
+                selectedEncounterId =
+                    null
+            },
+            onWhatsAppClick = {
+                openEncounterInWhatsApp(
+                    context =
+                        context,
+                    encounter =
+                        selectedEncounter
+                )
+            },
+            onTraceRouteClick = {
+                openEncounterInMapApp(
+                    context =
+                        context,
+                    encounter =
+                        selectedEncounter
+                )
+            },
+            customActivityPerformedLabel =
+                customActivityPerformedLabel
+        )
+    }
 }
 
 
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MapGroupFilterBottomSheet(
+    groups: List<MissionMapGroupFilterUiModel>,
+    selectedGroupIds: Set<String>,
+    includeUngrouped: Boolean,
+    isFilterActive: Boolean,
+    ungroupedParticipantCount: Int,
+    showUngroupedOption: Boolean,
+    onDismiss: () -> Unit,
+    onApply: (
+        Set<String>,
+        Boolean
+    ) -> Unit,
+    onClear: () -> Unit
+) {
+
+    val allGroupIds =
+        groups
+            .map {
+                it.id
+            }
+            .toSet()
+
+    var draftGroupIds by
+    remember(
+        groups,
+        selectedGroupIds,
+        isFilterActive
+    ) {
+        mutableStateOf(
+            if (
+                isFilterActive
+            ) {
+                selectedGroupIds
+            } else {
+                allGroupIds
+            }
+        )
+    }
+
+    var draftIncludeUngrouped by
+    remember(
+        includeUngrouped,
+        isFilterActive,
+        showUngroupedOption
+    ) {
+        mutableStateOf(
+            if (
+                !showUngroupedOption
+            ) {
+                false
+            } else if (
+                isFilterActive
+            ) {
+                includeUngrouped
+            } else {
+                true
+            }
+        )
+    }
+
+    val allSelected =
+        draftGroupIds ==
+                allGroupIds &&
+                (
+                        !showUngroupedOption ||
+                                draftIncludeUngrouped
+                        )
+
+    val hasSelection =
+        draftGroupIds.isNotEmpty() ||
+                (
+                        showUngroupedOption &&
+                                draftIncludeUngrouped
+                        )
+
+    ModalBottomSheet(
+        onDismissRequest =
+            onDismiss
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(
+                        rememberScrollState()
+                    )
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        bottom = 28.dp
+                    ),
+            verticalArrangement =
+                Arrangement.spacedBy(
+                    12.dp
+                )
+        ) {
+            Text(
+                text =
+                    stringResource(
+                        R.string
+                            .mission_execution_filter_groups
+                    ),
+                style =
+                    MaterialTheme
+                        .typography
+                        .headlineSmall,
+                fontWeight =
+                    FontWeight.Bold
+            )
+
+            Text(
+                text =
+                    stringResource(
+                        R.string
+                            .mission_group_filter_description
+                    ),
+                style =
+                    MaterialTheme
+                        .typography
+                        .bodyMedium,
+                color =
+                    MaterialTheme
+                        .colorScheme
+                        .onSurfaceVariant
+            )
+
+            MapGroupFilterOption(
+                title =
+                    stringResource(
+                        R.string
+                            .mission_group_filter_all
+                    ),
+                supportingText =
+                    null,
+                checked =
+                    allSelected,
+                colorHex =
+                    null,
+                onToggle = {
+                    if (
+                        allSelected
+                    ) {
+                        draftGroupIds =
+                            emptySet()
+                        draftIncludeUngrouped =
+                            false
+                    } else {
+                        draftGroupIds =
+                            allGroupIds
+                        draftIncludeUngrouped =
+                            showUngroupedOption
+                    }
+                }
+            )
+
+            HorizontalDivider()
+
+            groups
+                .forEach { group ->
+                    MapGroupFilterOption(
+                        title =
+                            group.name,
+                        supportingText =
+                            stringResource(
+                                R.string
+                                    .mission_group_filter_participants,
+                                group.participantCount
+                            ),
+                        checked =
+                            group.id in
+                                    draftGroupIds,
+                        colorHex =
+                            group.colorHex,
+                        onToggle = {
+                            draftGroupIds =
+                                if (
+                                    group.id in
+                                    draftGroupIds
+                                ) {
+                                    draftGroupIds -
+                                            group.id
+                                } else {
+                                    draftGroupIds +
+                                            group.id
+                                }
+                        }
+                    )
+                }
+
+            if (
+                showUngroupedOption
+            ) {
+                MapGroupFilterOption(
+                    title =
+                        stringResource(
+                            R.string
+                                .mission_group_filter_ungrouped
+                        ),
+                    supportingText =
+                        stringResource(
+                            R.string
+                                .mission_group_filter_participants,
+                            ungroupedParticipantCount
+                        ),
+                    checked =
+                        draftIncludeUngrouped,
+                    colorHex =
+                        null,
+                    onToggle = {
+                        draftIncludeUngrouped =
+                            !draftIncludeUngrouped
+                    }
+                )
+            }
+
+            Row(
+                modifier =
+                    Modifier.fillMaxWidth(),
+                horizontalArrangement =
+                    Arrangement.spacedBy(
+                        12.dp
+                    ),
+                verticalAlignment =
+                    Alignment.CenterVertically
+            ) {
+                if (
+                    isFilterActive
+                ) {
+                    TextButton(
+                        onClick =
+                            onClear
+                    ) {
+                        Text(
+                            text =
+                                stringResource(
+                                    R.string
+                                        .mission_group_filter_show_all
+                                )
+                        )
+                    }
+                }
+
+                Spacer(
+                    modifier =
+                        Modifier.weight(
+                            1f
+                        )
+                )
+
+                Button(
+                    onClick = {
+                        onApply(
+                            draftGroupIds,
+                            draftIncludeUngrouped
+                        )
+                    },
+                    enabled =
+                        hasSelection
+                ) {
+                    Text(
+                        text =
+                            stringResource(
+                                R.string
+                                    .mission_group_filter_apply
+                            )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MapGroupFilterOption(
+    title: String,
+    supportingText: String?,
+    checked: Boolean,
+    colorHex: String?,
+    onToggle: () -> Unit
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(
+                    onClick =
+                        onToggle
+                )
+                .padding(
+                    vertical = 6.dp
+                ),
+        verticalAlignment =
+            Alignment.CenterVertically,
+        horizontalArrangement =
+            Arrangement.spacedBy(
+                12.dp
+            )
+    ) {
+        Checkbox(
+            checked =
+                checked,
+            onCheckedChange = {
+                onToggle()
+            }
+        )
+
+        Box(
+            modifier =
+                Modifier
+                    .size(
+                        14.dp
+                    )
+                    .background(
+                        color =
+                            colorHex
+                                .toComposeColorOrNull()
+                                ?: MaterialTheme
+                                    .colorScheme
+                                    .outline,
+                        shape =
+                            CircleShape
+                    )
+        )
+
+        Column(
+            modifier =
+                Modifier.weight(
+                    1f
+                )
+        ) {
+            Text(
+                text =
+                    title,
+                style =
+                    MaterialTheme
+                        .typography
+                        .bodyLarge,
+                fontWeight =
+                    FontWeight.Medium
+            )
+
+            if (
+                supportingText != null
+            ) {
+                Text(
+                    text =
+                        supportingText,
+                    style =
+                        MaterialTheme
+                            .typography
+                            .bodySmall,
+                    color =
+                        MaterialTheme
+                            .colorScheme
+                            .onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MyGroupBottomSheet(
+    groupName: String?,
+    groupColorHex: String?,
+    members: List<MissionGroupMemberUiModel>,
+    onDismiss: () -> Unit,
+    onMemberClick: (
+        MissionGroupMemberUiModel
+    ) -> Unit
+) {
+
+    ModalBottomSheet(
+        onDismissRequest =
+            onDismiss
+    ) {
+
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        bottom = 28.dp
+                    ),
+            verticalArrangement =
+                Arrangement.spacedBy(
+                    16.dp
+                )
+        ) {
+
+            if (
+                groupName == null
+            ) {
+
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_my_group_title
+                        ),
+                    style =
+                        MaterialTheme
+                            .typography
+                            .headlineSmall,
+                    fontWeight =
+                        FontWeight.Bold
+                )
+
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_my_group_no_group
+                        ),
+                    style =
+                        MaterialTheme
+                            .typography
+                            .bodyLarge,
+                    color =
+                        MaterialTheme
+                            .colorScheme
+                            .onSurfaceVariant
+                )
+
+                return@Column
+            }
+
+            Row(
+                verticalAlignment =
+                    Alignment.CenterVertically,
+                horizontalArrangement =
+                    Arrangement.spacedBy(
+                        12.dp
+                    )
+            ) {
+
+                Box(
+                    modifier =
+                        Modifier
+                            .size(
+                                16.dp
+                            )
+                            .background(
+                                color =
+                                    groupColorHex
+                                        .toComposeColorOrNull()
+                                        ?: MaterialTheme
+                                            .colorScheme
+                                            .primary,
+                                shape =
+                                    CircleShape
+                            )
+                )
+
+                Column {
+
+                    Text(
+                        text =
+                            groupName,
+                        style =
+                            MaterialTheme
+                                .typography
+                                .headlineSmall,
+                        fontWeight =
+                            FontWeight.Bold
+                    )
+
+                    Text(
+                        text =
+                            stringResource(
+                                R.string
+                                    .mission_my_group_members_count,
+                                members.size
+                            ),
+                        style =
+                            MaterialTheme
+                                .typography
+                                .bodyMedium,
+                        color =
+                            MaterialTheme
+                                .colorScheme
+                                .onSurfaceVariant
+                    )
+                }
+            }
+
+            Text(
+                text =
+                    stringResource(
+                        R.string
+                            .mission_my_group_participants
+                    ),
+                style =
+                    MaterialTheme
+                        .typography
+                        .titleMedium,
+                fontWeight =
+                    FontWeight.SemiBold
+            )
+
+            members
+                .forEach { member ->
+
+                    MyGroupMemberRow(
+                        member =
+                            member,
+                        groupColorHex =
+                            groupColorHex,
+                        onClick = {
+                            onMemberClick(
+                                member
+                            )
+                        }
+                    )
+                }
+        }
+    }
+}
+
+@Composable
+private fun MyGroupMemberRow(
+    member: MissionGroupMemberUiModel,
+    groupColorHex: String?,
+    onClick: () -> Unit
+) {
+
+    val statusText =
+        when (
+            member.status
+        ) {
+
+            MissionParticipantStatus
+                .NEEDS_SUPPORT ->
+                stringResource(
+                    R.string
+                        .mission_participant_requested_support
+                )
+
+            MissionParticipantStatus
+                .FINISHED ->
+                stringResource(
+                    R.string
+                        .mission_my_group_finished
+                )
+
+            MissionParticipantStatus
+                .ACTIVE ->
+                stringResource(
+                    R.string
+                        .mission_participant_active
+                )
+        }
+
+    Surface(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(
+                    enabled =
+                        member.hasMapPosition,
+                    onClick =
+                        onClick
+                ),
+        shape =
+            RoundedCornerShape(
+                16.dp
+            ),
+        color =
+            MaterialTheme
+                .colorScheme
+                .surfaceVariant
+                .copy(
+                    alpha =
+                        0.55f
+                )
+    ) {
+
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        14.dp
+                    ),
+            verticalAlignment =
+                Alignment.CenterVertically,
+            horizontalArrangement =
+                Arrangement.spacedBy(
+                    12.dp
+                )
+        ) {
+
+            Surface(
+                modifier =
+                    Modifier.size(
+                        42.dp
+                    ),
+                shape =
+                    CircleShape,
+                color =
+                    groupColorHex
+                        .toComposeColorOrNull()
+                        ?: MaterialTheme
+                            .colorScheme
+                            .primary
+            ) {
+
+                Box(
+                    contentAlignment =
+                        Alignment.Center
+                ) {
+
+                    Icon(
+                        imageVector =
+                            if (
+                                member.status ==
+                                MissionParticipantStatus
+                                    .NEEDS_SUPPORT
+                            ) {
+                                Icons.Outlined.Sos
+                            } else {
+                                Icons.Outlined.Groups
+                            },
+                        contentDescription =
+                            null,
+                        tint =
+                            Color.White
+                    )
+                }
+            }
+
+            Column(
+                modifier =
+                    Modifier.weight(
+                        1f
+                    ),
+                verticalArrangement =
+                    Arrangement.spacedBy(
+                        3.dp
+                    )
+            ) {
+
+                Text(
+                    text =
+                        member.displayName
+                            .takeIf {
+                                it.isNotBlank()
+                            }
+                            ?: stringResource(
+                                R.string
+                                    .mission_participant_destination
+                            ),
+                    style =
+                        MaterialTheme
+                            .typography
+                            .titleMedium,
+                    fontWeight =
+                        FontWeight.SemiBold,
+                    maxLines =
+                        1,
+                    overflow =
+                        TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text =
+                        buildString {
+
+                            append(
+                                participantRoleLabel(
+                                    member.role
+                                )
+                            )
+
+                            if (
+                                member.isCurrentUser
+                            ) {
+                                append(
+                                    " • "
+                                )
+                                append(
+                                    stringResource(
+                                        R.string
+                                            .mission_my_group_you
+                                    )
+                                )
+                            }
+
+                            if (
+                                member.isSupport
+                            ) {
+                                append(
+                                    " • "
+                                )
+                                append(
+                                    stringResource(
+                                        R.string
+                                            .mission_my_group_support
+                                    )
+                                )
+                            }
+                        },
+                    style =
+                        MaterialTheme
+                            .typography
+                            .bodyMedium,
+                    color =
+                        MaterialTheme
+                            .colorScheme
+                            .onSurfaceVariant,
+                    maxLines =
+                        1,
+                    overflow =
+                        TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text =
+                        statusText,
+                    style =
+                        MaterialTheme
+                            .typography
+                            .labelLarge,
+                    fontWeight =
+                        FontWeight.Medium,
+                    color =
+                        if (
+                            member.status ==
+                            MissionParticipantStatus
+                                .NEEDS_SUPPORT
+                        ) {
+                            MaterialTheme
+                                .colorScheme
+                                .error
+                        } else {
+                            MaterialTheme
+                                .colorScheme
+                                .primary
+                        }
+                )
+            }
+        }
+    }
+}
+
+private fun String?.toComposeColorOrNull():
+        Color? {
+
+    val value =
+        this
+            ?.takeIf {
+                it.matches(
+                    Regex(
+                        "^#[0-9A-Fa-f]{6}$"
+                    )
+                )
+            }
+            ?: return null
+
+    return runCatching {
+        Color(
+            android.graphics.Color
+                .parseColor(
+                    value
+                )
+        )
+    }
+        .getOrNull()
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -795,12 +2123,267 @@ private fun openParticipantInMapApp(
     }
 }
 
+private fun openEncounterInWhatsApp(
+    context: Context,
+    encounter: MissionEncounter
+) {
+
+    val phoneDigits =
+        encounter
+            .phoneDigits
+            .orEmpty()
+            .filter(
+                Char::isDigit
+            )
+
+    if (
+        phoneDigits.length !=
+        11
+    ) {
+        return
+    }
+
+    val firstName =
+        encounter
+            .personName
+            ?.trim()
+            ?.substringBefore(
+                " "
+            )
+            ?.takeIf {
+                it.isNotBlank()
+            }
+
+    val message =
+        if (
+            firstName != null
+        ) {
+            context.getString(
+                R.string
+                    .new_encounter_whatsapp_message_named,
+                firstName
+            )
+        } else {
+            context.getString(
+                R.string
+                    .new_encounter_whatsapp_message_unnamed
+            )
+        }
+
+    val opened =
+        openEncounterWhatsAppConversation(
+            context =
+                context,
+            phoneDigits =
+                phoneDigits,
+            message =
+                message
+        )
+
+    if (
+        !opened
+    ) {
+
+        Toast
+            .makeText(
+                context,
+                context.getString(
+                    R.string
+                        .new_encounter_whatsapp_error
+                ),
+                Toast.LENGTH_SHORT
+            )
+            .show()
+    }
+}
+
+private fun openEncounterWhatsAppConversation(
+    context: Context,
+    phoneDigits: String,
+    message: String
+): Boolean {
+
+    val normalizedPhone =
+        phoneDigits
+            .filter(
+                Char::isDigit
+            )
+
+    if (
+        normalizedPhone.length !=
+        11
+    ) {
+        return false
+    }
+
+    val fullPhone =
+        "55$normalizedPhone"
+
+    val encodedMessage =
+        Uri.encode(
+            message
+        )
+
+    val nativeUri =
+        Uri.parse(
+            "whatsapp://send" +
+                    "?phone=$fullPhone" +
+                    "&text=$encodedMessage"
+        )
+
+    val whatsappPackages =
+        listOf(
+            "com.whatsapp",
+            "com.whatsapp.w4b"
+        )
+
+    whatsappPackages
+        .forEach { packageName ->
+
+            val opened =
+                runCatching {
+
+                    val intent =
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            nativeUri
+                        )
+                            .apply {
+                                setPackage(
+                                    packageName
+                                )
+
+                                addFlags(
+                                    Intent.FLAG_ACTIVITY_NEW_TASK
+                                )
+                            }
+
+                    context.startActivity(
+                        intent
+                    )
+
+                    true
+                }
+                    .getOrDefault(
+                        false
+                    )
+
+            if (
+                opened
+            ) {
+                return true
+            }
+        }
+
+    return runCatching {
+
+        val webUri =
+            Uri.parse(
+                "https://wa.me/$fullPhone" +
+                        "?text=$encodedMessage"
+            )
+
+        val intent =
+            Intent(
+                Intent.ACTION_VIEW,
+                webUri
+            )
+                .apply {
+                    addFlags(
+                        Intent.FLAG_ACTIVITY_NEW_TASK
+                    )
+                }
+
+        context.startActivity(
+            intent
+        )
+
+        true
+    }
+        .getOrDefault(
+            false
+        )
+}
+
+private fun openEncounterInMapApp(
+    context: Context,
+    encounter: MissionEncounter
+) {
+
+    val latitude =
+        encounter.latitude
+            ?: return
+
+    val longitude =
+        encounter.longitude
+            ?: return
+
+    val label =
+        encounter
+            .personName
+            ?.takeIf {
+                it.isNotBlank()
+            }
+            ?: context.getString(
+                R.string
+                    .mission_participant_destination
+            )
+
+    val uri =
+        Uri.parse(
+            "geo:0,0?q=" +
+                    "$latitude," +
+                    "$longitude" +
+                    "(${Uri.encode(label)})"
+        )
+
+    val mapIntent =
+        Intent(
+            Intent.ACTION_VIEW,
+            uri
+        )
+
+    val chooser =
+        Intent.createChooser(
+            mapIntent,
+            context.getString(
+                R.string
+                    .mission_participant_choose_map_app
+            )
+        )
+
+    try {
+
+        context.startActivity(
+            chooser
+        )
+
+    } catch (
+        exception:
+        ActivityNotFoundException
+    ) {
+
+        Toast
+            .makeText(
+                context,
+                context.getString(
+                    R.string
+                        .mission_participant_no_map_app
+                ),
+                Toast.LENGTH_SHORT
+            )
+            .show()
+    }
+}
+
 
 @Composable
 private fun MissionExecutionHeader(
     missionName: String,
     elapsedSeconds: Long,
+    canViewGeneralMetrics: Boolean,
     canManageMission: Boolean,
+    isGroupFilterActive: Boolean,
     menuExpanded: Boolean,
     onMenuExpandedChange: (Boolean) -> Unit,
     onBackClick: () -> Unit,
@@ -826,7 +2409,15 @@ private fun MissionExecutionHeader(
                     .fillMaxWidth()
                     .padding(
                         start = 4.dp,
-                        end = 2.dp,
+                        end =
+                            if (
+                                canViewGeneralMetrics ||
+                                canManageMission
+                            ) {
+                                2.dp
+                            } else {
+                                14.dp
+                            },
                         top = 6.dp,
                         bottom = 6.dp
                     ),
@@ -887,89 +2478,123 @@ private fun MissionExecutionHeader(
                 )
             }
 
-            Box {
-                IconButton(
-                    onClick = {
-                        onMenuExpandedChange(true)
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.MoreVert,
-                        contentDescription =
-                            stringResource(
-                                R.string
-                                    .mission_execution_more_options
-                            ),
-                        tint =
-                            MaterialTheme
-                                .colorScheme
-                                .onSurface
-                    )
-                }
-
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = {
-                        onMenuExpandedChange(false)
-                    }
-                ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
+            if (
+                canViewGeneralMetrics ||
+                canManageMission
+            ) {
+                Box {
+                    IconButton(
+                        onClick = {
+                            onMenuExpandedChange(true)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.MoreVert,
+                            contentDescription =
                                 stringResource(
                                     R.string
-                                        .mission_execution_general_metrics
-                                )
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Outlined.BarChart,
-                                contentDescription = null
-                            )
-                        },
-                        onClick = onGeneralMetricsClick
-                    )
-
-                    if (canManageMission) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    stringResource(
-                                        R.string
-                                            .mission_execution_filter_groups
-                                    )
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.FilterList,
-                                    contentDescription = null
-                                )
-                            },
-                            onClick = onFilterGroupsClick
+                                        .mission_execution_more_options
+                                ),
+                            tint =
+                                MaterialTheme
+                                    .colorScheme
+                                    .onSurface
                         )
+                    }
 
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text =
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = {
+                            onMenuExpandedChange(false)
+                        }
+                    ) {
+                        if (
+                            canViewGeneralMetrics
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
                                         stringResource(
                                             R.string
-                                                .mission_execution_finish_mission
-                                        ),
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.Flag,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error
-                                )
-                            },
-                            onClick = onFinishMissionClick
-                        )
+                                                .mission_execution_general_metrics
+                                        )
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.BarChart,
+                                        contentDescription = null
+                                    )
+                                },
+                                onClick = onGeneralMetricsClick
+                            )
+                        }
+
+                        if (canManageMission) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        stringResource(
+                                            R.string
+                                                .mission_execution_filter_groups
+                                        )
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.FilterList,
+                                        contentDescription = null
+                                    )
+                                },
+                                trailingIcon =
+                                    if (
+                                        isGroupFilterActive
+                                    ) {
+                                        {
+                                            Text(
+                                                text =
+                                                    stringResource(
+                                                        R.string
+                                                            .mission_group_filter_active
+                                                    ),
+                                                color =
+                                                    MaterialTheme
+                                                        .colorScheme
+                                                        .primary,
+                                                style =
+                                                    MaterialTheme
+                                                        .typography
+                                                        .labelMedium
+                                            )
+                                        }
+                                    } else {
+                                        null
+                                    },
+                                onClick =
+                                    onFilterGroupsClick
+                            )
+
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text =
+                                            stringResource(
+                                                R.string
+                                                    .mission_execution_finish_mission
+                                            ),
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Flag,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                },
+                                onClick = onFinishMissionClick
+                            )
+                        }
                     }
                 }
             }
@@ -1017,6 +2642,7 @@ private fun MissionExecutionActionCluster(
     onNewEncounterClick: () -> Unit,
     isSupportRequested: Boolean,
     isUpdatingSupportStatus: Boolean,
+    isEndingParticipation: Boolean,
     onRequestSupportClick: () -> Unit,
     onEndParticipationClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -1143,13 +2769,22 @@ private fun MissionExecutionActionCluster(
                 SpeedDialAction(
                     label =
                         stringResource(
-                            R.string
-                                .mission_execution_end_participation
+                            if (
+                                isEndingParticipation
+                            ) {
+                                R.string
+                                    .mission_end_participation_ending
+                            } else {
+                                R.string
+                                    .mission_execution_end_participation
+                            }
                         ),
                     icon =
                         Icons.Outlined.Logout,
                     isDestructive =
                         true,
+                    enabled =
+                        !isEndingParticipation,
                     onClick =
                         onEndParticipationClick
                 )

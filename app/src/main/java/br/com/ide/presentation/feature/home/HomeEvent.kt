@@ -18,6 +18,11 @@ sealed interface HomeEvent {
         val status: MissionStatus?
     ) : HomeEvent
 
+    data class MissionClicked(
+        val missionId: String,
+        val missionStatus: MissionStatus
+    ) : HomeEvent
+
     data object Retry :
         HomeEvent
 }

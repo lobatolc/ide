@@ -5,20 +5,32 @@ import androidx.lifecycle.viewModelScope
 import br.com.ide.R
 import br.com.ide.domain.location.MissionLocationServiceController
 import br.com.ide.domain.model.Mission
+import br.com.ide.domain.model.MissionEncounter
+import br.com.ide.domain.model.MissionCoordinate
+import br.com.ide.domain.model.MissionEncounterMarker
+import br.com.ide.domain.model.MissionGeneralMetrics
+import br.com.ide.domain.model.MissionPersonalMetrics
 import br.com.ide.domain.model.MissionParticipantStatus
 import br.com.ide.domain.model.MissionTrackPoint
 import br.com.ide.domain.model.UserProfile
 import br.com.ide.domain.model.MissionStatus
 import br.com.ide.domain.model.UserRole
+import br.com.ide.domain.usecase.CalculateMissionGeneralMetricsUseCase
+import br.com.ide.domain.usecase.CalculateMissionPersonalMetricsUseCase
+import br.com.ide.domain.usecase.FinishMissionUseCase
 import br.com.ide.domain.usecase.GetCurrentUserProfileUseCase
 import br.com.ide.domain.usecase.GetMissionByIdUseCase
 import br.com.ide.domain.usecase.GetVisibleMissionTrackUserIdsUseCase
 import br.com.ide.domain.usecase.GetUserByIdUseCase
+import br.com.ide.domain.usecase.ObserveMissionEncountersUseCase
 import br.com.ide.domain.usecase.ObserveMissionParticipantsUseCase
 import br.com.ide.domain.usecase.ObserveMissionTrackUseCase
 import br.com.ide.domain.usecase.UpdateMissionParticipantStatusUseCase
 import br.com.ide.presentation.components.map.MissionParticipantMarker
 import br.com.ide.presentation.components.map.MissionTrackLine
+import br.com.ide.presentation.components.snackbar.IdeSnackbarManager
+import br.com.ide.presentation.components.snackbar.IdeSnackbarMessage
+import br.com.ide.presentation.components.snackbar.IdeSnackbarType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Duration
 import java.time.LocalDateTime
@@ -40,6 +52,12 @@ class MissionExecutionViewModel @Inject constructor(
     private val getMissionByIdUseCase:
     GetMissionByIdUseCase,
 
+    private val calculateMissionPersonalMetricsUseCase:
+    CalculateMissionPersonalMetricsUseCase,
+
+    private val calculateMissionGeneralMetricsUseCase:
+    CalculateMissionGeneralMetricsUseCase,
+
     private val getCurrentUserProfileUseCase:
     GetCurrentUserProfileUseCase,
 
@@ -57,6 +75,15 @@ class MissionExecutionViewModel @Inject constructor(
 
     private val updateMissionParticipantStatusUseCase:
     UpdateMissionParticipantStatusUseCase,
+
+    private val finishMissionUseCase:
+    FinishMissionUseCase,
+
+    private val snackbarManager:
+    IdeSnackbarManager,
+
+    private val observeMissionEncountersUseCase:
+    ObserveMissionEncountersUseCase,
 
     private val missionLocationServiceController:
     MissionLocationServiceController
@@ -88,6 +115,10 @@ class MissionExecutionViewModel @Inject constructor(
             Job? =
         null
 
+    private var encountersJob:
+            Job? =
+        null
+
     private val trackJobs =
         mutableMapOf<String, Job>()
 
@@ -116,6 +147,20 @@ class MissionExecutionViewModel @Inject constructor(
             String? =
         null
 
+    /*
+     * Diferencia uma saída solicitada nesta execução de uma
+     * tentativa futura de entrar com status FINISHED.
+     *
+     * Não deve ser consumido junto com participationEnded, pois o
+     * listener do Firestore ainda pode emitir uma última atualização
+     * enquanto a tela está sendo removida da pilha de navegação.
+     */
+    private var participationEndRequestedInThisSession =
+        false
+
+    private var missionCompletionHandled =
+        false
+
     // =========================================================
     // Carregamento
     // =========================================================
@@ -138,6 +183,7 @@ class MissionExecutionViewModel @Inject constructor(
             missionId
         ) {
             stopParticipantsObservation()
+            stopEncounterObservation()
             stopTrackObservations()
 
             visibilitySignature =
@@ -146,20 +192,74 @@ class MissionExecutionViewModel @Inject constructor(
             loadedMission =
                 null
 
+            participationEndRequestedInThisSession =
+                false
+
+            missionCompletionHandled =
+                false
+
             _uiState.update {
                 it.copy(
                     participants =
                         emptyList(),
                     participantMarkers =
                         emptyList(),
+                    encounterMarkers =
+                        emptyList(),
+                    encounters =
+                        emptyList(),
                     participantTracks =
                         emptyList(),
+                    mapGroupFilters =
+                        emptyList(),
+                    selectedMapGroupIds =
+                        emptySet(),
+                    includeUngroupedOnMap =
+                        false,
+                    isMapGroupFilterActive =
+                        false,
+                    encounterCount =
+                        0,
+                    personalMetrics =
+                        MissionPersonalMetrics(),
+                    generalMetrics =
+                        MissionGeneralMetrics(),
+                    canViewGeneralMetrics =
+                        false,
+                    canFinishMission =
+                        false,
                     isSupportRequested =
                         false,
                     isCurrentUserSupport =
                         false,
                     isUpdatingSupportStatus =
-                        false
+                        false,
+                    isEndingParticipation =
+                        false,
+                    participationEnded =
+                        false,
+                    participationAccessDenied =
+                        false,
+                    isFinishing =
+                        false,
+                    missionFinished =
+                        false,
+                    endParticipationErrorMessage =
+                        null,
+                    usesGeneralGroup =
+                        false,
+                    currentGroupId =
+                        null,
+                    currentGroupName =
+                        null,
+                    currentGroupColorHex =
+                        null,
+                    currentGroupMembers =
+                        emptyList(),
+                    customActivityName =
+                        null,
+                    availableActivities =
+                        emptySet()
                 )
             }
         }
@@ -169,6 +269,12 @@ class MissionExecutionViewModel @Inject constructor(
 
         viewModelScope.launch {
 
+            /*
+             * Mantém as permissões já conhecidas enquanto atualizamos
+             * a mesma missão. Zerá-las aqui fazia o menu superior
+             * desaparecer por alguns instantes a cada ON_RESUME.
+             * Ao trocar de missão elas já são limpas no bloco acima.
+             */
             _uiState.update {
                 it.copy(
                     isLoading =
@@ -191,6 +297,7 @@ class MissionExecutionViewModel @Inject constructor(
 
                     stopTimer()
                     stopParticipantsObservation()
+                    stopEncounterObservation()
                     stopTrackObservations()
                     stopLocationTracking()
 
@@ -217,6 +324,7 @@ class MissionExecutionViewModel @Inject constructor(
 
                     stopTimer()
                     stopParticipantsObservation()
+                    stopEncounterObservation()
                     stopTrackObservations()
                     stopLocationTracking()
 
@@ -229,10 +337,24 @@ class MissionExecutionViewModel @Inject constructor(
                                 mission.id,
                             missionName =
                                 mission.name,
+                            customActivityName =
+                                mission.customActivityName,
+                            availableActivities =
+                                mission.activities.toSet(),
                             participants =
                                 emptyList(),
                             participantMarkers =
                                 emptyList(),
+                            encounterMarkers =
+                                emptyList(),
+                            encounters =
+                                emptyList(),
+                            encounterCount =
+                                0,
+                            personalMetrics =
+                                MissionPersonalMetrics(),
+                            generalMetrics =
+                                MissionGeneralMetrics(),
                             isLoading =
                                 false,
                             errorMessage =
@@ -277,7 +399,7 @@ class MissionExecutionViewModel @Inject constructor(
                                         )
                 }
 
-                val canFinishMission =
+                val canManageMission =
                     currentUser
                         ?.role
                         ?.hasAtLeast(
@@ -293,6 +415,12 @@ class MissionExecutionViewModel @Inject constructor(
 
                         missionName =
                             mission.name,
+
+                        customActivityName =
+                            mission.customActivityName,
+
+                        availableActivities =
+                            mission.activities.toSet(),
 
                         departureLatitude =
                             mission
@@ -310,13 +438,49 @@ class MissionExecutionViewModel @Inject constructor(
                                 ?.polygonPoints
                                 ?: emptyList(),
 
+                        usesGeneralGroup =
+                            state.participants
+                                .any {
+                                    it.groupId == null
+                                },
+
                         groupCount =
-                            mission
-                                .groups
-                                .size,
+                            effectiveGroupCount(
+                                mission =
+                                    mission,
+                                participants =
+                                    state.participants
+                            ),
+
+                        mapGroupFilters =
+                            buildMapGroupFilters(
+                                mission =
+                                    mission,
+                                participants =
+                                    state.participants
+                            ),
+
+                        selectedMapGroupIds =
+                            state
+                                .selectedMapGroupIds
+                                .intersect(
+                                    buildMapGroupFilters(
+                                        mission =
+                                            mission,
+                                        participants =
+                                            state.participants
+                                    )
+                                        .map {
+                                            it.id
+                                        }
+                                        .toSet()
+                                ),
+
+                        canViewGeneralMetrics =
+                            canManageMission,
 
                         canFinishMission =
-                            canFinishMission,
+                            canManageMission,
 
                         /*
                          * Caso o listener já tenha emitido
@@ -332,6 +496,38 @@ class MissionExecutionViewModel @Inject constructor(
                                     state.participants
                             ),
 
+                        currentGroupId =
+                            resolveCurrentGroupId(
+                                mission =
+                                    mission,
+                                participants =
+                                    state.participants
+                            ),
+
+                        currentGroupName =
+                            resolveCurrentGroupName(
+                                mission =
+                                    mission,
+                                participants =
+                                    state.participants
+                            ),
+
+                        currentGroupColorHex =
+                            resolveCurrentGroupColorHex(
+                                mission =
+                                    mission,
+                                participants =
+                                    state.participants
+                            ),
+
+                        currentGroupMembers =
+                            buildCurrentGroupMembers(
+                                mission =
+                                    mission,
+                                participants =
+                                    state.participants
+                            ),
+
                         isLoading =
                             false,
 
@@ -339,6 +535,9 @@ class MissionExecutionViewModel @Inject constructor(
                             null
                     )
                 }
+
+                refreshPersonalMetrics()
+                refreshGeneralMetrics()
 
                 startTimer(
                     startedAt =
@@ -350,12 +549,18 @@ class MissionExecutionViewModel @Inject constructor(
                         mission.id
                 )
 
+                startEncountersObservation(
+                    missionId =
+                        mission.id
+                )
+
             } catch (
                 exception: Exception
             ) {
 
                 stopTimer()
                 stopParticipantsObservation()
+                stopEncounterObservation()
                 stopTrackObservations()
                 stopLocationTracking()
 
@@ -389,6 +594,73 @@ class MissionExecutionViewModel @Inject constructor(
             force =
                 true
         )
+    }
+
+    // =========================================================
+    // Filtro de grupos no mapa
+    // =========================================================
+
+    fun applyMapGroupFilter(
+        selectedGroupIds: Set<String>,
+        includeUngrouped: Boolean
+    ) {
+
+        _uiState.update { state ->
+
+            val availableGroupIds =
+                state
+                    .mapGroupFilters
+                    .map {
+                        it.id
+                    }
+                    .toSet()
+
+            val normalizedSelection =
+                selectedGroupIds
+                    .intersect(
+                        availableGroupIds
+                    )
+
+            /*
+             * groupId == null nunca é tratado como "sem grupo" na UI:
+             * esses participantes pertencem ao Grupo Geral lógico.
+             */
+            val normalizedIncludeUngrouped =
+                false
+
+            val showsEverything =
+                normalizedSelection ==
+                        availableGroupIds
+
+            state.copy(
+                selectedMapGroupIds =
+                    if (
+                        showsEverything
+                    ) {
+                        emptySet()
+                    } else {
+                        normalizedSelection
+                    },
+                includeUngroupedOnMap =
+                    normalizedIncludeUngrouped,
+                isMapGroupFilterActive =
+                    !showsEverything
+            )
+        }
+    }
+
+    fun clearMapGroupFilter() {
+
+        _uiState.update {
+            it.copy(
+                selectedMapGroupIds =
+                    emptySet(),
+                includeUngroupedOnMap =
+                    false,
+                isMapGroupFilterActive =
+                    false
+            )
+        }
     }
 
     // =========================================================
@@ -442,6 +714,48 @@ class MissionExecutionViewModel @Inject constructor(
                                         }
                                 }
 
+                        val finishedByMission =
+                            currentParticipant
+                                ?.status ==
+                                    MissionParticipantStatus.FINISHED &&
+                                    currentParticipant
+                                        ?.endedByMission ==
+                                    true
+
+                        if (
+                            finishedByMission
+                        ) {
+                            handleMissionFinished()
+                        }
+
+                        val accessDenied =
+                            currentParticipant
+                                ?.status ==
+                                    MissionParticipantStatus.FINISHED &&
+                                    currentParticipant
+                                        ?.endedByMission !=
+                                    true &&
+                                    !_uiState.value.isEndingParticipation &&
+                                    !_uiState.value.participationEnded &&
+                                    !participationEndRequestedInThisSession
+
+                        if (
+                            accessDenied &&
+                            !_uiState.value.participationAccessDenied
+                        ) {
+                            missionLocationServiceController.stop()
+
+                            snackbarManager.show(
+                                IdeSnackbarMessage(
+                                    messageRes =
+                                        R.string
+                                            .home_participation_finished,
+                                    type =
+                                        IdeSnackbarType.WARNING
+                                )
+                            )
+                        }
+
                         _uiState.update {
                             it.copy(
                                 participants =
@@ -466,6 +780,9 @@ class MissionExecutionViewModel @Inject constructor(
                                         ?.isSupport ==
                                             true,
 
+                                participationAccessDenied =
+                                    accessDenied,
+
                                 participantMarkers =
                                     if (
                                         mission != null
@@ -480,10 +797,103 @@ class MissionExecutionViewModel @Inject constructor(
                                         emptyList()
                                     },
 
+                                mapGroupFilters =
+                                    if (
+                                        mission != null
+                                    ) {
+                                        buildMapGroupFilters(
+                                            mission =
+                                                mission,
+                                            participants =
+                                                participants
+                                        )
+                                    } else {
+                                        emptyList()
+                                    },
+
+                                usesGeneralGroup =
+                                    participants
+                                        .any {
+                                            it.groupId == null
+                                        },
+
+                                groupCount =
+                                    if (
+                                        mission != null
+                                    ) {
+                                        effectiveGroupCount(
+                                            mission =
+                                                mission,
+                                            participants =
+                                                participants
+                                        )
+                                    } else {
+                                        0
+                                    },
+
+                                currentGroupId =
+                                    if (
+                                        mission != null
+                                    ) {
+                                        resolveCurrentGroupId(
+                                            mission =
+                                                mission,
+                                            participants =
+                                                participants
+                                        )
+                                    } else {
+                                        null
+                                    },
+
+                                currentGroupName =
+                                    if (
+                                        mission != null
+                                    ) {
+                                        resolveCurrentGroupName(
+                                            mission =
+                                                mission,
+                                            participants =
+                                                participants
+                                        )
+                                    } else {
+                                        null
+                                    },
+
+                                currentGroupColorHex =
+                                    if (
+                                        mission != null
+                                    ) {
+                                        resolveCurrentGroupColorHex(
+                                            mission =
+                                                mission,
+                                            participants =
+                                                participants
+                                        )
+                                    } else {
+                                        null
+                                    },
+
+                                currentGroupMembers =
+                                    if (
+                                        mission != null
+                                    ) {
+                                        buildCurrentGroupMembers(
+                                            mission =
+                                                mission,
+                                            participants =
+                                                participants
+                                        )
+                                    } else {
+                                        emptyList()
+                                    },
+
                                 errorMessage =
                                     null
                             )
                         }
+
+                        refreshPersonalMetrics()
+                        refreshGeneralMetrics()
 
                         if (
                             mission != null
@@ -506,6 +916,141 @@ class MissionExecutionViewModel @Inject constructor(
 
         participantsJob =
             null
+    }
+
+    // =========================================================
+    // Encontros em tempo real
+    // =========================================================
+
+    private fun startEncountersObservation(
+        missionId: String
+    ) {
+
+        stopEncounterObservation()
+
+        encountersJob =
+            viewModelScope.launch {
+
+                observeMissionEncountersUseCase(
+                    missionId =
+                        missionId
+                )
+                    .catch {
+                        /*
+                         * Um erro no listener de encontros não deve
+                         * derrubar a execução da missão nem apagar
+                         * os demais elementos do mapa.
+                         */
+                    }
+                    .collect { encounters ->
+
+                        val markers =
+                            buildEncounterMarkers(
+                                mission =
+                                    loadedMission,
+                                encounters =
+                                    encounters
+                            )
+
+                        _uiState.update {
+                            it.copy(
+                                encounterMarkers =
+                                    markers,
+                                encounters =
+                                    encounters,
+                                encounterCount =
+                                    encounters.size
+                            )
+                        }
+
+                        refreshPersonalMetrics()
+                        refreshGeneralMetrics()
+                    }
+            }
+    }
+
+    private fun stopEncounterObservation() {
+
+        encountersJob
+            ?.cancel()
+
+        encountersJob =
+            null
+    }
+
+    private fun buildEncounterMarkers(
+        mission: Mission?,
+        encounters: List<MissionEncounter>
+    ): List<MissionEncounterMarker> {
+
+        val groupsById =
+            mission
+                ?.groups
+                ?.associateBy {
+                    it.id
+                }
+                .orEmpty()
+
+        return encounters
+            .asSequence()
+            .mapNotNull { encounter ->
+
+                val latitude =
+                    encounter.latitude
+
+                val longitude =
+                    encounter.longitude
+
+                if (
+                    latitude == null ||
+                    longitude == null
+                ) {
+                    return@mapNotNull null
+                }
+
+                val belongsToGeneralGroup =
+                    encounter.groupId == null
+
+                val colorHex =
+                    if (
+                        belongsToGeneralGroup
+                    ) {
+                        GENERAL_GROUP_COLOR
+                    } else {
+                        encounter.groupColorHex
+                            ?.takeIf {
+                                it.isNotBlank()
+                            }
+                            ?: encounter.groupId
+                                ?.let(
+                                    groupsById::get
+                                )
+                                ?.colorHex
+                            ?: UNGROUPED_PARTICIPANT_COLOR
+                    }
+
+                MissionEncounterMarker(
+                    encounterId =
+                        encounter.id,
+                    registeredByUserId =
+                        encounter.registeredByUserId,
+                    groupId =
+                        encounter.groupId
+                            ?: GENERAL_GROUP_ID,
+                    colorHex =
+                        colorHex,
+                    latitude =
+                        latitude,
+                    longitude =
+                        longitude,
+                    personName =
+                        encounter.personName
+                )
+            }
+            .sortedBy {
+                it.encounterId
+            }
+            .toList()
     }
 
     /*
@@ -587,93 +1132,440 @@ class MissionExecutionViewModel @Inject constructor(
                     it.id
                 }
 
-        val markers =
+        return participants
+            .asSequence()
+            .filter {
+                it.status !=
+                        MissionParticipantStatus.FINISHED
+            }
+            .mapNotNull { participant ->
+
+                val latitude =
+                    participant.latitude
+
+                val longitude =
+                    participant.longitude
+
+                if (
+                    latitude == null ||
+                    longitude == null
+                ) {
+                    return@mapNotNull null
+                }
+
+                val group =
+                    participant.groupId
+                        ?.let(
+                            groupsById::get
+                        )
+
+                MissionParticipantMarker(
+                    userId =
+                        participant.userId,
+                    latitude =
+                        latitude,
+                    longitude =
+                        longitude,
+                    groupId =
+                        participant.groupId
+                            ?: GENERAL_GROUP_ID,
+                    groupName =
+                        if (
+                            participant.groupId == null
+                        ) {
+                            GENERAL_GROUP_NAME
+                        } else {
+                            group?.name
+                        },
+                    colorHex =
+                        if (
+                            participant.groupId == null
+                        ) {
+                            GENERAL_GROUP_COLOR
+                        } else {
+                            group?.colorHex
+                                ?: UNGROUPED_PARTICIPANT_COLOR
+                        },
+                    status =
+                        participant.status,
+                    isSupport =
+                        participant.isSupport,
+                    isCurrentUser =
+                        participant.userId ==
+                                currentUserId,
+                    displayName =
+                        userProfilesById[
+                            participant.userId
+                        ]
+                            ?.let { profile ->
+                                listOf(
+                                    profile.firstName,
+                                    profile.lastName
+                                )
+                                    .filter {
+                                        it.isNotBlank()
+                                    }
+                                    .joinToString(
+                                        separator =
+                                            " "
+                                    )
+                            }
+                            .orEmpty(),
+                    role =
+                        userProfilesById[
+                            participant.userId
+                        ]
+                            ?.role
+                )
+            }
+            .toList()
+    }
+
+    private fun buildMapGroupFilters(
+        mission: Mission,
+        participants:
+        List<br.com.ide.domain.model.MissionParticipantState>
+    ): List<MissionMapGroupFilterUiModel> {
+
+        val activeParticipants =
             participants
-                .asSequence()
                 .filter {
                     it.status !=
                             MissionParticipantStatus.FINISHED
                 }
-                .mapNotNull { participant ->
 
-                    val latitude =
-                        participant.latitude
+        val activeParticipantCountByGroup =
+            activeParticipants
+                .asSequence()
+                .mapNotNull {
+                    it.groupId
+                }
+                .groupingBy {
+                    it
+                }
+                .eachCount()
 
-                    val longitude =
-                        participant.longitude
-
-                    if (
-                        latitude == null ||
-                        longitude == null
-                    ) {
-                        return@mapNotNull null
-                    }
-
-                    val group =
-                        participant.groupId
-                            ?.let(
-                                groupsById::get
-                            )
-
-                    MissionParticipantMarker(
-                        userId =
-                            participant.userId,
-
-                        latitude =
-                            latitude,
-
-                        longitude =
-                            longitude,
-
-                        groupId =
-                            participant.groupId,
-
-                        groupName =
-                            group?.name,
-
+        val configuredGroups =
+            mission
+                .groups
+                .map { group ->
+                    MissionMapGroupFilterUiModel(
+                        id =
+                            group.id,
+                        name =
+                            group.name,
                         colorHex =
-                            group?.colorHex
-                                ?: UNGROUPED_PARTICIPANT_COLOR,
-
-                        status =
-                            participant.status,
-
-                        isSupport =
-                            participant.isSupport,
-
-                        isCurrentUser =
-                            participant.userId ==
-                                    currentUserId,
-
-                        displayName =
-                            userProfilesById[
-                                participant.userId
-                            ]
-                                ?.let { profile ->
-                                    listOf(
-                                        profile.firstName,
-                                        profile.lastName
-                                    )
-                                        .filter {
-                                            it.isNotBlank()
-                                        }
-                                        .joinToString(
-                                            separator =
-                                                " "
-                                        )
-                                }
-                                .orEmpty(),
-
-                        role =
-                            userProfilesById[
-                                participant.userId
-                            ]
-                                ?.role
+                            group.colorHex,
+                        participantCount =
+                            activeParticipantCountByGroup[
+                                group.id
+                            ] ?: 0
                     )
                 }
-                .toList()
+                .sortedBy {
+                    it.name.lowercase()
+                }
 
-        return markers
+        val hasGeneralGroup =
+            participants
+                .any {
+                    it.groupId == null
+                }
+
+        if (
+            !hasGeneralGroup
+        ) {
+            return configuredGroups
+        }
+
+        val generalGroup =
+            MissionMapGroupFilterUiModel(
+                id =
+                    GENERAL_GROUP_ID,
+                name =
+                    GENERAL_GROUP_NAME,
+                colorHex =
+                    GENERAL_GROUP_COLOR,
+                participantCount =
+                    activeParticipants
+                        .count {
+                            it.groupId == null
+                        }
+            )
+
+        return configuredGroups +
+                generalGroup
+    }
+
+    private fun buildCurrentGroupMembers(
+        mission: Mission,
+        participants:
+        List<br.com.ide.domain.model.MissionParticipantState>
+    ): List<MissionGroupMemberUiModel> {
+
+        val userId =
+            currentUserId
+                ?: return emptyList()
+
+        val currentParticipant =
+            participants
+                .firstOrNull {
+                    it.userId ==
+                            userId
+                }
+                ?: return emptyList()
+
+        val participantsById =
+            participants
+                .associateBy {
+                    it.userId
+                }
+
+        val missionGroup =
+            currentParticipant
+                .groupId
+                ?.let { groupId ->
+                    mission.groups
+                        .firstOrNull {
+                            it.id ==
+                                    groupId
+                        }
+                }
+
+        val orderedUserIds =
+            if (
+                currentParticipant.groupId == null
+            ) {
+                /*
+                 * Todo participante com groupId == null pertence ao mesmo
+                 * Grupo Geral, exista ou não outro grupo configurado.
+                 */
+                participants
+                    .asSequence()
+                    .filter {
+                        it.groupId == null
+                    }
+                    .map {
+                        it.userId
+                    }
+                    .distinct()
+                    .toList()
+            } else {
+                val group =
+                    missionGroup
+                        ?: return emptyList()
+
+                buildList {
+
+                    group.participantIds
+                        .forEach { participantId ->
+
+                            if (
+                                participantId !in this
+                            ) {
+                                add(
+                                    participantId
+                                )
+                            }
+                        }
+
+                    group.supportUserId
+                        ?.let { supportUserId ->
+
+                            if (
+                                supportUserId !in this
+                            ) {
+                                add(
+                                    supportUserId
+                                )
+                            }
+                        }
+
+                    participants
+                        .filter {
+                            it.groupId ==
+                                    group.id
+                        }
+                        .forEach { participant ->
+
+                            if (
+                                participant.userId !in this
+                            ) {
+                                add(
+                                    participant.userId
+                                )
+                            }
+                        }
+                }
+            }
+
+        return orderedUserIds
+            .mapNotNull { participantId ->
+
+                val participant =
+                    participantsById[
+                        participantId
+                    ]
+                        ?: return@mapNotNull null
+
+                val profile =
+                    userProfilesById[
+                        participantId
+                    ]
+
+                MissionGroupMemberUiModel(
+                    userId =
+                        participantId,
+                    displayName =
+                        profile
+                            ?.let {
+                                listOf(
+                                    it.firstName,
+                                    it.lastName
+                                )
+                                    .filter(
+                                        String::isNotBlank
+                                    )
+                                    .joinToString(
+                                        separator =
+                                            " "
+                                    )
+                            }
+                            .orEmpty(),
+                    role =
+                        profile?.role,
+                    status =
+                        participant.status,
+                    isSupport =
+                        participant.isSupport ||
+                                missionGroup
+                                    ?.supportUserId ==
+                                participantId,
+                    isCurrentUser =
+                        participantId ==
+                                currentUserId,
+                    hasMapPosition =
+                        participant.latitude != null &&
+                                participant.longitude != null &&
+                                participant.status !=
+                                MissionParticipantStatus.FINISHED
+                )
+            }
+            .sortedWith(
+                compareByDescending<MissionGroupMemberUiModel> {
+                    it.isCurrentUser
+                }
+                    .thenByDescending {
+                        it.isSupport
+                    }
+                    .thenBy {
+                        it.displayName
+                            .lowercase()
+                    }
+            )
+    }
+
+    private fun effectiveGroupCount(
+        mission: Mission,
+        participants:
+        List<br.com.ide.domain.model.MissionParticipantState>
+    ): Int {
+
+        val hasGeneralGroup =
+            participants
+                .any {
+                    it.groupId == null
+                }
+
+        return mission.groups.size +
+                if (
+                    hasGeneralGroup
+                ) {
+                    1
+                } else {
+                    0
+                }
+    }
+
+    private fun resolveCurrentGroupId(
+        mission: Mission,
+        participants:
+        List<br.com.ide.domain.model.MissionParticipantState>
+    ): String? {
+
+        val participant =
+            currentUserId
+                ?.let { userId ->
+                    participants
+                        .firstOrNull {
+                            it.userId ==
+                                    userId
+                        }
+                }
+                ?: return null
+
+        return participant.groupId
+            ?: GENERAL_GROUP_ID
+    }
+
+    private fun resolveCurrentGroupName(
+        mission: Mission,
+        participants:
+        List<br.com.ide.domain.model.MissionParticipantState>
+    ): String? {
+
+        val groupId =
+            resolveCurrentGroupId(
+                mission =
+                    mission,
+                participants =
+                    participants
+            )
+                ?: return null
+
+        return if (
+            groupId ==
+            GENERAL_GROUP_ID
+        ) {
+            GENERAL_GROUP_NAME
+        } else {
+            mission.groups
+                .firstOrNull {
+                    it.id ==
+                            groupId
+                }
+                ?.name
+        }
+    }
+
+    private fun resolveCurrentGroupColorHex(
+        mission: Mission,
+        participants:
+        List<br.com.ide.domain.model.MissionParticipantState>
+    ): String? {
+
+        val groupId =
+            resolveCurrentGroupId(
+                mission =
+                    mission,
+                participants =
+                    participants
+            )
+                ?: return null
+
+        return if (
+            groupId ==
+            GENERAL_GROUP_ID
+        ) {
+            GENERAL_GROUP_COLOR
+        } else {
+            mission.groups
+                .firstOrNull {
+                    it.id ==
+                            groupId
+                }
+                ?.colorHex
+        }
     }
 
     // =========================================================
@@ -698,6 +1590,246 @@ class MissionExecutionViewModel @Inject constructor(
         )
     }
 
+    // =========================================================
+    // Encerramento da própria participação
+    // =========================================================
+
+    fun endParticipation() {
+
+        val missionId =
+            loadedMissionId
+                ?: return
+
+        val userId =
+            currentUserId
+                ?: return
+
+        val state =
+            _uiState.value
+
+        if (
+            state.isEndingParticipation ||
+            state.isUpdatingSupportStatus
+        ) {
+            return
+        }
+
+        participationEndRequestedInThisSession =
+            true
+
+        val alreadyFinished =
+            state
+                .participants
+                .firstOrNull {
+                    it.userId ==
+                            userId
+                }
+                ?.status ==
+                    MissionParticipantStatus.FINISHED
+
+        if (
+            alreadyFinished
+        ) {
+            stopLocationTracking()
+            stopTimer()
+
+            _uiState.update {
+                it.copy(
+                    participationEnded =
+                        true
+                )
+            }
+
+            return
+        }
+
+        viewModelScope.launch {
+
+            _uiState.update {
+                it.copy(
+                    isEndingParticipation =
+                        true,
+                    endParticipationErrorMessage =
+                        null
+                )
+            }
+
+            val result =
+                updateMissionParticipantStatusUseCase(
+                    missionId =
+                        missionId,
+                    userId =
+                        userId,
+                    status =
+                        MissionParticipantStatus.FINISHED
+                )
+
+            if (
+                result.isSuccess
+            ) {
+                stopLocationTracking()
+                stopTimer()
+
+                _uiState.update {
+                    it.copy(
+                        participationEnded =
+                            true
+                    )
+                }
+            } else {
+                participationEndRequestedInThisSession =
+                    false
+
+                _uiState.update {
+                    it.copy(
+                        isEndingParticipation =
+                            false,
+                        endParticipationErrorMessage =
+                            R.string
+                                .mission_end_participation_error
+                    )
+                }
+            }
+        }
+    }
+
+    fun consumeParticipationEnded() {
+        _uiState.update {
+            it.copy(
+                participationEnded =
+                    false
+            )
+        }
+    }
+
+    fun consumeParticipationAccessDenied() {
+        _uiState.update {
+            it.copy(
+                participationAccessDenied =
+                    false
+            )
+        }
+    }
+
+    fun consumeEndParticipationError() {
+        _uiState.update {
+            it.copy(
+                endParticipationErrorMessage =
+                    null
+            )
+        }
+    }
+
+    // =========================================================
+    // Finalização da missão
+    // =========================================================
+
+    fun finishMission() {
+
+        val missionId =
+            loadedMissionId
+                ?: return
+
+        val state =
+            _uiState.value
+
+        if (
+            !state.canFinishMission ||
+            state.isFinishing ||
+            missionCompletionHandled
+        ) {
+            return
+        }
+
+        viewModelScope.launch {
+
+            _uiState.update {
+                it.copy(
+                    isFinishing =
+                        true
+                )
+            }
+
+            val result =
+                finishMissionUseCase(
+                    missionId =
+                        missionId
+                )
+
+            if (
+                result.isSuccess
+            ) {
+                handleMissionFinished()
+            } else {
+                _uiState.update {
+                    it.copy(
+                        isFinishing =
+                            false
+                    )
+                }
+
+                snackbarManager.show(
+                    IdeSnackbarMessage(
+                        messageRes =
+                            R.string
+                                .mission_finish_error,
+                        type =
+                            IdeSnackbarType.ERROR
+                    )
+                )
+            }
+        }
+    }
+
+    private suspend fun handleMissionFinished() {
+
+        if (
+            missionCompletionHandled
+        ) {
+            return
+        }
+
+        missionCompletionHandled =
+            true
+
+        stopLocationTracking()
+        stopTimer()
+        stopEncounterObservation()
+        stopTrackObservations()
+
+        /*
+         * Publica a navegação antes da snackbar. O show() global é
+         * suspenso e não pode impedir missionFinished de chegar à tela.
+         */
+        _uiState.update {
+            it.copy(
+                isFinishing =
+                    true,
+                missionFinished =
+                    true
+            )
+        }
+
+        snackbarManager.show(
+            IdeSnackbarMessage(
+                messageRes =
+                    R.string
+                        .mission_finish_success,
+                type =
+                    IdeSnackbarType.SUCCESS
+            )
+        )
+    }
+
+    fun consumeMissionFinished() {
+        _uiState.update {
+            it.copy(
+                missionFinished =
+                    false
+            )
+        }
+    }
+
     private fun updateCurrentParticipantStatus(
         status: MissionParticipantStatus
     ) {
@@ -713,7 +1845,10 @@ class MissionExecutionViewModel @Inject constructor(
         if (
             _uiState
                 .value
-                .isUpdatingSupportStatus
+                .let {
+                    it.isUpdatingSupportStatus ||
+                            it.isEndingParticipation
+                }
         ) {
             return
         }
@@ -773,6 +1908,23 @@ class MissionExecutionViewModel @Inject constructor(
             currentUserId
                 ?: return
 
+        val participationFinished =
+            _uiState
+                .value
+                .participants
+                .firstOrNull {
+                    it.userId ==
+                            userId
+                }
+                ?.status ==
+                    MissionParticipantStatus.FINISHED
+
+        if (
+            participationFinished
+        ) {
+            return
+        }
+
         missionLocationServiceController.start(
             missionId = missionId,
             userId = userId
@@ -805,16 +1957,17 @@ class MissionExecutionViewModel @Inject constructor(
          * refazer consultas de igreja/distrito a cada update.
          */
         val signature =
-            participants
-                .sortedBy {
-                    it.userId
-                }
-                .joinToString(
-                    separator =
-                        "|"
-                ) {
-                    "${it.userId}:${it.groupId.orEmpty()}"
-                }
+            "configuredGroups=${mission.groups.isNotEmpty()}|" +
+                    participants
+                        .sortedBy {
+                            it.userId
+                        }
+                        .joinToString(
+                            separator =
+                                "|"
+                        ) {
+                            "${it.userId}:${it.groupId.orEmpty()}"
+                        }
 
         if (
             visibilitySignature ==
@@ -921,6 +2074,9 @@ class MissionExecutionViewModel @Inject constructor(
                                             .value
                                             .participants
                                 )
+
+                                refreshPersonalMetrics()
+                                refreshGeneralMetrics()
                             }
                     }
             }
@@ -931,6 +2087,8 @@ class MissionExecutionViewModel @Inject constructor(
             participants =
                 participants
         )
+
+        refreshGeneralMetrics()
     }
 
     private fun publishTrackLines(
@@ -972,12 +2130,12 @@ class MissionExecutionViewModel @Inject constructor(
                             userId
                         ]
 
-                    val groupId =
+                    val storedGroupId =
                         participant
                             ?.groupId
 
                     val group =
-                        groupId
+                        storedGroupId
                             ?.let(
                                 groupsById::get
                             )
@@ -986,10 +2144,17 @@ class MissionExecutionViewModel @Inject constructor(
                         userId =
                             userId,
                         groupId =
-                            groupId,
+                            storedGroupId
+                                ?: GENERAL_GROUP_ID,
                         colorHex =
-                            group?.colorHex
-                                ?: UNGROUPED_PARTICIPANT_COLOR,
+                            if (
+                                storedGroupId == null
+                            ) {
+                                GENERAL_GROUP_COLOR
+                            } else {
+                                group?.colorHex
+                                    ?: UNGROUPED_PARTICIPANT_COLOR
+                            },
                         points =
                             points
                                 .map { point ->
@@ -1031,6 +2196,142 @@ class MissionExecutionViewModel @Inject constructor(
             it.copy(
                 participantTracks =
                     emptyList()
+            )
+        }
+    }
+
+    // =========================================================
+    // Métricas pessoais
+    // =========================================================
+
+    private fun refreshPersonalMetrics(
+        now: LocalDateTime =
+            LocalDateTime.now()
+    ) {
+
+        val userId =
+            currentUserId
+                ?: run {
+
+                    _uiState.update {
+                        it.copy(
+                            personalMetrics =
+                                MissionPersonalMetrics()
+                        )
+                    }
+
+                    return
+                }
+
+        val state =
+            _uiState.value
+
+        val currentParticipant =
+            state
+                .participants
+                .firstOrNull {
+                    it.userId ==
+                            userId
+                }
+
+        val currentUserTrack =
+            trackPointsByUser[
+                userId
+            ]
+                .orEmpty()
+                .map { point ->
+                    MissionCoordinate(
+                        latitude =
+                            point.latitude,
+                        longitude =
+                            point.longitude
+                    )
+                }
+
+        val metrics =
+            calculateMissionPersonalMetricsUseCase(
+                currentUserId =
+                    userId,
+                encounters =
+                    state.encounters,
+                participant =
+                    currentParticipant,
+                trackPoints =
+                    currentUserTrack,
+                now =
+                    now
+            )
+
+        _uiState.update {
+            it.copy(
+                personalMetrics =
+                    metrics
+            )
+        }
+    }
+
+    // =========================================================
+    // Métricas gerais
+    // =========================================================
+
+    private fun refreshGeneralMetrics(
+        now: LocalDateTime =
+            LocalDateTime.now()
+    ) {
+
+        val state =
+            _uiState.value
+
+        /*
+         * Somente líder, pastor e administrador podem receber
+         * os totais consolidados da missão. Missionários mantêm
+         * apenas suas métricas pessoais no estado da tela.
+         */
+        if (
+            !state.canViewGeneralMetrics
+        ) {
+
+            if (
+                state.generalMetrics !=
+                MissionGeneralMetrics()
+            ) {
+                _uiState.update {
+                    it.copy(
+                        generalMetrics =
+                            MissionGeneralMetrics()
+                    )
+                }
+            }
+
+            return
+        }
+
+        val metrics =
+            calculateMissionGeneralMetricsUseCase(
+                participants =
+                    state.participants,
+                encounters =
+                    state.encounters,
+                trackPointsByUser =
+                    trackPointsByUser
+                        .mapValues {
+                                (
+                                    _,
+                                    points
+                                ) ->
+
+                            points.toList()
+                        },
+                groupCount =
+                    state.groupCount,
+                now =
+                    now
+            )
+
+        _uiState.update {
+            it.copy(
+                generalMetrics =
+                    metrics
             )
         }
     }
@@ -1084,6 +2385,19 @@ class MissionExecutionViewModel @Inject constructor(
                         )
                     }
 
+                    val now =
+                        LocalDateTime.now()
+
+                    refreshPersonalMetrics(
+                        now =
+                            now
+                    )
+
+                    refreshGeneralMetrics(
+                        now =
+                            now
+                    )
+
                     delay(
                         1.seconds
                     )
@@ -1104,17 +2418,27 @@ class MissionExecutionViewModel @Inject constructor(
 
         stopTimer()
         stopParticipantsObservation()
+        stopEncounterObservation()
         stopTrackObservations()
     }
 
     private companion object {
 
+        const val GENERAL_GROUP_ID =
+            "__GENERAL__"
+
+        const val GENERAL_GROUP_NAME =
+            "Grupo Geral"
+
         /*
-         * Cor reservada exclusivamente para participantes
-         * que ainda não pertencem a nenhum grupo.
-         *
-         * Não deve ser oferecida na seleção de cores
-         * dos grupos.
+         * Cor lógica do Grupo Geral. Não é persistida como grupo real.
+         */
+        const val GENERAL_GROUP_COLOR =
+            "#2A9D8F"
+
+        /*
+         * Cor de segurança para referências a grupos configurados que não
+         * possam ser resolvidas. groupId == null usa sempre Grupo Geral.
          */
         const val UNGROUPED_PARTICIPANT_COLOR =
             "#8B8D98"

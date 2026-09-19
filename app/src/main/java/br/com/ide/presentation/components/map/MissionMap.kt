@@ -27,6 +27,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import br.com.ide.domain.model.MissionCoordinate
+import br.com.ide.domain.model.MissionEncounterMarker
 import br.com.ide.domain.model.MissionParticipantStatus
 import org.json.JSONArray
 import org.json.JSONObject
@@ -64,6 +65,10 @@ fun MissionMap(
     List<MissionParticipantMarker> =
         emptyList(),
 
+    encounterMarkers:
+    List<MissionEncounterMarker> =
+        emptyList(),
+
     participantTracks:
     List<MissionTrackLine> =
         emptyList(),
@@ -85,6 +90,10 @@ fun MissionMap(
 
     onParticipantClick: (
         participant: MissionParticipantMarker
+    ) -> Unit = {},
+
+    onEncounterClick: (
+        encounterId: String
     ) -> Unit = {}
 ) {
 
@@ -112,6 +121,16 @@ fun MissionMap(
     val currentParticipantMarkers by
     rememberUpdatedState(
         participantMarkers
+    )
+
+    val currentEncounterMarkers by
+    rememberUpdatedState(
+        encounterMarkers
+    )
+
+    val currentOnEncounterClick by
+    rememberUpdatedState(
+        onEncounterClick
     )
 
     val currentOnFocusParticipantHandled by
@@ -258,6 +277,8 @@ fun MissionMap(
                         polygonPoints,
                     participantMarkers =
                         participantMarkers,
+                    encounterMarkers =
+                        encounterMarkers,
                     participantTracks =
                         participantTracks
                 )
@@ -310,6 +331,7 @@ fun MissionMap(
         selectedLatitude,
         selectedLongitude,
         participantMarkers,
+        encounterMarkers,
         participantTracks,
         mapView
     ) {
@@ -329,6 +351,8 @@ fun MissionMap(
                         polygonPoints,
                     participantMarkers =
                         participantMarkers,
+                    encounterMarkers =
+                        encounterMarkers,
                     participantTracks =
                         participantTracks
                 )
@@ -535,8 +559,7 @@ fun MissionMap(
                                     36.dp.toPx()
                                 }
 
-                            val participant:
-                                    MissionParticipantMarker? =
+                            val participantCandidate =
                                 currentParticipantMarkers
                                     .map { marker ->
 
@@ -580,26 +603,98 @@ fun MissionMap(
                                     .minByOrNull {
                                         it.second
                                     }
-                                    ?.first
 
-                            if (
-                                participant != null
-                            ) {
+                            val encounterCandidate =
+                                currentEncounterMarkers
+                                    .map { marker ->
 
-                                currentOnParticipantClick(
-                                    participant
-                                )
+                                        val markerPoint =
+                                            map.projection
+                                                .toScreenLocation(
+                                                    LatLng(
+                                                        marker.latitude,
+                                                        marker.longitude
+                                                    )
+                                                )
 
-                                true
+                                        val deltaX =
+                                            markerPoint.x -
+                                                    screenPoint.x
 
-                            } else {
+                                        val deltaY =
+                                            markerPoint.y -
+                                                    screenPoint.y
 
-                                currentOnMapClick(
-                                    point.latitude,
-                                    point.longitude
-                                )
+                                        val distanceSquared =
+                                            (
+                                                    deltaX *
+                                                            deltaX
+                                                    ) +
+                                                    (
+                                                            deltaY *
+                                                                    deltaY
+                                                            )
 
-                                true
+                                        marker to
+                                                distanceSquared
+                                    }
+                                    .filter {
+                                        it.second <=
+                                                (
+                                                        tapRadiusPx *
+                                                                tapRadiusPx
+                                                        )
+                                    }
+                                    .minByOrNull {
+                                        it.second
+                                    }
+
+                            val shouldOpenEncounter =
+                                encounterCandidate !=
+                                        null &&
+                                        (
+                                                participantCandidate ==
+                                                        null ||
+                                                        encounterCandidate
+                                                            .second <=
+                                                        participantCandidate
+                                                            .second
+                                                )
+
+                            when {
+
+                                shouldOpenEncounter -> {
+
+                                    currentOnEncounterClick(
+                                        encounterCandidate
+                                            ?.first
+                                            ?.encounterId
+                                            .orEmpty()
+                                    )
+
+                                    true
+                                }
+
+                                participantCandidate !=
+                                        null -> {
+
+                                    currentOnParticipantClick(
+                                        participantCandidate
+                                            .first
+                                    )
+
+                                    true
+                                }
+
+                                else -> {
+
+                                    currentOnMapClick(
+                                        point.latitude,
+                                        point.longitude
+                                    )
+
+                                    true
+                                }
                             }
                         }
                     }
@@ -630,6 +725,7 @@ private fun installMissionSourcesAndLayers(
         SOURCE_AREA_VERTICES,
         SOURCE_SELECTED_POINT,
         SOURCE_TRACKS,
+        SOURCE_ENCOUNTERS,
         SOURCE_PARTICIPANTS
     )
         .forEach { sourceId ->
@@ -770,6 +866,72 @@ private fun installMissionSourcesAndLayers(
                     ),
                     PropertyFactory.circleStrokeWidth(
                         4f
+                    )
+                )
+        )
+    }
+
+    /*
+     * Encontros registrados na missão.
+     *
+     * O círculo usa a cor do grupo que registrou o encontro
+     * e a cruz branca diferencia esse ponto de um participante.
+     */
+    if (
+        style.getLayer(
+            LAYER_ENCOUNTERS_BASE
+        ) == null
+    ) {
+
+        style.addLayer(
+            CircleLayer(
+                LAYER_ENCOUNTERS_BASE,
+                SOURCE_ENCOUNTERS
+            )
+                .withProperties(
+                    PropertyFactory.circleRadius(
+                        12f
+                    ),
+                    PropertyFactory.circleColor(
+                        Expression.toColor(
+                            Expression.get(
+                                PROPERTY_COLOR
+                            )
+                        )
+                    ),
+                    PropertyFactory.circleStrokeColor(
+                        Color.WHITE
+                    ),
+                    PropertyFactory.circleStrokeWidth(
+                        2.5f
+                    )
+                )
+        )
+    }
+
+    if (
+        style.getLayer(
+            LAYER_ENCOUNTERS_CROSS
+        ) == null
+    ) {
+
+        style.addLayer(
+            SymbolLayer(
+                LAYER_ENCOUNTERS_CROSS,
+                SOURCE_ENCOUNTERS
+            )
+                .withProperties(
+                    PropertyFactory.iconImage(
+                        IMAGE_ENCOUNTER_CROSS
+                    ),
+                    PropertyFactory.iconAllowOverlap(
+                        true
+                    ),
+                    PropertyFactory.iconIgnorePlacement(
+                        true
+                    ),
+                    PropertyFactory.iconSize(
+                        0.52f
                     )
                 )
         )
@@ -1021,6 +1183,17 @@ private fun installParticipantMarkerImages(
             createSosMarkerIcon()
         )
     }
+
+    if (
+        style.getImage(
+            IMAGE_ENCOUNTER_CROSS
+        ) == null
+    ) {
+        style.addImage(
+            IMAGE_ENCOUNTER_CROSS,
+            createEncounterCrossIcon()
+        )
+    }
 }
 
 private fun createSupportMarkerIcon():
@@ -1184,6 +1357,62 @@ private fun createSosMarkerIcon():
 }
 
 
+private fun createEncounterCrossIcon():
+        Bitmap {
+
+    val size =
+        48
+
+    val bitmap =
+        createBitmap(
+            size,
+            size
+        )
+
+    val canvas =
+        Canvas(
+            bitmap
+        )
+
+    val paint =
+        Paint(
+            Paint.ANTI_ALIAS_FLAG
+        ).apply {
+            color =
+                Color.WHITE
+
+            style =
+                Paint.Style.STROKE
+
+            strokeWidth =
+                7f
+
+            strokeCap =
+                Paint.Cap.ROUND
+        }
+
+    val centerX =
+        size / 2f
+
+    canvas.drawLine(
+        centerX,
+        8f,
+        centerX,
+        40f,
+        paint
+    )
+
+    canvas.drawLine(
+        15f,
+        20f,
+        33f,
+        20f,
+        paint
+    )
+
+    return bitmap
+}
+
 private fun addSourceIfMissing(
     style: Style,
     sourceId: String
@@ -1211,6 +1440,7 @@ private fun updateMissionSources(
     selectedLongitude: Double?,
     polygonPoints: List<MissionCoordinate>,
     participantMarkers: List<MissionParticipantMarker>,
+    encounterMarkers: List<MissionEncounterMarker>,
     participantTracks: List<MissionTrackLine>
 ) {
 
@@ -1262,6 +1492,16 @@ private fun updateMissionSources(
         ?.setGeoJson(
             tracksGeoJson(
                 participantTracks
+            )
+        )
+
+    source(
+        style,
+        SOURCE_ENCOUNTERS
+    )
+        ?.setGeoJson(
+            encountersGeoJson(
+                encounterMarkers
             )
         )
 
@@ -1450,6 +1690,58 @@ private fun tracksGeoJson(
                         "geometry",
                         geometry
                     )
+            }
+
+    return featureCollectionJson(
+        *features.toTypedArray()
+    )
+}
+
+private fun encountersGeoJson(
+    markers: List<MissionEncounterMarker>
+): String {
+
+    val features =
+        markers
+            .map { marker ->
+
+                val color =
+                    marker.colorHex
+                        ?.takeIf {
+                            it.isValidHexColor()
+                        }
+                        ?: DEFAULT_PARTICIPANT_COLOR
+
+                val properties =
+                    JSONObject()
+                        .put(
+                            PROPERTY_ENCOUNTER_ID,
+                            marker.encounterId
+                        )
+                        .put(
+                            PROPERTY_USER_ID,
+                            marker.registeredByUserId
+                        )
+                        .put(
+                            PROPERTY_GROUP_ID,
+                            marker.groupId
+                                ?: JSONObject.NULL
+                        )
+                        .put(
+                            PROPERTY_COLOR,
+                            color
+                        )
+                        .put(
+                            PROPERTY_PERSON_NAME,
+                            marker.personName
+                                ?: JSONObject.NULL
+                        )
+
+                pointFeature(
+                    marker.latitude,
+                    marker.longitude,
+                    properties
+                )
             }
 
     return featureCollectionJson(
@@ -1784,6 +2076,9 @@ private const val SOURCE_TRACKS =
 private const val SOURCE_PARTICIPANTS =
     "mission-participants-source"
 
+private const val SOURCE_ENCOUNTERS =
+    "mission-encounters-source"
+
 private const val LAYER_AREA_FILL =
     "mission-area-fill-layer"
 
@@ -1798,6 +2093,12 @@ private const val LAYER_AREA_VERTICES =
 
 private const val LAYER_SELECTED_POINT =
     "mission-selected-point-layer"
+
+private const val LAYER_ENCOUNTERS_BASE =
+    "mission-encounters-base-layer"
+
+private const val LAYER_ENCOUNTERS_CROSS =
+    "mission-encounters-cross-layer"
 
 private const val LAYER_CURRENT_USER =
     "mission-current-user-layer"
@@ -1819,6 +2120,15 @@ private const val IMAGE_SUPPORT =
 
 private const val IMAGE_SOS =
     "mission-participant-sos-icon"
+
+private const val IMAGE_ENCOUNTER_CROSS =
+    "mission-encounter-cross-icon"
+
+private const val PROPERTY_ENCOUNTER_ID =
+    "encounterId"
+
+private const val PROPERTY_PERSON_NAME =
+    "personName"
 
 private const val PROPERTY_USER_ID =
     "userId"

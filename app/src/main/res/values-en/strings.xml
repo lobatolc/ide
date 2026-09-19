@@ -718,6 +718,64 @@
     <string name="mission_location_notification_text">Your location is being shared during the mission.</string>
     <string name="mission_execution_support_received">I received support</string>
 
+    <string name="mission_personal_metrics_title">My metrics</string>
+    <string name="mission_personal_metrics_back">Back</string>
+    <string name="mission_personal_metrics_encounters">Encounters registered</string>
+    <string name="mission_personal_metrics_visits">Visits completed</string>
+    <string name="mission_personal_metrics_prayers">Prayers offered</string>
+    <string name="mission_personal_metrics_custom_activity_fallback">Custom activity</string>
+    <string name="mission_personal_metrics_bible_studies_offered">Bible studies offered</string>
+    <string name="mission_personal_metrics_bible_studies_accepted">Bible studies accepted</string>
+    <string name="mission_personal_metrics_materials_delivered">Materials delivered</string>
+    <string name="mission_personal_metrics_surveys_completed">Surveys completed</string>
+    <string name="mission_personal_metrics_distance">Distance traveled</string>
+    <string name="mission_personal_metrics_participation_time">Participation time</string>
+    <string name="mission_personal_metrics_unit_meter">m</string>
+    <string name="mission_personal_metrics_unit_kilometer">km</string>
+    <string name="mission_personal_metrics_unit_hour">h</string>
+    <string name="mission_personal_metrics_unit_minute">min</string>
 
+    <!-- Paste these lines inside app/src/main/res/values-en/strings.xml -->
+    <string name="mission_general_metrics_title">Mission metrics</string>
+    <string name="mission_general_metrics_back">Back</string>
+    <string name="mission_general_metrics_participants">Participants</string>
+    <string name="mission_general_metrics_groups">Groups</string>
+    <string name="mission_general_metrics_encounters">Encounters registered</string>
+    <string name="mission_general_metrics_visits">Visits completed</string>
+    <string name="mission_general_metrics_prayers">Prayers offered</string>
+    <string name="mission_general_metrics_custom_activity_fallback">Custom activity</string>
+    <string name="mission_general_metrics_bible_studies_offered">Bible studies offered</string>
+    <string name="mission_general_metrics_bible_studies_accepted">Bible studies accepted</string>
+    <string name="mission_general_metrics_materials_delivered">Materials delivered</string>
+    <string name="mission_general_metrics_surveys_completed">Surveys completed</string>
+    <string name="mission_general_metrics_distance">Total distance traveled</string>
+    <string name="mission_general_metrics_participation_time">Total participation time</string>
+    <string name="mission_general_metrics_unit_meter">m</string>
+    <string name="mission_general_metrics_unit_kilometer">km</string>
+    <string name="mission_general_metrics_unit_hour">h</string>
+    <string name="mission_general_metrics_unit_minute">min</string>
+    <string name="mission_group_filter_description">Choose which participants and routes appear on the map. Encounters remain visible.</string>
+    <string name="mission_group_filter_all">All groups</string>
+    <string name="mission_group_filter_ungrouped">No group</string>
+    <string name="mission_group_filter_participants">Participants: %1$d</string>
+    <string name="mission_group_filter_show_all">Show all</string>
+    <string name="mission_group_filter_apply">Apply</string>
+    <string name="mission_group_filter_active">Active</string>
+    <string name="mission_end_participation_title">End participation?</string>
+    <string name="mission_end_participation_message">Your time, distance, and location will no longer be recorded. The mission will continue for the other participants.</string>
+    <string name="mission_end_participation_confirm">End participation</string>
+    <string name="mission_end_participation_cancel">Cancel</string>
+    <string name="mission_end_participation_ending">Ending…</string>
+    <string name="mission_end_participation_error">Your participation could not be ended. Check your connection and try again.</string>
+    <string name="home_participation_finished">Your participation in this mission has ended. You cannot enter it again.</string>
+    <string name="home_mission_access_check_error">We couldn’t verify your participation. Please try again.</string>
+    <string name="mission_finish_title">Finish mission?</string>
+    <string name="mission_finish_message">This will end everyone’s participation and cannot be undone.</string>
+    <string name="mission_finish_confirm">Finish mission</string>
+    <string name="mission_finish_cancel">Cancel</string>
+    <string name="mission_finish_finishing">Finishing…</string>
+    <string name="mission_finish_success">Mission finished successfully.</string>
+    <string name="mission_finish_error">The mission could not be finished. Check your connection and try again.</string>
+    <string name="home_mission_already_completed">This mission has already ended. View the results in the Metrics tab.</string>
 
 </resources>

@@ -19,5 +19,7 @@ data class MissionParticipantState(
 
     val supportRequestedAt: LocalDateTime? = null,
 
-    val endedAt: LocalDateTime? = null
+    val endedAt: LocalDateTime? = null,
+
+    val endedByMission: Boolean = false
 )

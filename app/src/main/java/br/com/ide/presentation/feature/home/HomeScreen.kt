@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +64,25 @@ fun HomeScreen(
 
     val lifecycleOwner =
         LocalLifecycleOwner.current
+
+    LaunchedEffect(
+        viewModel
+    ) {
+        viewModel
+            .effects
+            .collect { effect ->
+                when (
+                    effect
+                ) {
+                    is HomeEffect.OpenMission -> {
+                        onMissionClick(
+                            effect.missionId,
+                            effect.missionStatus
+                        )
+                    }
+                }
+            }
+    }
 
     DisposableEffect(
         lifecycleOwner
@@ -103,7 +123,6 @@ fun HomeScreen(
     HomeContent(
         uiState = uiState,
         onEvent = viewModel::onEvent,
-        onMissionClick = onMissionClick,
         onMetricsClick = onMetricsClick,
         onProfileClick = onProfileClick,
         onFilterClick = onFilterClick,
@@ -115,7 +134,6 @@ fun HomeScreen(
 private fun HomeContent(
     uiState: HomeUiState,
     onEvent: (HomeEvent) -> Unit,
-    onMissionClick: (String, MissionStatus) -> Unit,
     onCreateMissionClick: () -> Unit,
     onMetricsClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -283,9 +301,13 @@ private fun HomeContent(
                                     ),
 
                                 onClick = {
-                                    onMissionClick(
-                                        mission.id,
-                                        mission.status
+                                    onEvent(
+                                        HomeEvent.MissionClicked(
+                                            missionId =
+                                                mission.id,
+                                            missionStatus =
+                                                mission.status
+                                        )
                                     )
                                 }
                             )

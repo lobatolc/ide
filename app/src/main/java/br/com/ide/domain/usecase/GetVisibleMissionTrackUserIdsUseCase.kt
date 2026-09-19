@@ -48,19 +48,21 @@ class GetVisibleMissionTrackUserIdsUseCase @Inject constructor(
                         .groupId
 
                 /*
-                 * Missionário sem grupo continua vendo
-                 * o próprio trajeto, mas não tratamos
-                 * "sem grupo" como um grupo coletivo.
-                 *
-                 * Assim evitamos que todos os não atribuídos
-                 * enxerguem os trajetos uns dos outros.
+                 * groupId == null significa Grupo Geral. Isso vale mesmo
+                 * quando a missão também possui grupos configurados.
                  */
                 if (
                     groupId == null
                 ) {
-                    return setOf(
-                        currentUser.id
-                    )
+                    return participants
+                        .asSequence()
+                        .filter {
+                            it.groupId == null
+                        }
+                        .map {
+                            it.userId
+                        }
+                        .toSet()
                 }
 
                 participants
@@ -126,14 +128,6 @@ class GetVisibleMissionTrackUserIdsUseCase @Inject constructor(
             }
 
             UserRole.ADMIN -> {
-
-                /*
-                 * Administrador possui visão operacional
-                 * completa da missão.
-                 *
-                 * A redução visual ficará a cargo do filtro
-                 * disponível no menu da execução.
-                 */
                 participantIds
             }
         }

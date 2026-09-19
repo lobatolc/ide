@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mission_my_group_title">My group</string>
+    <string name="mission_my_group_no_group">You are not in a group in this mission.</string>
+    <string name="mission_my_group_participants">Participants</string>
+    <string name="mission_my_group_members_count">%1$d participant(s)</string>
+    <string name="mission_my_group_you">You</string>
+    <string name="mission_my_group_support">Support</string>
+    <string name="mission_my_group_finished">Participation ended</string>
+</resources>

@@ -40,26 +40,43 @@ class StartMissionUseCase @Inject constructor(
                     )
                 )
 
-        /*
-         * Primeiro carregamos todos os usuários das igrejas
-         * participantes da missão.
-         *
-         * Isso é importante porque um missionário pode
-         * participar da missão sem ainda estar atribuído
-         * a um grupo.
-         */
         val eligibleUsersById =
             linkedMapOf<
                     String,
                     br.com.ide.domain.model.UserProfile
                     >()
 
-        mission
-            .participatingChurchIds
-            .filter {
-                it.isNotBlank()
+        /*
+         * Igrejas efetivamente participantes.
+         *
+         * Em missões locais antigas/sem grupos, participatingChurchIds
+         * pode estar vazio. Nesse caso usamos a igreja do criador para
+         * que a missão não seja iniciada sem nenhum participante.
+         */
+        val configuredChurchIds =
+            mission
+                .participatingChurchIds
+                .filter {
+                    it.isNotBlank()
+                }
+                .distinct()
+
+        val effectiveChurchIds =
+            if (
+                configuredChurchIds.isNotEmpty()
+            ) {
+                configuredChurchIds
+            } else {
+                listOfNotNull(
+                    mission.creatorChurchId
+                )
+                    .filter {
+                        it.isNotBlank()
+                    }
+                    .distinct()
             }
-            .distinct()
+
+        effectiveChurchIds
             .forEach { churchId ->
 
                 val users =
@@ -93,8 +110,12 @@ class StartMissionUseCase @Inject constructor(
                     >()
 
         /*
-         * Todos os usuários elegíveis entram inicialmente
-         * sem grupo.
+         * Todos os usuários elegíveis entram inicialmente sem groupId.
+         *
+         * groupId = null representa o Grupo Geral na camada de execução,
+         * mesmo quando a missão também possui grupos configurados. Assim,
+         * toda pessoa não atribuída fica reunida no mesmo grupo lógico.
+         * Não persistimos um grupo artificial no documento da missão.
          */
         eligibleUsersById
             .keys
@@ -118,10 +139,9 @@ class StartMissionUseCase @Inject constructor(
             }
 
         /*
-         * Em seguida aplicamos as atribuições dos grupos.
-         *
-         * Se o usuário estiver em um grupo, groupId passa a
-         * apontar para ele. Se for apoio, isSupport = true.
+         * Se existem grupos explícitos, aplicamos suas atribuições.
+         * Participantes salvos em grupos continuam sendo preservados mesmo
+         * que não apareçam mais na consulta da igreja.
          */
         mission.groups
             .forEach { group ->
@@ -155,13 +175,6 @@ class StartMissionUseCase @Inject constructor(
                                                 isSupport
                                 )
                             } else {
-                                /*
-                                 * Compatibilidade:
-                                 * se um usuário estiver salvo em
-                                 * um grupo antigo, mesmo que não
-                                 * apareça mais na consulta da igreja,
-                                 * ainda preservamos sua participação.
-                                 */
                                 MissionParticipantState(
                                     userId =
                                         userId,
@@ -216,6 +229,21 @@ class StartMissionUseCase @Inject constructor(
                             }
                     }
             }
+
+        /*
+         * Nunca colocamos a missão em andamento sem participantes.
+         * Isso evita gerar uma missão válida cujo usuário atual não possua
+         * missions/{missionId}/participants/{userId}.
+         */
+        if (
+            participantsByUserId.isEmpty()
+        ) {
+            return Result.failure(
+                IllegalStateException(
+                    "Mission has no participants to initialize."
+                )
+            )
+        }
 
         missionParticipantRepository
             .initializeParticipants(

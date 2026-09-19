@@ -31,6 +31,21 @@ data class MissionExecution(
 )
 
 @Serializable
+data class NewEncounter(
+    val missionId: String
+)
+
+@Serializable
+data class MissionPersonalMetrics(
+    val missionId: String
+)
+
+@Serializable
+data class MissionGeneralMetrics(
+    val missionId: String
+)
+
+@Serializable
 data class MissionLocations(
     val missionId: String
 )

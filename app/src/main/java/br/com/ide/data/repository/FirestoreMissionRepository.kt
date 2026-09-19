@@ -8,6 +8,7 @@ import br.com.ide.domain.model.MissionGroup
 import br.com.ide.domain.model.MissionLocation
 import br.com.ide.domain.model.MissionMaterialType
 import br.com.ide.domain.model.MissionMovement
+import br.com.ide.domain.model.MissionParticipantStatus
 import br.com.ide.domain.model.MissionStatus
 import br.com.ide.domain.model.MissionSurveyQuestion
 import br.com.ide.domain.model.SurveyQuestionType
@@ -22,7 +23,6 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
-import kotlin.collections.get
 
 class FirestoreMissionRepository @Inject constructor(
     private val firestore: FirebaseFirestore
@@ -348,6 +348,132 @@ class FirestoreMissionRepository @Inject constructor(
     }
 
     // =========================================================
+    // Finalizar missão e participantes
+    // =========================================================
+
+    override suspend fun finishMission(
+        missionId: String
+    ): Result<Unit> {
+
+        return try {
+
+            val missionReference =
+                firestore
+                    .collection(
+                        "missions"
+                    )
+                    .document(
+                        missionId
+                    )
+
+            /*
+             * A consulta fornece as referências. Os documentos são
+             * relidos dentro da transação, garantindo que um participante
+             * que já encerrou antes mantenha seu endedAt original.
+             */
+            val participantReferences =
+                missionReference
+                    .collection(
+                        "participants"
+                    )
+                    .get()
+                    .await()
+                    .documents
+                    .map {
+                        it.reference
+                    }
+
+            firestore
+                .runTransaction { transaction ->
+
+                    val missionSnapshot =
+                        transaction.get(
+                            missionReference
+                        )
+
+                    val participantSnapshots =
+                        participantReferences
+                            .map { reference ->
+                                transaction.get(
+                                    reference
+                                )
+                            }
+
+                    val currentMissionStatus =
+                        missionSnapshot
+                            .getString(
+                                "status"
+                            )
+
+                    check(
+                        currentMissionStatus ==
+                                MissionStatus
+                                    .IN_PROGRESS
+                                    .name
+                    ) {
+                        "Mission is not in progress"
+                    }
+
+                    transaction.update(
+                        missionReference,
+                        mapOf(
+                            "status" to
+                                    MissionStatus
+                                        .COMPLETED
+                                        .name,
+                            "endedAt" to
+                                    FieldValue
+                                        .serverTimestamp()
+                        )
+                    )
+
+                    participantSnapshots
+                        .filter { participant ->
+                            participant
+                                .getString(
+                                    "status"
+                                ) !=
+                                    MissionParticipantStatus
+                                        .FINISHED
+                                        .name
+                        }
+                        .forEach { participant ->
+                            transaction.update(
+                                participant.reference,
+                                mapOf(
+                                    "status" to
+                                            MissionParticipantStatus
+                                                .FINISHED
+                                                .name,
+                                    "endedAt" to
+                                            FieldValue
+                                                .serverTimestamp(),
+                                    "endedByMission" to
+                                            true,
+                                    "supportRequestedAt" to
+                                            null
+                                )
+                            )
+                        }
+
+                    Unit
+                }
+                .await()
+
+            Result.success(
+                Unit
+            )
+
+        } catch (
+            exception: Exception
+        ) {
+            Result.failure(
+                exception
+            )
+        }
+    }
+
+    // =========================================================
 // Área de atuação
 // =========================================================
 
@@ -623,6 +749,12 @@ class FirestoreMissionRepository @Inject constructor(
             startedAt =
                 getTimestamp(
                     "startedAt"
+                )
+                    ?.toLocalDateTime(),
+
+            endedAt =
+                getTimestamp(
+                    "endedAt"
                 )
                     ?.toLocalDateTime(),
 
@@ -987,6 +1119,10 @@ class FirestoreMissionRepository @Inject constructor(
 
             "startedAt" to
                     startedAt
+                        ?.toTimestamp(),
+
+            "endedAt" to
+                    endedAt
                         ?.toTimestamp(),
 
             // -------------------------------------------------

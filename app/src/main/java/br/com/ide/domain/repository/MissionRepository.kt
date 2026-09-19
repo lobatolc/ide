@@ -47,4 +47,8 @@ interface MissionRepository {
     suspend fun startMission(
         missionId: String
     ): Result<Unit>
+
+    suspend fun finishMission(
+        missionId: String
+    ): Result<Unit>
 }

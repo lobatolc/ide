@@ -46,5 +46,7 @@ data class Mission(
 
     // Dados preenchidos posteriormente
     val photoUrl: String? = null,
-    val totalDurationMinutes: Long? = null
+    val totalDurationMinutes: Long? = null,
+
+    val endedAt: LocalDateTime? = null
 )
