@@ -18,6 +18,9 @@ data object ForgotPassword
 data object Home
 
 @Serializable
+data object Metrics
+
+@Serializable
 data object Mission
 
 @Serializable

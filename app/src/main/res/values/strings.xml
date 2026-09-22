@@ -883,4 +883,46 @@
     <string name="mission_finish_success">Missão finalizada com sucesso.</string>
     <string name="mission_finish_error">Não foi possível finalizar a missão. Verifique sua conexão e tente novamente.</string>
     <string name="home_mission_already_completed">Esta missão já foi encerrada. Consulte os resultados na aba Métricas.</string>
+    <string name="metrics_title">Métricas</string>
+    <string name="metrics_subtitle">Missões concluídas</string>
+    <string name="metrics_results_title">Resultados</string>
+
+    <string name="metrics_filter_title">Missões analisadas</string>
+    <string name="metrics_only_completed">Somente concluídas</string>
+    <string name="metrics_all_completed">Todas as missões concluídas</string>
+    <string name="metrics_selected_one">1 missão selecionada</string>
+    <string name="metrics_selected_many">%1$d missões selecionadas</string>
+
+    <string name="metrics_selector_title">Selecionar missões</string>
+    <string name="metrics_selector_subtitle">Escolha uma ou mais missões concluídas para analisar as métricas.</string>
+    <string name="metrics_close_selector">Fechar seleção de missões</string>
+    <string name="metrics_search_hint">Buscar missão...</string>
+
+    <string name="metrics_period_value">Período: %1$s</string>
+    <string name="metrics_period_all">Todo período</string>
+    <string name="metrics_period_current_year">Este ano</string>
+    <string name="metrics_period_last_30_days">Últimos 30 dias</string>
+    <string name="metrics_period_last_90_days">Últimos 90 dias</string>
+
+    <string name="metrics_select_all">Selecionar todas</string>
+    <string name="metrics_of_completed">%1$d de %2$d</string>
+    <string name="metrics_total_completed">%1$d missões concluídas</string>
+    <string name="metrics_apply">Aplicar</string>
+
+    <string name="metrics_card_missions">Missões</string>
+    <string name="metrics_card_unique_missionaries">Missionários únicos</string>
+    <string name="metrics_card_participations">Participações</string>
+    <string name="metrics_card_other_activities">Outras atividades</string>
+
+    <string name="metrics_export_title">Exportar dados</string>
+    <string name="metrics_export_description">Relatório completo em Excel com resumo, missões, participantes, encontros, materiais e pesquisas.</string>
+    <string name="metrics_export_button">Exportar Excel</string>
+    <string name="metrics_export_building">Gerando...</string>
+    <string name="metrics_export_success">Arquivo Excel salvo com sucesso.</string>
+    <string name="metrics_export_error">Não foi possível exportar o arquivo Excel.</string>
+
+    <string name="metrics_empty">Nenhuma missão concluída encontrada.</string>
+    <string name="metrics_loading_error">Não foi possível carregar as métricas. Tente novamente.</string>
+    <string name="metrics_selection_limit">Selecione até %1$d missões por vez.</string>
+    <string name="metrics_selection_count_limit">%1$d de %2$d selecionadas</string>
 </resources>

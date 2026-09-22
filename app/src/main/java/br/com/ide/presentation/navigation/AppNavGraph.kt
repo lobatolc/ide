@@ -36,6 +36,7 @@ import br.com.ide.presentation.feature.editprofile.EditProfileScreen
 import br.com.ide.presentation.feature.forgotpassword.ForgotPasswordScreen
 import br.com.ide.presentation.feature.forgotpassword.ForgotPasswordViewModel
 import br.com.ide.presentation.feature.home.HomeScreen
+import br.com.ide.presentation.feature.metrics.MetricsScreen
 import br.com.ide.presentation.feature.login.LoginEvent
 import br.com.ide.presentation.feature.login.LoginScreen
 import br.com.ide.presentation.feature.login.LoginViewModel
@@ -463,6 +464,12 @@ fun AppNavGraph(
                     },
 
                     onMetricsClick = {
+
+                        navController.navigate(
+                            Metrics
+                        ) {
+                            launchSingleTop = true
+                        }
                     },
 
                     onProfileClick = {
@@ -480,6 +487,37 @@ fun AppNavGraph(
                         navController.navigate(
                             CreateMission
                         )
+                    }
+                )
+            }
+
+            // =====================================================
+            // Métricas históricas
+            // =====================================================
+
+            composable<Metrics> {
+
+                MetricsScreen(
+                    onHomeClick = {
+
+                        navController.navigate(
+                            Home
+                        ) {
+                            launchSingleTop = true
+
+                            popUpTo<Home> {
+                                inclusive = false
+                            }
+                        }
+                    },
+
+                    onProfileClick = {
+
+                        navController.navigate(
+                            Profile
+                        ) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
@@ -1426,6 +1464,12 @@ fun AppNavGraph(
                     },
 
                     onMetricsClick = {
+
+                        navController.navigate(
+                            Metrics
+                        ) {
+                            launchSingleTop = true
+                        }
                     },
 
                     onEditProfileClick = {
