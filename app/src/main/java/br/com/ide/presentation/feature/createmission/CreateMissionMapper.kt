@@ -6,7 +6,6 @@ import br.com.ide.domain.model.MissionMaterialType
 import br.com.ide.domain.model.MissionMovement
 import br.com.ide.domain.model.MissionStatus
 import br.com.ide.domain.model.MissionSurveyQuestion
-import br.com.ide.domain.model.UserRole
 import java.time.LocalDateTime
 import javax.inject.Inject
 

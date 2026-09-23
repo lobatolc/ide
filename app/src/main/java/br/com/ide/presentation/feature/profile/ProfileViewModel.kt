@@ -3,7 +3,6 @@ package br.com.ide.presentation.feature.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.ide.R
-import br.com.ide.domain.model.UserRole
 import br.com.ide.domain.usecase.GetChurchByIdUseCase
 import br.com.ide.domain.usecase.GetCurrentUserProfileUseCase
 import br.com.ide.domain.usecase.GetDistrictByIdUseCase

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Login -->
+
+    <!-- Autenticação — Login -->
     <string name="login_title">Welcome back</string>
     <string name="login_subtitle">Sign in to continue</string>
     <string name="login_email">Email</string>
@@ -13,50 +14,18 @@
     <string name="login_logo_description">IDE logo</string>
     <string name="login_show_password">Show password</string>
     <string name="login_hide_password">Hide password</string>
+    <string name="login_slogan">Missions that connect people</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_or">or</string>
+    <string name="google_logo_description">Google logo</string>
+    <string name="login_google_button">Continue with Google</string>
+    <string name="login_bible_verse">“Go into all the world and preach the gospel to all creation.”</string>
+    <string name="login_bible_reference">Mark 16:15</string>
 
-    <!-- Login extras -->
-    <string name="login_slogan">
-    Missions that connect people
-</string>
-
-    <string name="login_email_label">
-    Email
-</string>
-
-    <string name="login_password_label">
-    Password
-</string>
-
-    <string name="login_or">
-    or
-</string>
-
-    <string name="google_logo_description">
-    Google logo
-</string>
-
-    <string name="login_google_button">
-    Continue with Google
-</string>
-
-    <string name="login_bible_verse">
-    “Go into all the world and preach the gospel to all creation.”
-</string>
-
-    <string name="login_bible_reference">
-    Mark 16:15
-</string>
-
-    <!-- Register extras -->
-    <string name="register_back">
-    Back
-</string>
-
-    <string name="register_has_account">
-    Already have an account?
-</string>
-
-    <!-- Register -->
+    <!-- Autenticação — Cadastro -->
+    <string name="register_back">Back</string>
+    <string name="register_has_account">Already have an account?</string>
     <string name="register_title">Create account</string>
     <string name="register_subtitle">Fill in your information to get started</string>
     <string name="register_first_name">First name</string>
@@ -68,19 +37,15 @@
     <string name="register_button">Create account</string>
     <string name="register_already_have_account">Already have an account?</string>
     <string name="register_login">Sign in</string>
-
-    <!-- Sabbath School -->
     <string name="sabbath_school_juveniles">Juniors</string>
     <string name="sabbath_school_youth">Youth</string>
     <string name="sabbath_school_adults">Adults</string>
+    <string name="complete_registration_title">Complete your registration</string>
+    <string name="complete_registration_subtitle">We need a few more details before you continue.</string>
+    <string name="complete_registration_button">Complete registration</string>
+    <string name="complete_registration_back">Cancel registration and go back</string>
 
-    <!-- User roles -->
-    <string name="user_role_missionary">Missionary</string>
-    <string name="user_role_leader">Leader</string>
-    <string name="user_role_pastor">Pastor</string>
-    <string name="user_role_admin">Administrator</string>
-
-    <!-- Forgot password -->
+    <!-- Autenticação — Recuperação de senha -->
     <string name="forgot_password_title">Reset password</string>
     <string name="forgot_password_subtitle">Enter the email registered to your account. If it exists, we will send instructions to reset your password.</string>
     <string name="forgot_password_email">Email</string>
@@ -93,7 +58,7 @@
     <string name="forgot_password_resend">Resend link</string>
     <string name="forgot_password_wait_to_resend">Wait %1$d s to resend</string>
 
-    <!-- Validation -->
+    <!-- Validações -->
     <string name="error_email_required">Email is required.</string>
     <string name="error_email_invalid">Enter a valid email.</string>
     <string name="error_password_required">Password is required.</string>
@@ -103,7 +68,6 @@
     <string name="error_login_generic">Could not sign in.</string>
     <string name="error_google_login">Could not sign in with Google.</string>
     <string name="error_unexpected">An unexpected error occurred.</string>
-
     <string name="error_first_name_required">First name is required.</string>
     <string name="error_last_name_required">Last name is required.</string>
     <string name="error_sabbath_school_class_required">Select your Sabbath School class.</string>
@@ -112,69 +76,47 @@
     <string name="error_passwords_do_not_match">Passwords do not match.</string>
     <string name="error_register_generic">Could not create your account.</string>
 
-    <string name="complete_registration_title">
-    Complete your registration
-</string>
+    <!-- Navegação -->
+    <string name="bottom_nav_home">Home</string>
+    <string name="bottom_nav_metrics">Metrics</string>
+    <string name="bottom_nav_profile">Profile</string>
 
-    <string name="complete_registration_subtitle">
-    We need a few more details before you continue.
-</string>
-
-    <string name="complete_registration_button">
-    Complete registration
-</string>
-
-    <!-- Home / missions -->
-    <string name="home_loading_error">Could not load missions.</string>
-    <string name="mission_search_placeholder">Search missions</string>
-    <string name="mission_filter_description">Open mission filters</string>
-    <string name="mission_filter_all">All</string>
-
-    <string name="mission_status_scheduled">Scheduled</string>
-    <string name="mission_status_in_progress">In progress</string>
-    <string name="mission_status_completed">Completed</string>
-    <string name="mission_status_cancelled">Cancelled</string>
-
-    <!-- Language -->
+    <!-- Idioma -->
     <string name="language_selector_description">Select language</string>
     <string name="language_portuguese">Português</string>
     <string name="language_english">English</string>
     <string name="language_spanish">Español</string>
 
-    <!-- Bottom navigation -->
-    <string name="bottom_nav_home">Home</string>
-    <string name="bottom_nav_metrics">Metrics</string>
-    <string name="bottom_nav_profile">Profile</string>
+    <!-- Recursos comuns -->
+    <string name="common_confirm">Confirm</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_select_date">Select date</string>
+    <string name="common_date">Date</string>
 
-    <!-- Home -->
+    <!-- Home e status de missão -->
+    <string name="home_loading_error">Could not load missions.</string>
+    <string name="mission_search_placeholder">Search missions</string>
+    <string name="mission_filter_description">Open mission filters</string>
+    <string name="mission_filter_all">All</string>
+    <string name="mission_status_scheduled">Scheduled</string>
+    <string name="mission_status_in_progress">In progress</string>
+    <string name="mission_status_completed">Completed</string>
+    <string name="mission_status_cancelled">Cancelled</string>
     <string name="home_greeting">Hello!</string>
     <string name="home_greeting_name">Hello, %1$s!</string>
     <string name="home_subtitle">Ready for the mission?</string>
-
     <string name="home_retry">Try again</string>
-
-    <string name="home_no_missions">
-        No missions available
-    </string>
-
-    <string name="home_no_missions_subtitle">
-        Upcoming missions will appear here.
-    </string>
-
-    <string name="home_no_missions_found">
-        No missions found
-    </string>
-
-    <string name="home_no_missions_found_subtitle">
-        Try changing your search or filters.
-    </string>
-
-    <string name="complete_registration_back">
-    Cancel registration and go back
-</string>
-
+    <string name="home_no_missions">No missions available</string>
+    <string name="home_no_missions_subtitle">Upcoming missions will appear here.</string>
+    <string name="home_no_missions_found">No missions found</string>
+    <string name="home_no_missions_found_subtitle">Try changing your search or filters.</string>
     <string name="home_create_mission">Create mission</string>
+    <string name="mission_status_planning">Planning</string>
+    <string name="home_participation_finished">Your participation in this mission has ended. You cannot enter it again.</string>
+    <string name="home_mission_access_check_error">We couldn’t verify your participation. Please try again.</string>
+    <string name="home_mission_already_completed">This mission has already ended. View the results in the Metrics tab.</string>
 
+    <!-- Perfil -->
     <string name="profile_title">Profile</string>
     <string name="profile_subtitle">Update your personal information.</string>
     <string name="profile_permission">Permission</string>
@@ -185,117 +127,49 @@
     <string name="profile_loading_error">Could not load your profile.</string>
     <string name="profile_save_error">Could not save changes.</string>
     <string name="profile_save_success">Changes saved successfully.</string>
-    <string name="profile_change_photo">
-    Change profile photo
-</string>
-
-    <string name="profile_subtitle_overview">
-    Your information and preferences.
-</string>
-
-    <string name="profile_information">
-    Information
-</string>
-
-    <string name="profile_settings">
-    Settings
-</string>
-
-    <string name="profile_edit">
-    Edit profile
-</string>
-
-    <string name="profile_language">
-    Language
-</string>
-
-    <string name="profile_language_current">
-    English
-</string>
-
-    <string name="profile_theme">
-    Theme
-</string>
-
-    <string name="profile_theme_system">
-    System default
-</string>
-
-    <string name="profile_notifications">
-    Notifications
-</string>
-
-    <string name="profile_notifications_enabled">
-    Enabled
-</string>
-
-    <string name="edit_profile_title">
-    Edit profile
-</string>
-
-    <string name="edit_profile_subtitle">
-    Update your personal information.
-</string>
-
-    <string name="edit_profile_back">
-    Back to profile
-</string>
-
-    <!-- values-en/strings.xml -->
+    <string name="profile_change_photo">Change profile photo</string>
+    <string name="profile_subtitle_overview">Your information and preferences.</string>
+    <string name="profile_information">Information</string>
+    <string name="profile_settings">Settings</string>
+    <string name="profile_edit">Edit profile</string>
+    <string name="profile_language">Language</string>
+    <string name="profile_language_current">English</string>
+    <string name="profile_theme">Theme</string>
+    <string name="profile_theme_system">System default</string>
+    <string name="profile_notifications">Notifications</string>
+    <string name="profile_notifications_enabled">Enabled</string>
+    <string name="edit_profile_title">Edit profile</string>
+    <string name="edit_profile_subtitle">Update your personal information.</string>
+    <string name="edit_profile_back">Back to profile</string>
     <string name="profile_select_language">Select language</string>
-
     <string name="profile_theme_light">Light mode</string>
     <string name="profile_theme_dark">Dark mode</string>
     <string name="profile_select_theme">Select theme</string>
+    <string name="profile_administration">Administration</string>
+    <string name="profile_user_management">People management</string>
+    <string name="profile_user_management_subtitle">Manage roles, churches and districts.</string>
+    <string name="profile_district">District</string>
+    <string name="profile_church">Church</string>
+    <string name="edit_profile_success">Profile updated successfully!</string>
+    <string name="edit_profile_error">Unable to update the profile.</string>
 
-    <string name="user_management_error_cannot_manage_user">
-    You do not have permission to manage this user.
-</string>
-
-    <string name="user_management_error_cannot_assign_role">
-    You do not have permission to assign this role.
-</string>
-
-    <string name="user_management_error_district_required">
-    A district must be selected.
-</string>
-
-    <string name="user_management_error_church_required">
-    A church must be selected.
-</string>
-
-    <string name="user_management_error_pastor_without_district">
-    The pastor must be assigned to a district.
-</string>
-
-    <string name="user_management_error_other_district">
-    You cannot manage users from another district.
-</string>
-
-    <string name="user_management_error_move_district">
-    You do not have permission to move this user to another district.
-</string>
-
-    <string name="user_management_error_invalid_role_pastor">
-    A pastor can only assign the missionary or leader roles.
-</string>
-
-    <string name="user_management_error_admin_role">
-    The administrator role cannot be assigned from this screen.
-</string>
-
-    <string name="user_management_error_generic">
-    The change could not be completed. Please try again.
-</string>
-
-    <string name="user_management_error_church_wrong_district">
-    The selected church does not belong to the selected district.
-</string>
-
-    <string name="user_management_error_validate_church">
-    The selected church could not be validated. Check your connection and try again.
-</string>
-
+    <!-- Papéis e gestão de pessoas -->
+    <string name="user_role_missionary">Missionary</string>
+    <string name="user_role_leader">Leader</string>
+    <string name="user_role_pastor">Pastor</string>
+    <string name="user_role_admin">Administrator</string>
+    <string name="user_management_error_cannot_manage_user">You do not have permission to manage this user.</string>
+    <string name="user_management_error_cannot_assign_role">You do not have permission to assign this role.</string>
+    <string name="user_management_error_district_required">A district must be selected.</string>
+    <string name="user_management_error_church_required">A church must be selected.</string>
+    <string name="user_management_error_pastor_without_district">The pastor must be assigned to a district.</string>
+    <string name="user_management_error_other_district">You cannot manage users from another district.</string>
+    <string name="user_management_error_move_district">You do not have permission to move this user to another district.</string>
+    <string name="user_management_error_invalid_role_pastor">A pastor can only assign the missionary or leader roles.</string>
+    <string name="user_management_error_admin_role">The administrator role cannot be assigned from this screen.</string>
+    <string name="user_management_error_generic">The change could not be completed. Please try again.</string>
+    <string name="user_management_error_church_wrong_district">The selected church does not belong to the selected district.</string>
+    <string name="user_management_error_validate_church">The selected church could not be validated. Check your connection and try again.</string>
     <string name="user_management_title">People management</string>
     <string name="user_management_subtitle">Manage user roles and assignments.</string>
     <string name="user_management_back">Back</string>
@@ -305,367 +179,151 @@
     <string name="user_management_people_count">%1$d people</string>
     <string name="user_management_loading_error">Users could not be loaded.</string>
     <string name="user_management_access_denied">You do not have permission to access people management.</string>
-    <string name="profile_administration">Administration</string>
-
-    <string name="profile_user_management">People management</string>
-
-    <string name="profile_user_management_subtitle">
-    Manage roles, churches and districts.
-</string>
-
-    <string name="profile_district">District</string>
-    <string name="profile_church">Church</string>
-
     <string name="user_management_details_title">Manage person</string>
     <string name="user_management_details_subtitle">Change this user\'s role and assignments.</string>
     <string name="user_management_details_back">Back to people management</string>
-
     <string name="user_management_details_role">Role</string>
     <string name="user_management_details_district">District</string>
     <string name="user_management_details_church">Church</string>
-
-    <string name="user_management_details_pastor_no_church">
-    Pastors are assigned to a district rather than a specific church.
-</string>
-
+    <string name="user_management_details_pastor_no_church">Pastors are assigned to a district rather than a specific church.</string>
     <string name="user_management_details_save">Save changes</string>
+    <string name="user_management_update_success">Person updated successfully!</string>
+    <string name="user_management_update_error">Unable to update the person.</string>
 
+    <!-- Criação de missão -->
     <string name="create_mission_title">New mission</string>
     <string name="create_mission_general_title">General</string>
     <string name="create_mission_general_subtitle">Define the mission\'s main information.</string>
-
     <string name="create_mission_name">Mission name</string>
     <string name="create_mission_date">Date</string>
     <string name="create_mission_time">Time</string>
     <string name="create_mission_description">Description</string>
     <string name="create_mission_movement">Movement</string>
     <string name="create_mission_custom_movement">Movement name</string>
-
     <string name="create_mission_movement_breaking_silence">Breaking the Silence</string>
     <string name="create_mission_movement_hope_impact">Hope Impact</string>
     <string name="create_mission_movement_other">Other</string>
-
     <string name="create_mission_next">Next</string>
     <string name="create_mission_back">Back</string>
-
     <string name="create_mission_name_required">Enter the mission name.</string>
     <string name="create_mission_date_required">Select the mission date.</string>
     <string name="create_mission_time_required">Select the mission time.</string>
     <string name="create_mission_movement_required">Select the movement.</string>
     <string name="create_mission_custom_movement_required">Enter the movement name.</string>
-
     <string name="create_mission_step">Step %1$d of %2$d</string>
     <string name="create_mission_select_date">Select date</string>
     <string name="create_mission_select_time">Select time</string>
     <string name="create_mission_description_optional">Description (optional)</string>
-
-    <string name="common_confirm">Confirm</string>
-    <string name="common_cancel">Cancel</string>
-
-    <string name="common_select_date">Select date</string>
-    <string name="common_date">Date</string>
     <string name="create_mission_date_in_past">The mission date cannot be in the past.</string>
     <string name="create_mission_time_in_past">The mission time cannot be in the past.</string>
-
     <string name="create_mission_participants_title">Participants</string>
     <string name="create_mission_participants_subtitle">Choose which churches will participate in the mission.</string>
-
     <string name="create_mission_select_all_churches">Select all churches</string>
-
     <string name="create_mission_participants_required">Select at least one church.</string>
     <string name="create_mission_participants_loading_error">Unable to load participants.</string>
     <string name="create_mission_creator_assignment_error">Your district or church assignment is incomplete.</string>
     <string name="create_mission_permission_error">You do not have permission to create missions.</string>
-
-    <string name="create_mission_leader_participants_info">
-    All missionaries assigned to your church will be invited to this mission.
-</string>
-
+    <string name="create_mission_leader_participants_info">All missionaries assigned to your church will be invited to this mission.</string>
     <string name="create_mission_selected_church">Participating church</string>
-
     <string name="create_mission_selected_church_count">%1$d church(es) selected</string>
-
     <string name="create_mission_actions_title">Actions</string>
     <string name="create_mission_actions_subtitle">Select the activities that will be carried out during the mission.</string>
-
     <string name="create_mission_action_visit">Visits</string>
     <string name="create_mission_action_prayer">Prayers</string>
     <string name="create_mission_action_bible_study">Bible Study</string>
     <string name="create_mission_action_material_delivery">Material delivery</string>
     <string name="create_mission_action_opinion_survey">Opinion survey</string>
     <string name="create_mission_action_other">Other activity</string>
-
     <string name="create_mission_custom_activity">Activity name</string>
-
     <string name="create_mission_materials_title">Materials</string>
     <string name="create_mission_materials_subtitle">Select the materials that may be distributed.</string>
-
     <string name="create_mission_material_book">Book</string>
     <string name="create_mission_material_magazine">Magazine</string>
     <string name="create_mission_material_leaflet">Leaflet</string>
     <string name="create_mission_material_other">Other</string>
-
     <string name="create_mission_custom_material">Material name</string>
-
     <string name="create_mission_activities_required">Select at least one action.</string>
     <string name="create_mission_custom_activity_required">Enter the activity name.</string>
     <string name="create_mission_materials_required">Select at least one material.</string>
     <string name="create_mission_custom_material_required">Enter the material name.</string>
-
     <string name="create_mission_configure_materials">Configure materials</string>
     <string name="create_mission_materials_configured">%1$d material(s) configured</string>
-
     <string name="create_mission_configure_survey">Configure survey</string>
     <string name="create_mission_survey_configured">%1$d question(s) configured</string>
-
     <string name="create_mission_survey_title">Configure survey</string>
     <string name="create_mission_survey_subtitle">Define the questions that will be used during the mission.</string>
-
     <string name="create_mission_survey_question">Question</string>
     <string name="create_mission_survey_question_type">Type</string>
     <string name="create_mission_survey_type_text">Free text</string>
     <string name="create_mission_survey_type_single_choice">Single choice</string>
-
     <string name="create_mission_survey_option">Option</string>
     <string name="create_mission_add_option">Add option</string>
     <string name="create_mission_add_question">Add question</string>
     <string name="create_mission_remove_question">Remove question</string>
-
     <string name="create_mission_save_materials">Save materials</string>
     <string name="create_mission_save_survey">Save survey</string>
-
     <string name="create_mission_survey_required">Configure at least one survey question.</string>
     <string name="create_mission_survey_question_required">Enter the question text.</string>
     <string name="create_mission_survey_options_required">Choice questions must have at least two filled options.</string>
-
     <string name="create_mission_locations_title">Locations</string>
     <string name="create_mission_locations_subtitle">Define the mission locations.</string>
     <string name="create_mission_departure_title">Meeting / departure point</string>
     <string name="create_mission_departure_hint">Tap the map to select the meeting location.</string>
     <string name="create_mission_departure_selected">Selected location</string>
     <string name="create_mission_departure_required">Select the mission meeting point.</string>
-
     <string name="create_mission_departure_church">Select a church (optional)</string>
-
     <string name="create_mission_summary_title">Summary</string>
     <string name="create_mission_summary_subtitle">Review the information before creating the mission.</string>
-
     <string name="create_mission_summary_general">General</string>
     <string name="create_mission_summary_participants">Participants</string>
     <string name="create_mission_summary_actions">Actions</string>
-
     <string name="create_mission_summary_edit">Edit</string>
-
     <string name="create_mission_summary_leader_church">Participating church</string>
     <string name="create_mission_summary_selected_churches">%1$d church(es) selected</string>
-
     <string name="create_mission_summary_activities">Activities</string>
     <string name="create_mission_summary_questions_count">%1$d question(s) configured</string>
-
     <string name="create_mission_confirm">Create mission</string>
     <string name="create_mission_back_to_edit">Go back and edit</string>
+    <string name="create_mission_success">Mission created successfully!</string>
+    <string name="create_mission_error">Unable to create the mission.</string>
+    <string name="create_mission_user_error">Unable to identify the user.</string>
 
-    <string name="mission_status_planning">Planning</string>
-
-    <string name="create_mission_success">
-    Mission created successfully!
-</string>
-
-    <string name="create_mission_error">
-    Unable to create the mission.
-</string>
-
-    <string name="create_mission_user_error">
-    Unable to identify the user.
-</string>
-
-    <string name="edit_profile_success">Profile updated successfully!</string>
-    <string name="edit_profile_error">Unable to update the profile.</string>
-
-    <string name="user_management_update_success">Person updated successfully!</string>
-    <string name="user_management_update_error">Unable to update the person.</string>
-
-    <string name="mission_locations_loading_error">
-    Unable to load the mission locations.
-</string>
-
-    <string name="mission_locations_departure_required">
-    Define the mission departure location.
-</string>
-
-    <string name="mission_locations_save_success">
-    Mission locations saved successfully!
-</string>
-
-    <string name="mission_locations_save_error">
-    Unable to save the mission locations.
-</string>
-
-    <string name="mission_locations_title">Mission locations</string>
-    <string name="mission_locations_subtitle">Define where the mission will begin and, optionally, where it will end.</string>
-    <string name="mission_locations_back">Back</string>
-
-    <string name="mission_locations_select_type">Which location do you want to define?</string>
-    <string name="mission_locations_departure">Departure</string>
-    <string name="mission_locations_return">Return</string>
-
-    <string name="mission_locations_departure_help">Tap the map to define the mission departure location.</string>
-    <string name="mission_locations_return_help">Tap the map to define the return location. This location is optional.</string>
-
-    <string name="mission_locations_remove_return">Remove return location</string>
-    <string name="mission_locations_save">Save locations</string>
-
-    <string name="mission_locations_not_defined_required">Location not defined yet.</string>
-    <string name="mission_locations_not_defined_optional">Not defined (optional).</string>
-
-    <string name="mission_locations_coordinates">Lat. %.5f • Long. %.5f</string>
-
-    <string name="mission_locations_read_only">Locations can no longer be changed because the mission has already started or ended.</string>
-
+    <!-- Planejamento da missão -->
     <string name="mission_planning_mission_id">Mission: %1$s</string>
-
     <string name="mission_planning_back">Back</string>
     <string name="mission_planning_title">Planning</string>
     <string name="mission_planning_subtitle">Organize the mission details.</string>
-
     <string name="mission_planning_hero_title">Prepare the mission</string>
     <string name="mission_planning_hero_description">Configure the departure location and, if desired, organize groups and activity areas before the mission begins.</string>
-
     <string name="mission_planning_configuration_title">Configuration</string>
     <string name="mission_planning_configuration_description">Define how the mission will be organized.</string>
-
     <string name="mission_planning_locations_title">Locations</string>
     <string name="mission_planning_locations_description">Define the departure location and, optionally, the return location.</string>
-
     <string name="mission_planning_groups_title">Groups</string>
     <string name="mission_planning_groups_description">Organize participants into pairs, trios, or other groups.</string>
-
     <string name="mission_planning_area_title">Activity area</string>
     <string name="mission_planning_area_description">Define the streets or regions where the mission will operate.</string>
-
     <string name="mission_planning_required">Required</string>
     <string name="mission_planning_optional">Optional</string>
     <string name="mission_planning_coming_soon">Coming soon</string>
-
     <string name="mission_planning_edit_until_start">The planning can be changed until the mission is started.</string>
-    <string name="mission_locations_map_departure_title">Set the departure location</string>
-    <string name="mission_locations_map_return_title">Set the return location</string>
-    <string name="mission_locations_defined_title">Defined locations</string>
-    <string name="mission_locations_defined_subtitle">Review the locations configured for the mission.</string>
-
-    <string name="mission_locations_selected_location">Selected location</string>
-
-    <string name="mission_locations_geocoding">Finding address...</string>
-
     <string name="mission_planning_departure_defined">Departure defined</string>
     <string name="mission_planning_departure_not_defined">Departure not defined yet</string>
     <string name="mission_planning_return_defined">Return defined</string>
     <string name="mission_planning_return_not_defined">Optional return not defined</string>
-
-    <string name="mission_groups_loading_error">Unable to load the mission groups.</string>
-    <string name="mission_groups_save_success">Groups saved successfully!</string>
-    <string name="mission_groups_save_error">Unable to save the groups.</string>
-
-    <string name="mission_groups_back">Back</string>
-    <string name="mission_groups_title">Groups</string>
-
-    <string name="mission_groups_section_title">Group organization</string>
-    <string name="mission_groups_section_description">Distribute participants and assign a Support person to each group if needed.</string>
-
-    <string name="mission_groups_create_group">Create group</string>
-    <string name="mission_groups_edit">Edit</string>
-    <string name="mission_groups_save">Save groups</string>
-
-    <string name="mission_groups_empty_title">No groups created</string>
-    <string name="mission_groups_empty_description">All %1$d participants will work together while no groups are created.</string>
-
-    <string name="mission_groups_no_participants">No participants in this group.</string>
-
-    <string name="mission_groups_support">Support</string>
-    <string name="mission_groups_support_name">Support: %1$s</string>
-
-    <string name="mission_groups_unassigned_title">Participants without a group</string>
-    <string name="mission_groups_unassigned_description">These people have not been assigned to a group yet.</string>
-    <string name="mission_groups_unassigned_empty">All participants are already organized into groups.</string>
-
-    <string name="mission_groups_create_dialog_title">Create group</string>
-    <string name="mission_groups_create_dialog_description">Give the group a name to identify it during the mission.</string>
-
-    <string name="mission_groups_edit_dialog_title">Edit group</string>
-
-    <string name="mission_groups_name">Group name</string>
-
-    <string name="mission_groups_participants_title">Participants</string>
-    <string name="mission_groups_participants_description">Choose who will be part of this group.</string>
-
-    <string name="mission_groups_support_title">Support</string>
-    <string name="mission_groups_support_description">Choose a member responsible for support and material replenishment.</string>
-    <string name="mission_groups_support_none">No Support</string>
-
-    <string name="mission_groups_delete">Delete group</string>
-    <string name="mission_groups_cancel">Cancel</string>
-    <string name="mission_groups_create">Create</string>
-    <string name="mission_groups_confirm">Confirm</string>
-
-    <string name="mission_groups_read_only">Groups can no longer be changed because the mission has already started.</string>
-
-    <string name="mission_groups_all_assigned">All participants are already in groups</string>
-
     <string name="mission_planning_groups_not_defined">No groups defined</string>
     <string name="mission_planning_groups_everyone_together">All participants will work together.</string>
-
     <string name="mission_planning_groups_defined">%1$d groups defined</string>
     <string name="mission_planning_grouped_participants">%1$d participants organized</string>
     <string name="mission_planning_unassigned_participants">%1$d participants without a group</string>
     <string name="mission_planning_all_participants_grouped">All participants organized</string>
-
-    <string name="mission_area_title">Mission area</string>
-    <string name="mission_area_back">Back</string>
-
-    <string name="mission_area_load_error">Unable to load the mission area.</string>
-    <string name="mission_area_save_error">Unable to save the mission area.</string>
-    <string name="mission_area_save_success">Mission area saved successfully!</string>
-
-    <string name="mission_area_minimum_points_error">Mark at least 3 points to define an area.</string>
-
-    <string name="mission_area_free_title">Free area</string>
-    <string name="mission_area_free_description">The mission may operate freely without a defined perimeter.</string>
-
-    <string name="mission_area_defined_title">Defined area</string>
-    <string name="mission_area_defined_description">Define on the map the general perimeter where the mission will operate.</string>
-
-    <string name="mission_area_map_title">Define the area</string>
-    <string name="mission_area_map_description">Tap the map to mark the mission boundaries.</string>
-
-    <string name="mission_area_point_count">%1$d points marked</string>
-    <string name="mission_area_undo">Undo</string>
-    <string name="mission_area_clear">Clear</string>
-
-    <string name="mission_area_save_defined">Save area</string>
-    <string name="mission_area_use_free">Use free area</string>
-
-    <string name="mission_area_minimum_points">At least 3 points are required to form the perimeter.</string>
-
-    <string name="mission_area_read_only">The mission area can no longer be changed because the mission has already started.</string>
-
-    <string name="mission_area_hero_title">Define the mission area</string>
-    <string name="mission_area_hero_description">Choose whether the mission will have an area limit and, if necessary, define the perimeter on the map.</string>
-
-    <string name="mission_area_mode_title">How will the mission operate?</string>
-    <string name="mission_area_mode_description">Choose whether the mission will have a geographic operating limit.</string>
-
-    <string name="mission_area_save_free">Save free area</string>
-    <string name="mission_area_perimeter_ready">The perimeter is ready to be saved.</string>
-
     <string name="mission_planning_area_free">Free area</string>
     <string name="mission_planning_area_free_description">No geographic limit defined.</string>
     <string name="mission_planning_area_defined">Defined area</string>
     <string name="mission_planning_area_points">%1$d points in the perimeter</string>
-
     <string name="mission_planning_schedule_success">Mission scheduled successfully.</string>
     <string name="mission_planning_schedule_error">The mission could not be scheduled.</string>
     <string name="mission_planning_departure_required">Set the departure location before scheduling the mission.</string>
-
     <string name="mission_planning_status_title">Mission status</string>
     <string name="mission_planning_status_planning">Planning</string>
     <string name="mission_planning_status_planning_description">Configure the mission and schedule it when everything is ready.</string>
@@ -679,19 +337,112 @@
     <string name="mission_planning_status_cancelled_description">This mission has been cancelled.</string>
     <string name="mission_planning_status_loading">Loading status</string>
     <string name="mission_planning_status_loading_description">Please wait while the mission data is loaded.</string>
-
     <string name="mission_planning_schedule_button">Schedule mission</string>
     <string name="mission_planning_schedule_departure_hint">Set the departure location to enable scheduling.</string>
-
     <string name="mission_planning_start_button">Start mission</string>
     <string name="mission_planning_start_success">Mission started successfully.</string>
     <string name="mission_planning_start_error">The mission could not be started.</string>
     <string name="mission_planning_start_departure_required">Set the departure location before starting the mission.</string>
     <string name="mission_planning_start_departure_hint">Set the departure location to enable starting the mission.</string>
 
+    <!-- Locais da missão -->
+    <string name="mission_locations_loading_error">Unable to load the mission locations.</string>
+    <string name="mission_locations_departure_required">Define the mission departure location.</string>
+    <string name="mission_locations_save_success">Mission locations saved successfully!</string>
+    <string name="mission_locations_save_error">Unable to save the mission locations.</string>
+    <string name="mission_locations_title">Mission locations</string>
+    <string name="mission_locations_subtitle">Define where the mission will begin and, optionally, where it will end.</string>
+    <string name="mission_locations_back">Back</string>
+    <string name="mission_locations_select_type">Which location do you want to define?</string>
+    <string name="mission_locations_departure">Departure</string>
+    <string name="mission_locations_return">Return</string>
+    <string name="mission_locations_departure_help">Tap the map to define the mission departure location.</string>
+    <string name="mission_locations_return_help">Tap the map to define the return location. This location is optional.</string>
+    <string name="mission_locations_remove_return">Remove return location</string>
+    <string name="mission_locations_save">Save locations</string>
+    <string name="mission_locations_not_defined_required">Location not defined yet.</string>
+    <string name="mission_locations_not_defined_optional">Not defined (optional).</string>
+    <string name="mission_locations_coordinates">Lat. %.5f • Long. %.5f</string>
+    <string name="mission_locations_read_only">Locations can no longer be changed because the mission has already started or ended.</string>
+    <string name="mission_locations_map_departure_title">Set the departure location</string>
+    <string name="mission_locations_map_return_title">Set the return location</string>
+    <string name="mission_locations_defined_title">Defined locations</string>
+    <string name="mission_locations_defined_subtitle">Review the locations configured for the mission.</string>
+    <string name="mission_locations_selected_location">Selected location</string>
+    <string name="mission_locations_geocoding">Finding address...</string>
+
+    <!-- Área da missão -->
+    <string name="mission_area_title">Mission area</string>
+    <string name="mission_area_back">Back</string>
+    <string name="mission_area_load_error">Unable to load the mission area.</string>
+    <string name="mission_area_save_error">Unable to save the mission area.</string>
+    <string name="mission_area_save_success">Mission area saved successfully!</string>
+    <string name="mission_area_minimum_points_error">Mark at least 3 points to define an area.</string>
+    <string name="mission_area_free_title">Free area</string>
+    <string name="mission_area_free_description">The mission may operate freely without a defined perimeter.</string>
+    <string name="mission_area_defined_title">Defined area</string>
+    <string name="mission_area_defined_description">Define on the map the general perimeter where the mission will operate.</string>
+    <string name="mission_area_map_title">Define the area</string>
+    <string name="mission_area_map_description">Tap the map to mark the mission boundaries.</string>
+    <string name="mission_area_point_count">%1$d points marked</string>
+    <string name="mission_area_undo">Undo</string>
+    <string name="mission_area_clear">Clear</string>
+    <string name="mission_area_save_defined">Save area</string>
+    <string name="mission_area_use_free">Use free area</string>
+    <string name="mission_area_minimum_points">At least 3 points are required to form the perimeter.</string>
+    <string name="mission_area_read_only">The mission area can no longer be changed because the mission has already started.</string>
+    <string name="mission_area_hero_title">Define the mission area</string>
+    <string name="mission_area_hero_description">Choose whether the mission will have an area limit and, if necessary, define the perimeter on the map.</string>
+    <string name="mission_area_mode_title">How will the mission operate?</string>
+    <string name="mission_area_mode_description">Choose whether the mission will have a geographic operating limit.</string>
+    <string name="mission_area_save_free">Save free area</string>
+    <string name="mission_area_perimeter_ready">The perimeter is ready to be saved.</string>
+
+    <!-- Grupos da missão -->
+    <string name="mission_groups_loading_error">Unable to load the mission groups.</string>
+    <string name="mission_groups_save_success">Groups saved successfully!</string>
+    <string name="mission_groups_save_error">Unable to save the groups.</string>
+    <string name="mission_groups_back">Back</string>
+    <string name="mission_groups_title">Groups</string>
+    <string name="mission_groups_section_title">Group organization</string>
+    <string name="mission_groups_section_description">Distribute participants and assign a Support person to each group if needed.</string>
+    <string name="mission_groups_create_group">Create group</string>
+    <string name="mission_groups_edit">Edit</string>
+    <string name="mission_groups_save">Save groups</string>
+    <string name="mission_groups_empty_title">No groups created</string>
+    <string name="mission_groups_empty_description">All %1$d participants will work together while no groups are created.</string>
+    <string name="mission_groups_no_participants">No participants in this group.</string>
+    <string name="mission_groups_support">Support</string>
+    <string name="mission_groups_support_name">Support: %1$s</string>
+    <string name="mission_groups_unassigned_title">Participants without a group</string>
+    <string name="mission_groups_unassigned_description">These people have not been assigned to a group yet.</string>
+    <string name="mission_groups_unassigned_empty">All participants are already organized into groups.</string>
+    <string name="mission_groups_create_dialog_title">Create group</string>
+    <string name="mission_groups_create_dialog_description">Give the group a name to identify it during the mission.</string>
+    <string name="mission_groups_edit_dialog_title">Edit group</string>
+    <string name="mission_groups_name">Group name</string>
+    <string name="mission_groups_participants_title">Participants</string>
+    <string name="mission_groups_participants_description">Choose who will be part of this group.</string>
+    <string name="mission_groups_support_title">Support</string>
+    <string name="mission_groups_support_description">Choose a member responsible for support and material replenishment.</string>
+    <string name="mission_groups_support_none">No Support</string>
+    <string name="mission_groups_delete">Delete group</string>
+    <string name="mission_groups_cancel">Cancel</string>
+    <string name="mission_groups_create">Create</string>
+    <string name="mission_groups_confirm">Confirm</string>
+    <string name="mission_groups_read_only">Groups can no longer be changed because the mission has already started.</string>
+    <string name="mission_groups_all_assigned">All participants are already in groups</string>
+    <string name="mission_groups_empty_group_title">Group without participants</string>
+    <string name="mission_groups_empty_group_save_message">There are groups without participants: %1$s. Add at least one person or delete the group before saving.</string>
+    <string name="mission_groups_empty_group_exit_message">There are groups without participants: %1$s. If you leave now, these changes will not be saved.</string>
+    <string name="mission_groups_empty_group_leave">Leave without saving</string>
+    <string name="mission_groups_empty_group_keep_editing">Keep editing</string>
+    <string name="mission_groups_empty_group_ok">Got it</string>
+    <string name="mission_groups_empty_group_save_error">You cannot save while there are groups without participants.</string>
+
+    <!-- Execução da missão -->
     <string name="mission_execution_loading_error">The mission could not be loaded.</string>
     <string name="mission_execution_not_in_progress">This mission is not in progress.</string>
-
     <string name="mission_execution_back">Back</string>
     <string name="mission_execution_status_in_progress">In progress</string>
     <string name="mission_execution_recenter">Recenter map</string>
@@ -700,7 +451,6 @@
     <string name="mission_execution_encounters">Encounters</string>
     <string name="mission_execution_register_encounter">Register encounter</string>
     <string name="mission_execution_finish_mission">Finish mission</string>
-
     <string name="mission_execution_more_options">More options</string>
     <string name="mission_execution_general_metrics">General metrics</string>
     <string name="mission_execution_filter_groups">Filter groups</string>
@@ -711,13 +461,130 @@
     <string name="mission_execution_end_participation">End participation</string>
     <string name="mission_execution_open_actions">Open actions</string>
     <string name="mission_execution_close_actions">Close actions</string>
+    <string name="mission_execution_support_received">I received support</string>
+    <string name="mission_execution_support_requested">Support requested</string>
 
+    <!-- Localização em segundo plano -->
     <string name="mission_location_notification_channel_name">Mission location</string>
     <string name="mission_location_notification_channel_description">Keeps your location updated while you participate in a mission.</string>
     <string name="mission_location_notification_title">Mission in progress</string>
     <string name="mission_location_notification_text">Your location is being shared during the mission.</string>
-    <string name="mission_execution_support_received">I received support</string>
 
+    <!-- Apoio durante a missão -->
+    <string name="mission_support_sheet_title">Support requested</string>
+    <string name="mission_support_sheet_message">Your group’s support request has already been signaled to the mission team. When support arrives, confirm below.</string>
+    <string name="mission_support_sheet_close">Close</string>
+    <string name="mission_support_notification_channel_name">Support requests</string>
+    <string name="mission_support_notification_channel_description">Alerts when a group participant requests support during a mission.</string>
+    <string name="mission_support_notification_title">Support request</string>
+    <string name="mission_support_notification_text">%1$s requested support. Tap to locate them on the map.</string>
+    <string name="mission_support_notification_unknown_user">A participant</string>
+
+    <!-- Meu grupo e filtro de grupos -->
+    <string name="mission_group_filter_description">Choose which participants and routes appear on the map. Encounters remain visible.</string>
+    <string name="mission_group_filter_all">All groups</string>
+    <string name="mission_group_filter_ungrouped">No group</string>
+    <string name="mission_group_filter_participants">Participants: %1$d</string>
+    <string name="mission_group_filter_show_all">Show all</string>
+    <string name="mission_group_filter_apply">Apply</string>
+    <string name="mission_group_filter_active">Active</string>
+    <string name="mission_my_group_title">My group</string>
+    <string name="mission_my_group_no_group">You are not in a group in this mission.</string>
+    <string name="mission_my_group_participants">Participants</string>
+    <string name="mission_my_group_members_count">%1$d participant(s)</string>
+    <string name="mission_my_group_you">You</string>
+    <string name="mission_my_group_support">Support</string>
+    <string name="mission_my_group_finished">Participation ended</string>
+
+    <!-- Participantes da missão -->
+    <string name="mission_participant_group">Group</string>
+    <string name="mission_participant_no_group">No group</string>
+    <string name="mission_participant_group_support">Group support</string>
+    <string name="mission_participant_requested_support">Requested support</string>
+    <string name="mission_participant_active">Active</string>
+    <string name="mission_participant_trace_route">Get directions</string>
+    <string name="mission_participant_choose_map_app">Choose a maps app</string>
+    <string name="mission_participant_no_map_app">No compatible maps app was found.</string>
+    <string name="mission_participant_destination">Participant</string>
+    <string name="mission_participant_role_missionary">Missionary</string>
+    <string name="mission_participant_role_leader">Leader</string>
+    <string name="mission_participant_role_pastor">Pastor</string>
+    <string name="mission_participant_role_admin">Administrator</string>
+    <string name="mission_participant_role_unknown">Role not provided</string>
+
+    <!-- Encerramento de participação e missão -->
+    <string name="mission_end_participation_title">End participation?</string>
+    <string name="mission_end_participation_message">Your time, distance, and location will no longer be recorded. The mission will continue for the other participants.</string>
+    <string name="mission_end_participation_confirm">End participation</string>
+    <string name="mission_end_participation_cancel">Cancel</string>
+    <string name="mission_end_participation_ending">Ending…</string>
+    <string name="mission_end_participation_error">Your participation could not be ended. Check your connection and try again.</string>
+    <string name="mission_finish_title">Finish mission?</string>
+    <string name="mission_finish_message">This will end everyone’s participation and cannot be undone.</string>
+    <string name="mission_finish_confirm">Finish mission</string>
+    <string name="mission_finish_cancel">Cancel</string>
+    <string name="mission_finish_finishing">Finishing…</string>
+    <string name="mission_finish_success">Mission finished successfully.</string>
+    <string name="mission_finish_error">The mission could not be finished. Check your connection and try again.</string>
+
+    <!-- Novo encontro -->
+    <string name="new_encounter_title">New encounter</string>
+    <string name="new_encounter_back">Back</string>
+    <string name="new_encounter_person_section">Person met</string>
+    <string name="new_encounter_person_name">Name (optional)</string>
+    <string name="new_encounter_age_group">Age group (optional)</string>
+    <string name="new_encounter_age_not_informed">Not provided</string>
+    <string name="new_encounter_age_child">Child</string>
+    <string name="new_encounter_age_teenager">Teenager</string>
+    <string name="new_encounter_age_youth">Youth</string>
+    <string name="new_encounter_age_adult">Adult</string>
+    <string name="new_encounter_age_elderly">Older adult</string>
+    <string name="new_encounter_phone">WhatsApp / phone (optional)</string>
+    <string name="new_encounter_phone_invalid">Enter an 11-digit Brazilian mobile number or leave the field blank.</string>
+    <string name="new_encounter_address">Address (optional)</string>
+    <string name="new_encounter_at_person_home">The encounter happened at the person’s home</string>
+    <string name="new_encounter_at_person_home_help">When enabled, the app will try to fill the address using the encounter location.</string>
+    <string name="new_encounter_resolving_address">Finding the address from the location…</string>
+    <string name="new_encounter_location_section">Encounter location</string>
+    <string name="new_encounter_location_permission_missing">Location permission not granted</string>
+    <string name="new_encounter_location_captured">Location recorded</string>
+    <string name="new_encounter_location_waiting">Waiting for location…</string>
+    <string name="new_encounter_location_unavailable">Location is currently unavailable</string>
+    <string name="new_encounter_location_refresh">Refresh location</string>
+    <string name="new_encounter_actions_section">Activities performed</string>
+    <string name="new_encounter_activity_visit">Visit completed</string>
+    <string name="new_encounter_activity_prayer">Prayer completed</string>
+    <string name="new_encounter_activity_other">Other activity completed</string>
+    <string name="new_encounter_bible_study_title">Bible study</string>
+    <string name="new_encounter_bible_study_not_offered">Not offered</string>
+    <string name="new_encounter_bible_study_offered">Offered</string>
+    <string name="new_encounter_bible_study_accepted">Accepted</string>
+    <string name="new_encounter_materials_title">Materials delivered</string>
+    <string name="new_encounter_material_book">Book</string>
+    <string name="new_encounter_material_magazine">Magazine</string>
+    <string name="new_encounter_material_leaflet">Leaflet</string>
+    <string name="new_encounter_material_other">Other material</string>
+    <string name="new_encounter_quantity_decrease">Decrease quantity</string>
+    <string name="new_encounter_quantity_increase">Increase quantity</string>
+    <string name="new_encounter_survey_title">Opinion survey</string>
+    <string name="new_encounter_survey_answer">Answer</string>
+    <string name="new_encounter_follow_up_section">Follow-up</string>
+    <string name="new_encounter_follow_up_accepted">Accepted future contact</string>
+    <string name="new_encounter_follow_up_help">Enable when the person authorizes future contact.</string>
+    <string name="new_encounter_notes">Notes (optional)</string>
+    <string name="new_encounter_contact_now">Contact now</string>
+    <string name="new_encounter_contact_now_help">After saving the encounter, open WhatsApp with the message ready.</string>
+    <string name="new_encounter_contact_now_requires_phone">Enter a valid phone number to use this option.</string>
+    <string name="new_encounter_save">Save encounter</string>
+    <string name="new_encounter_save_success">Encounter saved successfully.</string>
+    <string name="new_encounter_save_error">The encounter could not be saved.</string>
+    <string name="new_encounter_loading_error">The mission data could not be loaded.</string>
+    <string name="new_encounter_validation_invalid_phone">Check the phone number before saving.</string>
+    <string name="new_encounter_whatsapp_error">WhatsApp could not be opened.</string>
+    <string name="new_encounter_whatsapp_message_named">Hello, %1$s! It was very nice talking with you today. Thank you for your time and for our conversation. Count on me if you need anything. May God bless you and your family!</string>
+    <string name="new_encounter_whatsapp_message_unnamed">Hello! It was very nice talking with you today. Thank you for your time and for our conversation. Count on me if you need anything. May God bless you and your family!</string>
+
+    <!-- Métricas em tempo real -->
     <string name="mission_personal_metrics_title">My metrics</string>
     <string name="mission_personal_metrics_back">Back</string>
     <string name="mission_personal_metrics_encounters">Encounters registered</string>
@@ -734,8 +601,6 @@
     <string name="mission_personal_metrics_unit_kilometer">km</string>
     <string name="mission_personal_metrics_unit_hour">h</string>
     <string name="mission_personal_metrics_unit_minute">min</string>
-
-    <!-- Paste these lines inside app/src/main/res/values-en/strings.xml -->
     <string name="mission_general_metrics_title">Mission metrics</string>
     <string name="mission_general_metrics_back">Back</string>
     <string name="mission_general_metrics_participants">Participants</string>
@@ -754,82 +619,42 @@
     <string name="mission_general_metrics_unit_kilometer">km</string>
     <string name="mission_general_metrics_unit_hour">h</string>
     <string name="mission_general_metrics_unit_minute">min</string>
-    <string name="mission_group_filter_description">Choose which participants and routes appear on the map. Encounters remain visible.</string>
-    <string name="mission_group_filter_all">All groups</string>
-    <string name="mission_group_filter_ungrouped">No group</string>
-    <string name="mission_group_filter_participants">Participants: %1$d</string>
-    <string name="mission_group_filter_show_all">Show all</string>
-    <string name="mission_group_filter_apply">Apply</string>
-    <string name="mission_group_filter_active">Active</string>
-    <string name="mission_end_participation_title">End participation?</string>
-    <string name="mission_end_participation_message">Your time, distance, and location will no longer be recorded. The mission will continue for the other participants.</string>
-    <string name="mission_end_participation_confirm">End participation</string>
-    <string name="mission_end_participation_cancel">Cancel</string>
-    <string name="mission_end_participation_ending">Ending…</string>
-    <string name="mission_end_participation_error">Your participation could not be ended. Check your connection and try again.</string>
-    <string name="home_participation_finished">Your participation in this mission has ended. You cannot enter it again.</string>
-    <string name="home_mission_access_check_error">We couldn’t verify your participation. Please try again.</string>
-    <string name="mission_finish_title">Finish mission?</string>
-    <string name="mission_finish_message">This will end everyone’s participation and cannot be undone.</string>
-    <string name="mission_finish_confirm">Finish mission</string>
-    <string name="mission_finish_cancel">Cancel</string>
-    <string name="mission_finish_finishing">Finishing…</string>
-    <string name="mission_finish_success">Mission finished successfully.</string>
-    <string name="mission_finish_error">The mission could not be finished. Check your connection and try again.</string>
-    <string name="home_mission_already_completed">This mission has already ended. View the results in the Metrics tab.</string>
+
+    <!-- Métricas históricas -->
     <string name="metrics_title">Metrics</string>
     <string name="metrics_subtitle">Completed missions</string>
     <string name="metrics_results_title">Results</string>
-
     <string name="metrics_filter_title">Missions analyzed</string>
     <string name="metrics_only_completed">Completed only</string>
     <string name="metrics_all_completed">All completed missions</string>
     <string name="metrics_selected_one">1 mission selected</string>
     <string name="metrics_selected_many">%1$d missions selected</string>
-
     <string name="metrics_selector_title">Select missions</string>
     <string name="metrics_selector_subtitle">Choose one or more completed missions to analyze the metrics.</string>
     <string name="metrics_close_selector">Close mission selection</string>
     <string name="metrics_search_hint">Search mission...</string>
-
     <string name="metrics_period_value">Period: %1$s</string>
     <string name="metrics_period_all">All time</string>
     <string name="metrics_period_current_year">This year</string>
     <string name="metrics_period_last_30_days">Last 30 days</string>
     <string name="metrics_period_last_90_days">Last 90 days</string>
-
     <string name="metrics_select_all">Select all</string>
     <string name="metrics_of_completed">%1$d of %2$d</string>
     <string name="metrics_total_completed">%1$d completed missions</string>
     <string name="metrics_apply">Apply</string>
-
     <string name="metrics_card_missions">Missions</string>
     <string name="metrics_card_unique_missionaries">Unique missionaries</string>
     <string name="metrics_card_participations">Participations</string>
     <string name="metrics_card_other_activities">Other activities</string>
-
     <string name="metrics_export_title">Export data</string>
     <string name="metrics_export_description">Complete Excel report with summary, missions, participants, encounters, materials, and surveys.</string>
     <string name="metrics_export_button">Export Excel</string>
     <string name="metrics_export_building">Generating...</string>
     <string name="metrics_export_success">Excel file saved successfully.</string>
     <string name="metrics_export_error">The Excel file could not be exported.</string>
-
     <string name="metrics_empty">No completed missions found.</string>
     <string name="metrics_loading_error">Metrics could not be loaded. Please try again.</string>
     <string name="metrics_selection_limit">Select up to %1$d missions at a time.</string>
     <string name="metrics_selection_count_limit">%1$d of %2$d selected</string>
 
-    <string name="mission_execution_support_requested">Support requested</string>
-    <string name="mission_support_sheet_title">Support requested</string>
-    <string name="mission_support_sheet_message">Your group’s support request has already been signaled to the mission team. When support arrives, confirm below.</string>
-    <string name="mission_support_sheet_close">Close</string>
-
-    <string name="mission_groups_empty_group_title">Group without participants</string>
-    <string name="mission_groups_empty_group_save_message">There are groups without participants: %1$s. Add at least one person or delete the group before saving.</string>
-    <string name="mission_groups_empty_group_exit_message">There are groups without participants: %1$s. If you leave now, these changes will not be saved.</string>
-    <string name="mission_groups_empty_group_leave">Leave without saving</string>
-    <string name="mission_groups_empty_group_keep_editing">Keep editing</string>
-    <string name="mission_groups_empty_group_ok">Got it</string>
-    <string name="mission_groups_empty_group_save_error">You cannot save while there are groups without participants.</string>
 </resources>

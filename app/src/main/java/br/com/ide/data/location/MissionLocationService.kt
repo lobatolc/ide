@@ -11,7 +11,6 @@ import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
@@ -27,8 +26,6 @@ import br.com.ide.domain.usecase.RecordMissionTrackPointUseCase
 import br.com.ide.domain.usecase.SyncPendingMissionTrackPointsUseCase
 import br.com.ide.domain.usecase.UpdateMissionParticipantLocationUseCase
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,6 +35,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @AndroidEntryPoint
 class MissionLocationService : Service() {

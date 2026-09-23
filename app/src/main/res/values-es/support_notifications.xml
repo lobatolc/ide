@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="mission_support_notification_channel_name">Solicitudes de apoyo</string>
-    <string name="mission_support_notification_channel_description">Alertas cuando un participante del grupo solicita apoyo durante una misión.</string>
-    <string name="mission_support_notification_title">Solicitud de apoyo</string>
-    <string name="mission_support_notification_text">%1$s solicitó apoyo. Toca para localizarlo en el mapa.</string>
-    <string name="mission_support_notification_unknown_user">Un participante</string>
-</resources>

@@ -1,7 +1,6 @@
-package br.com.ide.presentation.snackbar
+package br.com.ide.presentation.components.snackbar
 
 import androidx.lifecycle.ViewModel
-import br.com.ide.presentation.components.snackbar.IdeSnackbarManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

@@ -1,6 +1,5 @@
 package br.com.ide.presentation.feature.profile
 
-import android.R.attr.start
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +23,6 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Map
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.SettingsBrightness
 import androidx.compose.material3.CircularProgressIndicator
@@ -58,10 +56,10 @@ import br.com.ide.presentation.components.IdeBottomNavigation
 import br.com.ide.presentation.components.IdePrimaryButton
 import br.com.ide.presentation.components.IdeScreenSubtitle
 import br.com.ide.presentation.components.IdeScreenTitle
-import br.com.ide.presentation.feature.register.toStringRes as sabbathClassToStringRes
-import br.com.ide.presentation.mapper.toStringRes as userRoleToStringRes
 import br.com.ide.presentation.model.AppLanguage
 import br.com.ide.presentation.model.AppTheme
+import br.com.ide.presentation.feature.register.toStringRes as sabbathClassToStringRes
+import br.com.ide.presentation.mapper.toStringRes as userRoleToStringRes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

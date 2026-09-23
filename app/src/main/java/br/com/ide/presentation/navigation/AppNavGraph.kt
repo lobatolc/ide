@@ -63,7 +63,7 @@ import br.com.ide.presentation.feature.usermanagement.UserManagementViewModel
 import br.com.ide.presentation.feature.usermanagementdetails.UserManagementDetailsScreen
 import br.com.ide.presentation.model.AppLanguage
 import br.com.ide.presentation.model.AppTheme
-import br.com.ide.presentation.snackbar.AppSnackbarViewModel
+import br.com.ide.presentation.components.snackbar.AppSnackbarViewModel
 import br.com.ide.presentation.util.forLanguage
 import androidx.compose.foundation.layout.navigationBarsPadding
 import kotlinx.coroutines.launch

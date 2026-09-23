@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.ide.R
 import br.com.ide.domain.model.MissionGroup
-import br.com.ide.domain.model.MissionStatus
 import br.com.ide.domain.usecase.GetMissionByIdUseCase
 import br.com.ide.domain.usecase.GetMissionGroupParticipantsUseCase
 import br.com.ide.domain.usecase.UpdateMissionGroupsUseCase
