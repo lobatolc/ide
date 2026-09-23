@@ -1,5 +1,6 @@
 package br.com.ide.presentation.feature.profile
 
+import android.R.attr.start
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -438,25 +439,6 @@ private fun ProfileContent(
                         onThemeClick
                 )
 
-                ProfileDivider()
-
-                ProfileOptionRow(
-                    icon =
-                        Icons.Outlined.Notifications,
-
-                    title = stringResource(
-                        R.string
-                            .profile_notifications
-                    ),
-
-                    subtitle = stringResource(
-                        R.string
-                            .profile_notifications_enabled
-                    ),
-
-                    onClick =
-                        onNotificationsClick
-                )
             }
 
             if (
@@ -635,6 +617,7 @@ private fun ProfileHeaderCard(
 
             Surface(
                 modifier = Modifier
+                    .padding(start = 4.dp)
                     .size(44.dp)
                     .clickable {
                         onEditClick()

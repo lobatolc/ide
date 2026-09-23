@@ -12,6 +12,8 @@ import br.com.ide.presentation.components.snackbar.IdeSnackbarManager
 import br.com.ide.presentation.components.snackbar.IdeSnackbarMessage
 import br.com.ide.presentation.components.snackbar.IdeSnackbarType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,6 +54,23 @@ class MissionPlanningViewModel @Inject constructor(
             String? =
         null
 
+    /*
+     * Mantemos apenas um carregamento/refresh ativo por vez.
+     *
+     * Isso é especialmente importante quando voltamos de uma
+     * subtela (Locais, Grupos ou Área): o ON_RESUME dispara um
+     * refresh e, sem controle, uma leitura antiga pode terminar
+     * depois de um agendamento/início e sobrescrever o estado
+     * local com dados defasados.
+     */
+    private var loadJob:
+            Job? =
+        null
+
+    private var loadGeneration:
+            Long =
+        0L
+
     // =========================================================
     // Carregamento
     // =========================================================
@@ -72,169 +91,218 @@ class MissionPlanningViewModel @Inject constructor(
         loadedMissionId =
             missionId
 
-        viewModelScope.launch {
+        /*
+         * Cancela qualquer leitura anterior. O token também
+         * impede que uma leitura que já tenha retornado de uma
+         * suspensão publique dados antigos depois de uma operação.
+         */
+        loadJob?.cancel()
 
-            _uiState.update {
-                it.copy(
-                    isLoading =
-                        true
-                )
-            }
+        val generation =
+            ++loadGeneration
 
-            try {
+        loadJob =
+            viewModelScope.launch {
 
-                val mission =
-                    getMissionByIdUseCase(
-                        missionId
+                _uiState.update {
+                    it.copy(
+                        isLoading =
+                            true
                     )
+                }
 
-                if (
-                    mission == null
-                ) {
+                try {
+
+                    val mission =
+                        getMissionByIdUseCase(
+                            missionId
+                        )
+
+                    if (
+                        generation !=
+                        loadGeneration
+                    ) {
+                        return@launch
+                    }
+
+                    if (
+                        mission == null
+                    ) {
+
+                        _uiState.update {
+                            it.copy(
+                                isLoading =
+                                    false
+                            )
+                        }
+
+                        return@launch
+                    }
+
+                    // =================================================
+                    // Participantes elegíveis
+                    // =================================================
+
+                    val eligibleParticipants =
+                        getMissionGroupParticipantsUseCase(
+                            participatingChurchIds =
+                                mission
+                                    .participatingChurchIds
+                        )
+                            .getOrElse {
+                                emptyList()
+                            }
+
+                    if (
+                        generation !=
+                        loadGeneration
+                    ) {
+                        return@launch
+                    }
+
+                    val eligibleParticipantIds =
+                        eligibleParticipants
+                            .map {
+                                it.id
+                            }
+                            .toSet()
+
+                    // =================================================
+                    // Participantes já distribuídos
+                    // =================================================
+
+                    val groupedParticipantIds =
+                        mission
+                            .groups
+                            .flatMap {
+                                it.participantIds
+                            }
+                            .filter {
+                                it in
+                                        eligibleParticipantIds
+                            }
+                            .toSet()
+
+                    val groupedParticipantCount =
+                        groupedParticipantIds
+                            .size
+
+                    val unassignedParticipantCount =
+                        eligibleParticipants
+                            .count { participant ->
+
+                                participant.id !in
+                                        groupedParticipantIds
+                            }
+
+                    // =================================================
+                    // Área
+                    // =================================================
+
+                    val area =
+                        mission.area
+
+                    if (
+                        generation !=
+                        loadGeneration
+                    ) {
+                        return@launch
+                    }
+
+                    // =================================================
+                    // Estado
+                    // =================================================
 
                     _uiState.update {
                         it.copy(
+
+                            missionId =
+                                mission.id,
+
+                            missionName =
+                                mission.name,
+
+                            missionStatus =
+                                mission.status,
+
+                            // -----------------------------
+                            // Locais
+                            // -----------------------------
+
+                            hasDepartureLocation =
+                                mission
+                                    .departureLocation !=
+                                        null,
+
+                            hasReturnLocation =
+                                mission
+                                    .returnLocation !=
+                                        null,
+
+                            // -----------------------------
+                            // Grupos
+                            // -----------------------------
+
+                            groupCount =
+                                mission.groups.size,
+
+                            groupedParticipantCount =
+                                groupedParticipantCount,
+
+                            unassignedParticipantCount =
+                                unassignedParticipantCount,
+
+                            // -----------------------------
+                            // Área
+                            // -----------------------------
+
+                            hasDefinedArea =
+                                area != null,
+
+                            areaPointCount =
+                                area
+                                    ?.polygonPoints
+                                    ?.size
+                                    ?: 0,
+
+                            // -----------------------------
+                            // Controle
+                            // -----------------------------
+
                             isLoading =
                                 false
                         )
                     }
 
-                    return@launch
-                }
+                } catch (
+                    exception: CancellationException
+                ) {
 
-                // =================================================
-                // Participantes elegíveis
-                // =================================================
+                    /*
+                     * Cancelamento faz parte do fluxo normal quando
+                     * um refresh é substituído por outro ou quando o
+                     * usuário agenda/inicia a missão.
+                     */
+                    throw exception
 
-                val eligibleParticipants =
-                    getMissionGroupParticipantsUseCase(
-                        participatingChurchIds =
-                            mission
-                                .participatingChurchIds
-                    )
-                        .getOrElse {
-                            emptyList()
+                } catch (
+                    exception: Exception
+                ) {
+
+                    if (
+                        generation ==
+                        loadGeneration
+                    ) {
+
+                        _uiState.update {
+                            it.copy(
+                                isLoading =
+                                    false
+                            )
                         }
-
-                val eligibleParticipantIds =
-                    eligibleParticipants
-                        .map {
-                            it.id
-                        }
-                        .toSet()
-
-                // =================================================
-                // Participantes já distribuídos
-                // =================================================
-
-                val groupedParticipantIds =
-                    mission
-                        .groups
-                        .flatMap {
-                            it.participantIds
-                        }
-                        .filter {
-                            it in
-                                    eligibleParticipantIds
-                        }
-                        .toSet()
-
-                val groupedParticipantCount =
-                    groupedParticipantIds
-                        .size
-
-                val unassignedParticipantCount =
-                    eligibleParticipants
-                        .count { participant ->
-
-                            participant.id !in
-                                    groupedParticipantIds
-                        }
-
-                // =================================================
-                // Área
-                // =================================================
-
-                val area =
-                    mission.area
-
-                // =================================================
-                // Estado
-                // =================================================
-
-                _uiState.update {
-                    it.copy(
-
-                        missionId =
-                            mission.id,
-
-                        missionName =
-                            mission.name,
-
-                        missionStatus =
-                            mission.status,
-
-                        // -----------------------------
-                        // Locais
-                        // -----------------------------
-
-                        hasDepartureLocation =
-                            mission
-                                .departureLocation !=
-                                    null,
-
-                        hasReturnLocation =
-                            mission
-                                .returnLocation !=
-                                    null,
-
-                        // -----------------------------
-                        // Grupos
-                        // -----------------------------
-
-                        groupCount =
-                            mission.groups.size,
-
-                        groupedParticipantCount =
-                            groupedParticipantCount,
-
-                        unassignedParticipantCount =
-                            unassignedParticipantCount,
-
-                        // -----------------------------
-                        // Área
-                        // -----------------------------
-
-                        hasDefinedArea =
-                            area != null,
-
-                        areaPointCount =
-                            area
-                                ?.polygonPoints
-                                ?.size
-                                ?: 0,
-
-                        // -----------------------------
-                        // Controle
-                        // -----------------------------
-
-                        isLoading =
-                            false
-                    )
-                }
-
-            } catch (
-                exception: Exception
-            ) {
-
-                _uiState.update {
-                    it.copy(
-                        isLoading =
-                            false
-                    )
+                    }
                 }
             }
-        }
     }
 
     // =========================================================
@@ -265,7 +333,6 @@ class MissionPlanningViewModel @Inject constructor(
             _uiState.value
 
         if (
-            currentState.isLoading ||
             currentState.isScheduling ||
             currentState.isStarting ||
             currentState.missionId.isBlank()
@@ -273,10 +340,20 @@ class MissionPlanningViewModel @Inject constructor(
             return
         }
 
+        /*
+         * Se acabamos de voltar de uma subtela, pode existir um
+         * refresh em andamento. O próprio agendamento recarrega a
+         * missão antes de alterar o status, então essa leitura antiga
+         * deve ser invalidada para não sobrescrever o resultado.
+         */
+        invalidatePendingLoad()
+
         viewModelScope.launch {
 
             _uiState.update {
                 it.copy(
+                    isLoading =
+                        false,
                     isScheduling =
                         true
                 )
@@ -460,7 +537,6 @@ class MissionPlanningViewModel @Inject constructor(
             _uiState.value
 
         if (
-            currentState.isLoading ||
             currentState.isScheduling ||
             currentState.isStarting ||
             currentState.missionId.isBlank()
@@ -468,10 +544,18 @@ class MissionPlanningViewModel @Inject constructor(
             return
         }
 
+        /*
+         * Mesma proteção usada no agendamento: uma leitura antiga
+         * não pode voltar depois e regredir o status visual.
+         */
+        invalidatePendingLoad()
+
         viewModelScope.launch {
 
             _uiState.update {
                 it.copy(
+                    isLoading =
+                        false,
                     isStarting =
                         true
                 )
@@ -642,5 +726,27 @@ class MissionPlanningViewModel @Inject constructor(
             }
         }
     }
+
+
+    // =========================================================
+    // Controle de concorrência do carregamento
+    // =========================================================
+
+    private fun invalidatePendingLoad() {
+
+        /*
+         * Incrementamos antes de cancelar para que, mesmo no caso
+         * raro em que a coroutine já tenha saído do último ponto
+         * suspenso, ela não publique um snapshot antigo.
+         */
+        loadGeneration +=
+            1L
+
+        loadJob?.cancel()
+
+        loadJob =
+            null
+    }
+
 
 }

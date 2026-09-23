@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.rememberScrollState
@@ -83,6 +84,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -346,15 +348,11 @@ fun MissionExecutionScreen(
         onClearMapGroupFilter =
             viewModel::clearMapGroupFilter,
         onRequestSupportClick = {
-            if (
-                uiState.isSupportRequested
-            ) {
-                viewModel.confirmSupportReceived()
-            } else {
-                viewModel.requestSupport()
-                onRequestSupportClick()
-            }
+            viewModel.requestSupport()
+            onRequestSupportClick()
         },
+        onConfirmSupportReceived =
+            viewModel::confirmSupportReceived,
         isEndingParticipation =
             uiState.isEndingParticipation,
         onEndParticipationClick =
@@ -379,6 +377,7 @@ private fun MissionExecutionContent(
     ) -> Unit,
     onClearMapGroupFilter: () -> Unit,
     onRequestSupportClick: () -> Unit,
+    onConfirmSupportReceived: () -> Unit,
     isEndingParticipation: Boolean,
     onEndParticipationClick: () -> Unit
 ) {
@@ -393,6 +392,7 @@ private fun MissionExecutionContent(
     var headerMenuExpanded by remember { mutableStateOf(false) }
     var showMyGroup by remember { mutableStateOf(false) }
     var showGroupFilter by remember { mutableStateOf(false) }
+    var showSupportStatusSheet by remember { mutableStateOf(false) }
     var showEndParticipationConfirmation by
     remember {
         mutableStateOf(
@@ -616,7 +616,26 @@ private fun MissionExecutionContent(
                 isEndingParticipation,
             onRequestSupportClick = {
                 speedDialExpanded = false
-                onRequestSupportClick()
+
+                if (
+                    uiState.isSupportRequested
+                ) {
+                    showSupportStatusSheet =
+                        true
+                } else {
+                    onRequestSupportClick()
+
+                    /*
+                     * O pedido é disparado e o usuário recebe imediatamente
+                     * um retorno visual claro sobre o que acabou de fazer.
+                     *
+                     * O estado real continua vindo do listener em tempo real.
+                     * Se a atualização falhar, o botão do menu continuará
+                     * refletindo o estado persistido.
+                     */
+                    showSupportStatusSheet =
+                        true
+                }
             },
             onEndParticipationClick = {
                 speedDialExpanded = false
@@ -631,6 +650,35 @@ private fun MissionExecutionContent(
                         end = 16.dp,
                         bottom = 16.dp
                     )
+        )
+    }
+
+    if (
+        showSupportStatusSheet
+    ) {
+
+        SupportRequestedBottomSheet(
+            isUpdatingSupportStatus =
+                uiState.isUpdatingSupportStatus,
+            onDismiss = {
+                if (
+                    !uiState.isUpdatingSupportStatus
+                ) {
+                    showSupportStatusSheet =
+                        false
+                }
+            },
+            onSupportReceivedClick = {
+                onConfirmSupportReceived()
+
+                /*
+                 * Fecha após a confirmação. Caso a atualização remota falhe,
+                 * o listener manterá isSupportRequested = true e o usuário
+                 * poderá abrir o bottom sheet novamente pelo menu.
+                 */
+                showSupportStatusSheet =
+                    false
+            }
         )
     }
 
@@ -674,7 +722,7 @@ private fun MissionExecutionContent(
     if (
         showGroupFilter
     ) {
-        MapGroupFilterBottomSheet(
+        MapGroupFilterDialog(
             groups =
                 uiState.mapGroupFilters,
             selectedGroupIds =
@@ -1020,7 +1068,167 @@ private fun MissionExecutionContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MapGroupFilterBottomSheet(
+private fun SupportRequestedBottomSheet(
+    isUpdatingSupportStatus: Boolean,
+    onDismiss: () -> Unit,
+    onSupportReceivedClick: () -> Unit
+) {
+
+    ModalBottomSheet(
+        onDismissRequest = {
+            if (
+                !isUpdatingSupportStatus
+            ) {
+                onDismiss()
+            }
+        }
+    ) {
+
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        bottom = 28.dp
+                    ),
+            verticalArrangement =
+                Arrangement.spacedBy(
+                    16.dp
+                )
+        ) {
+
+            Surface(
+                modifier =
+                    Modifier.size(
+                        52.dp
+                    ),
+                shape =
+                    CircleShape,
+                color =
+                    MaterialTheme
+                        .colorScheme
+                        .errorContainer
+            ) {
+
+                Box(
+                    contentAlignment =
+                        Alignment.Center
+                ) {
+
+                    Icon(
+                        imageVector =
+                            Icons.Outlined.Sos,
+                        contentDescription =
+                            null,
+                        modifier =
+                            Modifier.size(
+                                27.dp
+                            ),
+                        tint =
+                            MaterialTheme
+                                .colorScheme
+                                .onErrorContainer
+                    )
+                }
+            }
+
+            Text(
+                text =
+                    stringResource(
+                        R.string
+                            .mission_support_sheet_title
+                    ),
+                style =
+                    MaterialTheme
+                        .typography
+                        .headlineSmall,
+                fontWeight =
+                    FontWeight.Bold
+            )
+
+            Text(
+                text =
+                    stringResource(
+                        R.string
+                            .mission_support_sheet_message
+                    ),
+                style =
+                    MaterialTheme
+                        .typography
+                        .bodyLarge,
+                color =
+                    MaterialTheme
+                        .colorScheme
+                        .onSurfaceVariant
+            )
+
+            Button(
+                onClick =
+                    onSupportReceivedClick,
+                enabled =
+                    !isUpdatingSupportStatus,
+                modifier =
+                    Modifier.fillMaxWidth()
+            ) {
+
+                if (
+                    isUpdatingSupportStatus
+                ) {
+                    CircularProgressIndicator(
+                        modifier =
+                            Modifier.size(
+                                18.dp
+                            ),
+                        strokeWidth =
+                            2.dp,
+                        color =
+                            MaterialTheme
+                                .colorScheme
+                                .onPrimary
+                    )
+
+                    Spacer(
+                        modifier =
+                            Modifier.width(
+                                8.dp
+                            )
+                    )
+                }
+
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_execution_support_received
+                        )
+                )
+            }
+
+            TextButton(
+                onClick =
+                    onDismiss,
+                enabled =
+                    !isUpdatingSupportStatus,
+                modifier =
+                    Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_support_sheet_close
+                        )
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun MapGroupFilterDialog(
     groups: List<MissionMapGroupFilterUiModel>,
     selectedGroupIds: Set<String>,
     includeUngrouped: Boolean,
@@ -1095,202 +1303,227 @@ private fun MapGroupFilterBottomSheet(
                                 draftIncludeUngrouped
                         )
 
-    ModalBottomSheet(
+    Dialog(
         onDismissRequest =
             onDismiss
     ) {
-        Column(
+        Surface(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .verticalScroll(
-                        rememberScrollState()
-                    )
-                    .padding(
-                        start = 24.dp,
-                        end = 24.dp,
-                        bottom = 28.dp
+                    .heightIn(
+                        max = 560.dp
                     ),
-            verticalArrangement =
-                Arrangement.spacedBy(
-                    12.dp
-                )
+            shape =
+                RoundedCornerShape(
+                    24.dp
+                ),
+            color =
+                MaterialTheme
+                    .colorScheme
+                    .surface,
+            tonalElevation =
+                6.dp,
+            shadowElevation =
+                10.dp
         ) {
-            Text(
-                text =
-                    stringResource(
-                        R.string
-                            .mission_execution_filter_groups
-                    ),
-                style =
-                    MaterialTheme
-                        .typography
-                        .headlineSmall,
-                fontWeight =
-                    FontWeight.Bold
-            )
-
-            Text(
-                text =
-                    stringResource(
-                        R.string
-                            .mission_group_filter_description
-                    ),
-                style =
-                    MaterialTheme
-                        .typography
-                        .bodyMedium,
-                color =
-                    MaterialTheme
-                        .colorScheme
-                        .onSurfaceVariant
-            )
-
-            MapGroupFilterOption(
-                title =
-                    stringResource(
-                        R.string
-                            .mission_group_filter_all
-                    ),
-                supportingText =
-                    null,
-                checked =
-                    allSelected,
-                colorHex =
-                    null,
-                onToggle = {
-                    if (
-                        allSelected
-                    ) {
-                        draftGroupIds =
-                            emptySet()
-                        draftIncludeUngrouped =
-                            false
-                    } else {
-                        draftGroupIds =
-                            allGroupIds
-                        draftIncludeUngrouped =
-                            showUngroupedOption
-                    }
-                }
-            )
-
-            HorizontalDivider()
-
-            groups
-                .forEach { group ->
-                    MapGroupFilterOption(
-                        title =
-                            group.name,
-                        supportingText =
-                            stringResource(
-                                R.string
-                                    .mission_group_filter_participants,
-                                group.participantCount
-                            ),
-                        checked =
-                            group.id in
-                                    draftGroupIds,
-                        colorHex =
-                            group.colorHex,
-                        onToggle = {
-                            draftGroupIds =
-                                if (
-                                    group.id in
-                                    draftGroupIds
-                                ) {
-                                    draftGroupIds -
-                                            group.id
-                                } else {
-                                    draftGroupIds +
-                                            group.id
-                                }
-                        }
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(
+                            rememberScrollState()
+                        )
+                        .padding(
+                            horizontal = 24.dp,
+                            vertical = 22.dp
+                        ),
+                verticalArrangement =
+                    Arrangement.spacedBy(
+                        12.dp
                     )
-                }
-
-            if (
-                showUngroupedOption
             ) {
+
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_execution_filter_groups
+                        ),
+                    style =
+                        MaterialTheme
+                            .typography
+                            .headlineSmall,
+                    fontWeight =
+                        FontWeight.Bold
+                )
+
+                Text(
+                    text =
+                        stringResource(
+                            R.string
+                                .mission_group_filter_description
+                        ),
+                    style =
+                        MaterialTheme
+                            .typography
+                            .bodyMedium,
+                    color =
+                        MaterialTheme
+                            .colorScheme
+                            .onSurfaceVariant
+                )
+
                 MapGroupFilterOption(
                     title =
                         stringResource(
                             R.string
-                                .mission_group_filter_ungrouped
+                                .mission_group_filter_all
                         ),
                     supportingText =
-                        stringResource(
-                            R.string
-                                .mission_group_filter_participants,
-                            ungroupedParticipantCount
-                        ),
+                        null,
                     checked =
-                        draftIncludeUngrouped,
+                        allSelected,
                     colorHex =
                         null,
                     onToggle = {
-                        draftIncludeUngrouped =
-                            !draftIncludeUngrouped
+                        if (
+                            allSelected
+                        ) {
+                            draftGroupIds =
+                                emptySet()
+
+                            draftIncludeUngrouped =
+                                false
+                        } else {
+                            draftGroupIds =
+                                allGroupIds
+
+                            draftIncludeUngrouped =
+                                showUngroupedOption
+                        }
                     }
                 )
-            }
 
-            Row(
-                modifier =
-                    Modifier.fillMaxWidth(),
-                horizontalArrangement =
-                    Arrangement.spacedBy(
-                        12.dp
-                    ),
-                verticalAlignment =
-                    Alignment.CenterVertically
-            ) {
+                HorizontalDivider()
+
+                groups
+                    .forEach { group ->
+                        MapGroupFilterOption(
+                            title =
+                                group.name,
+                            supportingText =
+                                stringResource(
+                                    R.string
+                                        .mission_group_filter_participants,
+                                    group.participantCount
+                                ),
+                            checked =
+                                group.id in
+                                        draftGroupIds,
+                            colorHex =
+                                group.colorHex,
+                            onToggle = {
+                                draftGroupIds =
+                                    if (
+                                        group.id in
+                                        draftGroupIds
+                                    ) {
+                                        draftGroupIds -
+                                                group.id
+                                    } else {
+                                        draftGroupIds +
+                                                group.id
+                                    }
+                            }
+                        )
+                    }
+
                 if (
-                    isFilterActive
+                    showUngroupedOption
                 ) {
-                    TextButton(
-                        onClick =
-                            onClear
+                    MapGroupFilterOption(
+                        title =
+                            stringResource(
+                                R.string
+                                    .mission_group_filter_ungrouped
+                            ),
+                        supportingText =
+                            stringResource(
+                                R.string
+                                    .mission_group_filter_participants,
+                                ungroupedParticipantCount
+                            ),
+                        checked =
+                            draftIncludeUngrouped,
+                        colorHex =
+                            null,
+                        onToggle = {
+                            draftIncludeUngrouped =
+                                !draftIncludeUngrouped
+                        }
+                    )
+                }
+
+                Row(
+                    modifier =
+                        Modifier.fillMaxWidth(),
+                    horizontalArrangement =
+                        Arrangement.spacedBy(
+                            12.dp
+                        ),
+                    verticalAlignment =
+                        Alignment.CenterVertically
+                ) {
+
+                    if (
+                        isFilterActive
+                    ) {
+                        TextButton(
+                            onClick =
+                                onClear
+                        ) {
+                            Text(
+                                text =
+                                    stringResource(
+                                        R.string
+                                            .mission_group_filter_show_all
+                                    )
+                            )
+                        }
+                    }
+
+                    Spacer(
+                        modifier =
+                            Modifier.weight(
+                                1f
+                            )
+                    )
+
+                    Button(
+                        onClick = {
+                            onApply(
+                                draftGroupIds,
+                                draftIncludeUngrouped
+                            )
+                        },
+                        enabled =
+                            hasSelection
                     ) {
                         Text(
                             text =
                                 stringResource(
                                     R.string
-                                        .mission_group_filter_show_all
+                                        .mission_group_filter_apply
                                 )
                         )
                     }
-                }
-
-                Spacer(
-                    modifier =
-                        Modifier.weight(
-                            1f
-                        )
-                )
-
-                Button(
-                    onClick = {
-                        onApply(
-                            draftGroupIds,
-                            draftIncludeUngrouped
-                        )
-                    },
-                    enabled =
-                        hasSelection
-                ) {
-                    Text(
-                        text =
-                            stringResource(
-                                R.string
-                                    .mission_group_filter_apply
-                            )
-                    )
                 }
             }
         }
     }
 }
+
 
 @Composable
 private fun MapGroupFilterOption(
@@ -2752,7 +2985,7 @@ private fun MissionExecutionActionCluster(
                                 isSupportRequested
                             ) {
                                 R.string
-                                    .mission_execution_support_received
+                                    .mission_execution_support_requested
                             } else {
                                 R.string
                                     .mission_execution_request_support

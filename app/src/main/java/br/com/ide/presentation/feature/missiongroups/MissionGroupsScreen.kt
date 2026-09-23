@@ -1,5 +1,6 @@
 package br.com.ide.presentation.feature.missiongroups
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.VolunteerActivism
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -62,6 +64,11 @@ import br.com.ide.presentation.components.IdePrimaryButton
 import br.com.ide.presentation.components.IdeScreenSubtitle
 import br.com.ide.presentation.components.IdeScreenTitle
 
+private enum class EmptyGroupWarningAction {
+    SAVE,
+    EXIT
+}
+
 @Composable
 fun MissionGroupsScreen(
     missionId: String,
@@ -87,6 +94,45 @@ fun MissionGroupsScreen(
         mutableStateOf<MissionGroup?>(
             null
         )
+    }
+
+    var emptyGroupWarningAction by
+    remember {
+        mutableStateOf<EmptyGroupWarningAction?>(
+            null
+        )
+    }
+
+    val emptyGroups =
+        uiState.groups
+            .filter {
+                it.participantIds.isEmpty()
+            }
+
+    val emptyGroupNames =
+        emptyGroups
+            .joinToString(
+                separator = ", "
+            ) { group ->
+                "“${group.name}”"
+            }
+
+    val handleBackClick: () -> Unit = {
+        if (
+            emptyGroups.isNotEmpty()
+        ) {
+            emptyGroupWarningAction =
+                EmptyGroupWarningAction.EXIT
+        } else {
+            onBackClick()
+        }
+    }
+
+    BackHandler(
+        enabled =
+            !uiState.isLoading
+    ) {
+        handleBackClick()
     }
 
     LaunchedEffect(
@@ -131,7 +177,7 @@ fun MissionGroupsScreen(
             uiState,
 
         onBackClick =
-            onBackClick,
+            handleBackClick,
 
         onCreateGroupClick = {
 
@@ -147,11 +193,123 @@ fun MissionGroupsScreen(
 
         onSaveClick = {
 
-            viewModel.onEvent(
-                MissionGroupsEvent.Save
-            )
+            if (
+                emptyGroups.isNotEmpty()
+            ) {
+                emptyGroupWarningAction =
+                    EmptyGroupWarningAction.SAVE
+            } else {
+                viewModel.onEvent(
+                    MissionGroupsEvent.Save
+                )
+            }
         }
     )
+
+    emptyGroupWarningAction
+        ?.let { action ->
+
+            val isExitWarning =
+                action ==
+                        EmptyGroupWarningAction.EXIT
+
+            AlertDialog(
+                onDismissRequest = {
+                    emptyGroupWarningAction =
+                        null
+                },
+                icon = {
+                    Icon(
+                        imageVector =
+                            Icons.Outlined.Groups,
+                        contentDescription =
+                            null,
+                        tint =
+                            MaterialTheme
+                                .colorScheme
+                                .error
+                    )
+                },
+                title = {
+                    Text(
+                        text =
+                            stringResource(
+                                R.string
+                                    .mission_groups_empty_group_title
+                            )
+                    )
+                },
+                text = {
+                    Text(
+                        text =
+                            stringResource(
+                                if (
+                                    isExitWarning
+                                ) {
+                                    R.string
+                                        .mission_groups_empty_group_exit_message
+                                } else {
+                                    R.string
+                                        .mission_groups_empty_group_save_message
+                                },
+                                emptyGroupNames
+                            )
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            emptyGroupWarningAction =
+                                null
+
+                            if (
+                                isExitWarning
+                            ) {
+                                onBackClick()
+                            }
+                        }
+                    ) {
+                        Text(
+                            text =
+                                stringResource(
+                                    if (
+                                        isExitWarning
+                                    ) {
+                                        R.string
+                                            .mission_groups_empty_group_leave
+                                    } else {
+                                        R.string
+                                            .mission_groups_empty_group_ok
+                                    }
+                                )
+                        )
+                    }
+                },
+                dismissButton =
+                    if (
+                        isExitWarning
+                    ) {
+                        {
+                            TextButton(
+                                onClick = {
+                                    emptyGroupWarningAction =
+                                        null
+                                }
+                            ) {
+                                Text(
+                                    text =
+                                        stringResource(
+                                            R.string
+                                                .mission_groups_empty_group_keep_editing
+                                        )
+                                )
+                            }
+                        }
+                    } else {
+                        null
+                    }
+            )
+        }
 
     // =========================================================
     // Criar grupo

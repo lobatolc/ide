@@ -925,4 +925,17 @@
     <string name="metrics_loading_error">Não foi possível carregar as métricas. Tente novamente.</string>
     <string name="metrics_selection_limit">Selecione até %1$d missões por vez.</string>
     <string name="metrics_selection_count_limit">%1$d de %2$d selecionadas</string>
+
+    <string name="mission_execution_support_requested">Apoio solicitado</string>
+    <string name="mission_support_sheet_title">Apoio solicitado</string>
+    <string name="mission_support_sheet_message">O pedido de apoio do seu grupo já foi sinalizado para a equipe da missão. Quando o apoio chegar, confirme abaixo.</string>
+    <string name="mission_support_sheet_close">Fechar</string>
+
+    <string name="mission_groups_empty_group_title">Grupo sem participantes</string>
+    <string name="mission_groups_empty_group_save_message">Existem grupos sem participantes: %1$s. Adicione pelo menos uma pessoa ou exclua o grupo antes de salvar.</string>
+    <string name="mission_groups_empty_group_exit_message">Existem grupos sem participantes: %1$s. Se sair agora, essas alterações não serão salvas.</string>
+    <string name="mission_groups_empty_group_leave">Sair sem salvar</string>
+    <string name="mission_groups_empty_group_keep_editing">Continuar editando</string>
+    <string name="mission_groups_empty_group_ok">Entendi</string>
+    <string name="mission_groups_empty_group_save_error">Não é possível salvar enquanto houver grupos sem participantes.</string>
 </resources>

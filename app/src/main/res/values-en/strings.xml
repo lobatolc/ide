@@ -819,4 +819,17 @@
     <string name="metrics_loading_error">Metrics could not be loaded. Please try again.</string>
     <string name="metrics_selection_limit">Select up to %1$d missions at a time.</string>
     <string name="metrics_selection_count_limit">%1$d of %2$d selected</string>
+
+    <string name="mission_execution_support_requested">Support requested</string>
+    <string name="mission_support_sheet_title">Support requested</string>
+    <string name="mission_support_sheet_message">Your group’s support request has already been signaled to the mission team. When support arrives, confirm below.</string>
+    <string name="mission_support_sheet_close">Close</string>
+
+    <string name="mission_groups_empty_group_title">Group without participants</string>
+    <string name="mission_groups_empty_group_save_message">There are groups without participants: %1$s. Add at least one person or delete the group before saving.</string>
+    <string name="mission_groups_empty_group_exit_message">There are groups without participants: %1$s. If you leave now, these changes will not be saved.</string>
+    <string name="mission_groups_empty_group_leave">Leave without saving</string>
+    <string name="mission_groups_empty_group_keep_editing">Keep editing</string>
+    <string name="mission_groups_empty_group_ok">Got it</string>
+    <string name="mission_groups_empty_group_save_error">You cannot save while there are groups without participants.</string>
 </resources>

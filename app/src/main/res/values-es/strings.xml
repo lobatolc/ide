@@ -815,4 +815,18 @@
     <string name="metrics_loading_error">No se pudieron cargar las métricas. Inténtalo de nuevo.</string>
     <string name="metrics_selection_limit">Selecciona hasta %1$d misiones a la vez.</string>
     <string name="metrics_selection_count_limit">%1$d de %2$d seleccionadas</string>
+
+    <string name="mission_execution_support_requested">Apoyo solicitado</string>
+    <string name="mission_support_sheet_title">Apoyo solicitado</string>
+    <string name="mission_support_sheet_message">La solicitud de apoyo de tu grupo ya fue señalada al equipo de la misión. Cuando llegue el apoyo, confírmalo abajo.</string>
+    <string name="mission_support_sheet_close">Cerrar</string>
+
+    <string name="mission_groups_empty_group_title">Grupo sin participantes</string>
+    <string name="mission_groups_empty_group_save_message">Hay grupos sin participantes: %1$s. Agrega al menos una persona o elimina el grupo antes de guardar.</string>
+    <string name="mission_groups_empty_group_exit_message">Hay grupos sin participantes: %1$s. Si sales ahora, estos cambios no se guardarán.</string>
+    <string name="mission_groups_empty_group_leave">Salir sin guardar</string>
+    <string name="mission_groups_empty_group_keep_editing">Seguir editando</string>
+    <string name="mission_groups_empty_group_ok">Entendido</string>
+    <string name="mission_groups_empty_group_save_error">No se puede guardar mientras haya grupos sin participantes.</string>
+
 </resources>

@@ -629,6 +629,26 @@ class MissionGroupsViewModel @Inject constructor(
             return
         }
 
+        if (
+            state.groups.any {
+                it.participantIds.isEmpty()
+            }
+        ) {
+            viewModelScope.launch {
+                snackbarManager.show(
+                    IdeSnackbarMessage(
+                        messageRes =
+                            R.string
+                                .mission_groups_empty_group_save_error,
+                        type =
+                            IdeSnackbarType.WARNING
+                    )
+                )
+            }
+
+            return
+        }
+
         viewModelScope.launch {
 
             _uiState.update {
